@@ -1,0 +1,6 @@
+{ "note": "Mr X holding the bottle. Sprite: pose_hold_bottle (character sheet action pose), unaltered. The bottle is the sheet's X bottle; no ZSCENTS product photo has been supplied yet.",
+  "layers": [
+    { "src": "assets/sets/studio/studio_back.png", "x": 0, "y": 0, "w": 1080 },
+    { "src": "assets/characters/mrx/sprites_4x/pose_hold_bottle.png", "x": 540, "y": 1740, "h": 1400, "anchor": [0.5, 1] },
+    { "src": "assets/sets/studio/studio_counter.png", "x": 0, "y": 0, "w": 1080 }
+  ] }

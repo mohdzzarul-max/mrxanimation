@@ -1,0 +1,6 @@
+{ "note": "Mr X standing inside the perfume studio. Sprite: body_front (turnaround DEPAN), unaltered.",
+  "layers": [
+    { "src": "assets/sets/studio/studio_back.png", "x": 0, "y": 0, "w": 1080 },
+    { "src": "assets/characters/mrx/sprites_4x/body_front.png", "x": 540, "y": 330, "h": 1880, "anchor": [0.5, 0] },
+    { "src": "assets/sets/studio/studio_counter.png", "x": 0, "y": 0, "w": 1080 }
+  ] }

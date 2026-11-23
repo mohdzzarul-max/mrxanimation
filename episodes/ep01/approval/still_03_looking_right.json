@@ -1,0 +1,6 @@
+{ "note": "Mr X looking toward screen-right. Sprite: body_34_left (turnaround 3/4 DEPAN) mirrored horizontally; the design is symmetrical, so the mirror keeps him on model.",
+  "layers": [
+    { "src": "assets/sets/studio/studio_back.png", "x": 0, "y": 0, "w": 1080 },
+    { "src": "assets/characters/mrx/sprites_4x/body_34_left.png", "x": 500, "y": 330, "h": 1880, "anchor": [0.5, 0], "mirror": true },
+    { "src": "assets/sets/studio/studio_counter.png", "x": 0, "y": 0, "w": 1080 }
+  ] }

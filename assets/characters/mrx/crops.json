@@ -1,0 +1,233 @@
+{
+ "body_front": {
+  "src": "turnaround",
+  "box": [
+   275,
+   5,
+   640,
+   800
+  ],
+  "note": "turnaround DEPAN",
+  "thr": 100,
+  "grow": 2
+ },
+ "body_34_left": {
+  "src": "turnaround",
+  "box": [
+   655,
+   22,
+   975,
+   800
+  ],
+  "note": "turnaround 3/4 DEPAN (faces screen-left)",
+  "thr": 60,
+  "grow": 3
+ },
+ "body_side_left": {
+  "src": "turnaround",
+  "box": [
+   1015,
+   22,
+   1265,
+   800
+  ],
+  "note": "turnaround SISI (faces screen-left)",
+  "thr": 60,
+  "grow": 2
+ },
+ "body_back": {
+  "src": "turnaround",
+  "box": [
+   1315,
+   5,
+   1675,
+   800
+  ],
+  "note": "turnaround BELAKANG",
+  "thr": 100,
+  "grow": 2
+ },
+ "bust_arms_crossed": {
+  "src": "sheet",
+  "box": [
+   0,
+   175,
+   372,
+   722
+  ],
+  "note": "sheet hero bust",
+  "method": "color"
+ },
+ "pose_punch": {
+  "src": "sheet",
+  "box": [
+   0,
+   718,
+   430,
+   1024
+  ],
+  "note": "sheet punch close-up",
+  "method": "color"
+ },
+ "pose_hold_bottle": {
+  "src": "sheet",
+  "box": [
+   880,
+   658,
+   1160,
+   1003
+  ],
+  "note": "sheet action pose holding X bottle",
+  "method": "color",
+  "erase": [
+   [
+    [
+     880,
+     658
+    ],
+    [
+     965,
+     658
+    ],
+    [
+     955,
+     742
+    ],
+    [
+     908,
+     762
+    ],
+    [
+     880,
+     792
+    ]
+   ]
+  ],
+  "erase_fill": [
+   90,
+   70,
+   130
+  ]
+ },
+ "pose_run": {
+  "src": "sheet",
+  "box": [
+   400,
+   660,
+   668,
+   1000
+  ],
+  "note": "sheet action run",
+  "method": "color"
+ },
+ "pose_crouch": {
+  "src": "sheet",
+  "box": [
+   620,
+   655,
+   905,
+   1000
+  ],
+  "note": "sheet action landing crouch",
+  "method": "color"
+ },
+ "head_normal": {
+  "src": "sheet",
+  "box": [
+   1094,
+   58,
+   1236,
+   196
+  ],
+  "note": "expression NORMAL",
+  "method": "color"
+ },
+ "head_senyum": {
+  "src": "sheet",
+  "box": [
+   1238,
+   58,
+   1382,
+   196
+  ],
+  "note": "expression SENYUM",
+  "method": "color"
+ },
+ "head_terkejut": {
+  "src": "sheet",
+  "box": [
+   1384,
+   50,
+   1528,
+   196
+  ],
+  "note": "expression TERKEJUT",
+  "method": "color"
+ },
+ "head_marah": {
+  "src": "sheet",
+  "box": [
+   1094,
+   232,
+   1236,
+   372
+  ],
+  "note": "expression MARAH",
+  "method": "color"
+ },
+ "head_fikir": {
+  "src": "sheet",
+  "box": [
+   1238,
+   232,
+   1382,
+   372
+  ],
+  "note": "expression FIKIR",
+  "method": "color"
+ },
+ "head_skeptikal": {
+  "src": "sheet",
+  "box": [
+   1384,
+   232,
+   1528,
+   372
+  ],
+  "note": "expression SKEPTIKAL",
+  "method": "color"
+ },
+ "head_gelak": {
+  "src": "sheet",
+  "box": [
+   1094,
+   410,
+   1236,
+   555
+  ],
+  "note": "expression GELAK",
+  "method": "color"
+ },
+ "head_bengang": {
+  "src": "sheet",
+  "box": [
+   1238,
+   410,
+   1382,
+   555
+  ],
+  "note": "expression BENGANG",
+  "method": "color"
+ },
+ "head_godam": {
+  "src": "sheet",
+  "box": [
+   1384,
+   410,
+   1528,
+   555
+  ],
+  "note": "expression GODAM",
+  "method": "color"
+ }
+}

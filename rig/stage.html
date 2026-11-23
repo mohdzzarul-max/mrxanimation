@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>MR X sprite stage</title>
+<!--
+  Sprite stage: composites approved artwork layers into a 1080x1920 frame. No character geometry is
+  drawn here: every character pixel comes from assets/characters/mrx/sprites_4x (cut from the sheets).
+  window.renderShot(shot) places layers; tools/render_stills.js calls it and screenshots the result.
+  shot = { layers: [ { src, x, y, h | w, anchor: [ax, ay] (0..1 of the sprite), mirror, opacity } ] }
+  Layers draw in order (first = back). Paths are relative to the repo root.
+-->
+<style>
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  #stage img { position: absolute; left: 0; top: 0; transform-origin: 0 0; image-rendering: auto; }
+</style></head>
+<body><div id="stage"></div>
+<script>
+const ROOT = '../';
+function load(src) { return new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('missing ' + src)); i.src = ROOT + src; }); }
+window.renderShot = async function (shot) {
+  const st = document.getElementById('stage'); st.innerHTML = '';
+  for (const L of shot.layers) {
+    const img = await load(L.src);
+    const s = L.h ? L.h / img.naturalHeight : L.w ? L.w / img.naturalWidth : 1;
+    const w = img.naturalWidth * s, h = img.naturalHeight * s;
+    const [ax, ay] = L.anchor || [0, 0];
+    const x = (L.x || 0) - ax * w, y = (L.y || 0) - ay * h;
+    img.style.width = w + 'px'; img.style.height = h + 'px';
+    img.style.transform = `translate(${x}px, ${y}px)` + (L.mirror ? ` translate(${w}px,0) scaleX(-1)` : '');
+    if (L.opacity !== undefined) img.style.opacity = L.opacity;
+    st.appendChild(img);
+  }
+  return true;
+};
+window.STAGE_READY = true;
+</script></body></html>
