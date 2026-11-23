@@ -1,0 +1,4 @@
+{"fps": 24, "_note": "exposure per drawing in frames (DRAWING_LIST.md). Root x/y = whole-figure placement (jump travel), drawings carry the pose.",
+ "frames": [["T01",12],["T02",4],["T03",8],["T04",2],["T05",1],["T06",5],["T07",2],["T08",2],["T09",4],["T10",8],
+            ["T11",4],["T12",4],["T13",4],["T14",4],["T15",6],["T16",14],["T17",4],["T18",4],
+            ["T19",12],["T19b",2],["T19c",2],["T19b",2],["T19",10]]}

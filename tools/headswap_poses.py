@@ -17,7 +17,7 @@ cfg = json.loads((P / "headswap.json").read_text())
 HPX, HPY = 800, 1200
 
 def shift_for(tid):
-    n = int(tid[1:])
+    n = int(tid[1:3])
     for rng, dy in cfg["ground_shift"].items():
         a, b = [int(x[1:]) for x in rng.split("-")]
         if a <= n <= b: return dy
@@ -26,13 +26,19 @@ def shift_for(tid):
 ids = sys.argv[1:] or [k for k in cfg if k.startswith("T")]
 for tid in ids:
     c = cfg[tid]
-    src = next(P.glob(f"src/{tid}_*.png"))
+    src = next(P.glob(f"src/{c.get('src', tid)}_*.png"))
     im = Image.open(src).convert("RGBA")
     if c.get("state"):
         m = Image.new("L", im.size, 0); d = ImageDraw.Draw(m)
         for cx, cy, rx, ry in c["erase"].get("ell", []): d.ellipse([cx - rx, cy - ry, cx + rx, cy + ry], fill=255)
         for box in c["erase"].get("box", []): d.rectangle(box, fill=255)
-        a = np.asarray(im).copy(); a[..., 3] = np.where(np.asarray(m) > 0, 0, a[..., 3]); im = Image.fromarray(a)
+        er = np.asarray(m) > 0
+        if c.get("neckline", True):
+            # never erase below the head's neck line (tilted with the head): shoulders and arms stay intact
+            th = np.radians(c.get("rot", 0)); dx, dy = -np.sin(th), np.cos(th)
+            yy, xx = np.mgrid[0:er.shape[0], 0:er.shape[1]]
+            er &= ((xx - c["pivot"][0]) * dx + (yy - c["pivot"][1]) * dy) < c.get("neck_margin", 10)
+        a = np.asarray(im).copy(); a[..., 3] = np.where(er, 0, a[..., 3]); im = Image.fromarray(a)
         head = Image.open(R / f"rig/states/{c['state']}.png").convert("RGBA")
         s = c.get("scale", cfg["head_scale"])
         head = head.resize((int(head.width * s), int(head.height * s)), Image.LANCZOS)

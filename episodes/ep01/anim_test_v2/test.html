@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset="utf-8"><title>MR X drawn animation test</title>
+<!-- 5 s drawn-animation test. Each frame shows ONE drawing from assets/characters/mrx/poses_draft/fixed
+     (draft body drawings + approved heads), exposed per xsheet.json. Camera, FX and floor are layered on top.
+     ?t=1.2 hold · ?capture=1 render -->
+<style>
+ @font-face{font-family:'Bangers';src:url('../../../assets/fonts/Bangers.woff2') format('woff2');font-display:block}
+ html,body{margin:0;background:#0b0820;overflow:hidden} #frame{position:relative;width:1080px;height:1920px;overflow:hidden}
+ .abs{position:absolute;left:0;top:0} #cam,#bgcam{width:1080px;height:1920px;transform-origin:540px 1300px}
+ #draw{transform-origin:0 0} #draw img{position:absolute;left:0;top:0;width:2000px;height:2000px;visibility:hidden}
+ #tag{position:absolute;left:24px;bottom:24px;font:600 26px Inter,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:8px 14px;border-radius:8px}
+</style></head><body>
+<div id="frame">
+ <div id="bgcam" class="abs"><img class="abs" src="../../../assets/sets/studio/studio_back.png" width="1080" height="1920"></div>
+ <div id="cam" class="abs">
+  <svg class="abs" width="1080" height="1920"><defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2c8c"/><stop offset="1" stop-color="#140e3a"/></linearGradient>
+   <radialGradient id="sh"><stop offset="0" stop-color="#05020f" stop-opacity=".6"/><stop offset="1" stop-color="#05020f" stop-opacity="0"/></radialGradient></defs>
+   <rect x="-200" y="1590" width="1480" height="600" fill="url(#fl)"/><rect x="-200" y="1588" width="1480" height="5" fill="#a99bff"/>
+   <ellipse id="shadow" cx="540" cy="1640" rx="230" ry="34" fill="url(#sh)"/></svg>
+  <svg id="speed" class="abs" width="1080" height="1920"></svg>
+  <div id="draw" class="abs"></div>
+  <svg id="fx" class="abs" width="1080" height="1920"></svg>
+ </div>
+ <div id="tag">Draft bottle — real ZSCENTS product pending</div>
+</div>
+<script>
+(async()=>{
+const P=new URLSearchParams(location.search), capture=P.get('capture')==='1';
+const X={"fps": 24, "_note": "exposure per drawing in frames (DRAWING_LIST.md). Root x/y = whole-figure placement (jump travel), drawings carry the pose.",
+ "frames": [["T01",12],["T02",4],["T03",8],["T04",2],["T05",1],["T06",5],["T07",2],["T08",2],["T09",4],["T10",8],
+            ["T11",4],["T12",4],["T13",4],["T14",4],["T15",6],["T16",14],["T17",4],["T18",4],
+            ["T19",12],["T19b",2],["T19c",2],["T19b",2],["T19",10]]}; // = xsheet.json
+const FPS=24, seq=[]; for(const [id,n] of X.frames) for(let i=0;i<n;i++) seq.push(id);
+const DURATION=seq.length/FPS, $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+const imgs={}; for(const id of new Set(seq)){const i=new Image();i.src=`../../../assets/characters/mrx/poses_draft/fixed/${id}.png`;$('draw').appendChild(i);imgs[id]=i;}
+// drawing canvas 2000px scaled 0.62; ground y=1760 -> frame y=1640
+const SC=0.62, GX=540-1000*SC, GY=1640-1760*SC;
+// root placement per frame (jump carries him forward; then he stays put)
+const key=[[0,-40],[24,-40],[28,10],[32,50],[40,90],[48,90],[120,90]];
+const rootX=f=>{for(let i=1;i<key.length;i++)if(f<=key[i][0]){const[a,x0]=key[i-1],[b,x1]=key[i];return x0+(x1-x0)*(f-a)/(b-a)}return 90};
+// FX
+const dust=[]; for(let i=0;i<7;i++) dust.push(mk('circle',{fill:'#cfc4ff',opacity:0},$('fx')));
+const ring=mk('ellipse',{fill:'none',stroke:'#fff','stroke-width':10,opacity:0},$('fx'));
+for(let i=0;i<9;i++) mk('rect',{x:-200,y:1050+i*55+(i%2)*20,width:300+(i%3)*160,height:7,rx:4,fill:'#fff',opacity:.5},$('speed'));
+let shown=null;
+function seek(t){
+ t=Math.min(Math.max(t,0),DURATION-1e-6); const f=Math.floor(t*FPS+1e-6), id=seq[f];
+ if(id!==shown){ if(shown)imgs[shown].style.visibility='hidden'; imgs[id].style.visibility='visible'; shown=id; }
+ const rx=rootX(f);
+ $('draw').style.transform=`translate(${GX+rx}px,${GY}px) scale(${SC})`;
+ // shadow shrinks while airborne
+ const air=(f>=24&&f<34)?1-Math.abs(f-29)/6:0; $('shadow').setAttribute('cx',540+rx+20); $('shadow').setAttribute('rx',230-90*air); $('shadow').setAttribute('opacity',1-0.5*air);
+ // camera: low dramatic angle → medium; impact shake at landing (f34); small push on the bottle hold
+ const k=Math.min(1,t/1.6), ease=1-Math.pow(1-k,3);
+ let cs=1.18-0.18*ease, cy=-60*(1-ease), cx=0;
+ if(f>=70) cs+=0.06*Math.min(1,(f-70)/14);
+ const sh=f>=34&&f<40?(40-f)*3:0; cx+=Math.sin(f*2.3)*sh; cy+=Math.cos(f*3.1)*sh;
+ $('cam').style.transform=`translate(${cx}px,${cy}px) scale(${cs})`; $('bgcam').style.transform=`translate(${cx*.4}px,${cy*.4}px) scale(${1+(cs-1)*.5})`;
+ // speed lines during push-off/smear/flight
+ const sp=f>=24&&f<32; $('speed').style.opacity=sp?1:0; $('speed').style.transform=`translateX(${(f-24)*90+rx}px)`;
+ // landing dust + impact ring (drawn on twos)
+ const fd=Math.floor((f-34)/2)*2;
+ dust.forEach((d,i)=>{ const u=fd/12, a=(i-3)*0.45; const on=f>=34&&u<1;
+   d.setAttribute('cx',560+rx+Math.sin(a)*(60+260*u)); d.setAttribute('cy',1635-20*u*Math.cos(a*0.5)-(i%2)*14);
+   d.setAttribute('r',(18+(i%3)*8)*(1-u*0.6)); d.setAttribute('opacity',on?0.85*(1-u):0); });
+ const ur=(f-34)/5; ring.setAttribute('cx',560+rx); ring.setAttribute('cy',1640); ring.setAttribute('rx',120+320*ur); ring.setAttribute('ry',22+50*ur); ring.setAttribute('opacity',f>=34&&ur<1?1-ur:0);
+}
+await Promise.all(Object.values(imgs).map(i=>i.decode().catch(()=>{})));
+window.seek=seek; window.DURATION=DURATION;
+const tp=P.get('t'); if(tp!==null) seek(+tp); else if(!capture){const t0=performance.now();const L=n=>{seek(((n-t0)/1000)%DURATION);requestAnimationFrame(L)};requestAnimationFrame(L)} else seek(0);
+})();
+</script></body></html>
