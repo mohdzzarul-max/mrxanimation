@@ -9,7 +9,7 @@ const fs = require('fs'), path = require('path');
   const opt = k => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : null; };
   const fps = +(opt('--fps') || 24), audio = opt('--audio'), stills = opt('--stills');
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
-  const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('requestfailed', r => errs.push('missing ' + r.url()));
+  const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('requestfailed', r => { if (r.url().includes('/assets/products/')) console.warn('note: optional product asset not found: ' + r.url()); else errs.push('missing ' + r.url()); });
   await p.goto('file://' + html + '?capture=1'); await p.waitForFunction(() => window.DURATION > 0, null, { timeout: 60000 });
   const frame = p.locator('#frame');
   if (stills) {

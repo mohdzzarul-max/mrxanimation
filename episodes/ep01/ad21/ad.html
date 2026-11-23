@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZSCENTS Clearance Habis-Habisan</title>
+<!--
+  ZSCENTS — CLEARANCE HABIS-HABISAN!  21 s · 1080x1920 · 24 fps (504 frames). Music + SFX only.
+
+  Character: every Mr X frame is ONE drawing from assets/characters/mrx/poses_draft/fixed
+  (draft body drawings + approved rig heads), exposed frame by frame per the X-sheet below.
+  GSAP drives camera, typography and FX only. Nothing moves the character drawing except
+  the root placement of the jump (as in the approved 5 s test).
+
+  Product: assets/products/zscents_bottle.png (transparent PNG, upright) is used in the showcase
+  and end card when present. Without it a clearly labelled placeholder slot is shown.
+
+  URL: ?t=8.5 hold a frame · ?capture=1 render (tools/render_video.js)
+-->
+<style>
+ @font-face{font-family:'Bangers';src:url('../../../assets/fonts/Bangers.woff2') format('woff2');font-display:block}
+ html,body{margin:0;background:#0b0820;overflow:hidden}
+ #frame{position:relative;width:1080px;height:1920px;overflow:hidden;background:#140e3a}
+ body.fit{display:grid;place-items:center;height:100vh} body.fit #frame{transform:scale(calc(100vh / 1920px))}
+ .abs{position:absolute;left:0;top:0} .full{width:1080px;height:1920px}
+ #cam,#bgcam{transform-origin:540px 1300px}
+ #draw,#cu{transform-origin:0 0} #draw img,#cu img{position:absolute;left:0;top:0;width:2000px;height:2000px;visibility:hidden}
+ .t{font-family:'Bangers',Impact,sans-serif;position:absolute;left:0;width:1080px;text-align:center;white-space:nowrap;
+    color:#fff;-webkit-text-stroke:16px #0a0710;paint-order:stroke fill;letter-spacing:4px;opacity:0}
+ .y{color:#ffd23f} .p{color:#c9b8ff}
+ #tag{position:absolute;left:24px;bottom:24px;font:600 24px Inter,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:8px 14px;border-radius:8px}
+ #slot{position:absolute;display:grid;place-items:center;text-align:center;border:6px dashed #c9b8ff;border-radius:28px;
+       background:rgba(20,12,60,.55);color:#fff;font:700 34px Inter,sans-serif;line-height:1.3}
+ #flash{background:#fff;opacity:0}
+</style></head><body>
+<div id="frame">
+ <!-- STUDIO (shots 1, 4, 5) -->
+ <div id="studio" class="abs full">
+  <div id="bgcam" class="abs full"><img class="abs" src="../../../assets/sets/studio/studio_back.png" width="1080" height="1920"></div>
+  <div id="cam" class="abs full">
+   <svg class="abs" width="1080" height="1920"><defs>
+     <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2c8c"/><stop offset="1" stop-color="#140e3a"/></linearGradient>
+     <radialGradient id="sh"><stop offset="0" stop-color="#05020f" stop-opacity=".6"/><stop offset="1" stop-color="#05020f" stop-opacity="0"/></radialGradient></defs>
+     <rect x="-200" y="1590" width="1480" height="600" fill="url(#fl)"/><rect x="-200" y="1588" width="1480" height="5" fill="#a99bff"/>
+     <ellipse id="shadow" cx="540" cy="1640" rx="230" ry="34" fill="url(#sh)"/></svg>
+   <svg id="speed" class="abs" width="1080" height="1920"></svg>
+   <div id="draw" class="abs"></div>
+   <svg id="fx" class="abs" width="1080" height="1920"></svg>
+  </div>
+ </div>
+ <!-- CLOSE-UP (shot 2) -->
+ <div id="close" class="abs full" style="display:none">
+  <svg class="abs" width="1080" height="1920"><defs><radialGradient id="cug" cx=".55" cy=".62" r=".8"><stop offset="0" stop-color="#7a63ff"/><stop offset=".5" stop-color="#3a2a9e"/><stop offset="1" stop-color="#120c38"/></radialGradient></defs>
+   <rect width="1080" height="1920" fill="url(#cug)"/><g id="cuRays" opacity=".18"></g></svg>
+  <div id="cuCam" class="abs full" style="transform-origin:540px 1250px"><div id="cu" class="abs"></div></div>
+ </div>
+ <!-- SHOWCASE (shot 3) + END CARD (shot 5b) -->
+ <div id="show" class="abs full" style="display:none">
+  <svg class="abs" width="1080" height="1920"><defs>
+    <radialGradient id="shg" cx=".5" cy=".52" r=".75"><stop offset="0" stop-color="#8b74ff"/><stop offset=".45" stop-color="#3b2aa6"/><stop offset="1" stop-color="#0d0830"/></radialGradient>
+    <linearGradient id="streak" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="ped" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b55e6"/><stop offset="1" stop-color="#241873"/></linearGradient></defs>
+   <rect width="1080" height="1920" fill="url(#shg)"/>
+   <g id="shRays" opacity=".16"></g><g id="dots" opacity=".16"></g>
+   <g id="streaks"></g>
+   <ellipse cx="540" cy="1265" rx="300" ry="54" fill="url(#ped)" stroke="#0a0710" stroke-width="8"/>
+   <rect x="240" y="1265" width="600" height="80" fill="#241873" stroke="#0a0710" stroke-width="8"/>
+   <ellipse cx="540" cy="1345" rx="300" ry="54" fill="#1a1158" stroke="#0a0710" stroke-width="8"/>
+   <ellipse id="pglow" cx="540" cy="1000" rx="260" ry="330" fill="#cfc4ff" opacity=".25" filter="url(#none)"/>
+  </svg>
+  <div id="prod" class="abs" style="left:340px;top:640px;width:400px;height:620px;transform-origin:200px 620px">
+   <img id="prodImg" class="abs" style="width:400px;height:620px;object-fit:contain;display:none">
+   <div id="slot" style="left:0;top:0;width:388px;height:608px">GAMBAR<br>PRODUK<br>ZSCENTS<br>SEBENAR<br><span style="font-size:22px;opacity:.8">(belum dibekalkan)</span></div>
+  </div>
+  <svg id="glint" class="abs" width="1080" height="1920"><path id="gl" d="M0 -60L14 -14L60 0L14 14L0 60L-14 14L-60 0L-14 -14Z" fill="#fff"/></svg>
+ </div>
+ <!-- END CARD -->
+ <div id="card" class="abs full" style="display:none">
+  <svg class="abs" width="1080" height="1920"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1150"/><stop offset=".5" stop-color="#3b2aa6"/><stop offset="1" stop-color="#120c38"/></linearGradient></defs>
+   <rect width="1080" height="1920" fill="url(#cg)"/><g id="cRays" opacity=".12"></g>
+   <path id="cPlate" d="M 90 1110 L 990 1090 L 970 1330 L 70 1352 Z" fill="#ffd23f" stroke="#0a0710" stroke-width="12" stroke-linejoin="round"/></svg>
+  <div id="cProd" class="abs" style="left:390px;top:330px;width:300px;height:460px">
+   <img id="cProdImg" class="abs" style="width:300px;height:460px;object-fit:contain;display:none">
+   <div id="cSlot" style="position:absolute;inset:0;display:grid;place-items:center;text-align:center;border:5px dashed #c9b8ff;border-radius:22px;background:rgba(20,12,60,.55);color:#fff;font:700 26px Inter,sans-serif">PRODUK<br>ZSCENTS</div>
+  </div>
+ </div>
+ <!-- TYPOGRAPHY (screen space, TikTok safe area: x 70–1010, y 200–1540) -->
+ <div id="t1a" class="t y" style="top:210px;font-size:170px">HEYYY!</div>
+ <div id="t1b" class="t" style="top:390px;font-size:96px">JANGAN SCROLL DULUUU!</div>
+ <div id="t2a" class="t" style="top:230px;font-size:190px;letter-spacing:10px">ZSCENTS</div>
+ <div id="t2b" class="t y" style="top:440px;font-size:128px">CLEARANCE</div>
+ <div id="t2c" class="t" style="top:575px;font-size:112px">HABIS-HABISAN!</div>
+ <div id="t3a" class="t p" style="top:300px;font-size:200px">55 ML</div>
+ <div id="t3b" class="t y" style="top:1390px;font-size:136px;-webkit-text-stroke:20px #0a0710">SEMUA BAWAH</div>
+ <div id="t3c" class="t y" style="top:1520px;font-size:200px;-webkit-text-stroke:22px #0a0710">RM55!</div>
+ <div id="t4a" class="t y" style="top:240px;font-size:170px">STOK TERHAD!</div>
+ <div id="t4b" class="t" style="top:430px;font-size:104px">HABIS MEMANG HABIS!</div>
+ <div id="c1" class="t" style="top:860px;font-size:180px;letter-spacing:12px">ZSCENTS</div>
+ <div id="c2" class="t p" style="top:1040px;font-size:84px">CLEARANCE HABIS-HABISAN!</div>
+ <div id="c3" class="t" style="top:1178px;font-size:72px;color:#0a0710;-webkit-text-stroke:0">55 ML — SEMUA BAWAH RM55!</div>
+ <div id="c4" class="t" style="top:1410px;font-size:70px;color:#ffd23f">SEMENTARA STOK MASIH ADA</div>
+ <div id="flash" class="abs full"></div>
+ <div id="tag">Draft bottle — real ZSCENTS product pending</div>
+</div>
+<script src="../../../rig/vendor/gsap.min.js"></script>
+<script>
+(async () => {
+const P = new URLSearchParams(location.search), capture = P.get('capture') === '1';
+const FPS = 24, $ = id => document.getElementById(id), NS = 'http://www.w3.org/2000/svg';
+const mk = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+
+// ===== X-SHEET: [drawing, frames]; shot changes are listed in SHOTS =====
+const XS = [
+ // SHOT 1 (0–119): the approved 5 s test, unchanged
+ ['T01',12],['T02',4],['T03',8],['T04',2],['T05',1],['T06',5],['T07',2],['T08',2],['T09',4],['T10',8],
+ ['T11',4],['T12',4],['T13',4],['T14',4],['T15',6],['T16',14],['T17',4],['T18',4],['T19',12],['T19b',2],['T19c',2],['T19b',2],['T19',10],
+ // SHOT 2 (120–191): anticipation in the medium, cut on the thrust to the close-up
+ ['T18',4],['T20',44],['T20b',2],['T20c',2],['T20b',2],['T20',18],
+ // SHOT 3 (192–311): product showcase, no character
+ [null,120],
+ // SHOT 4 (312–407): notices the shelf, gestures at the stock, grabs a bottle, raises it
+ ['T10',6],['T11',10],['T12',6],['T13',30],['T14',8],['T15',6],['T16',30],
+ // SHOT 5 (408–503): take, overshoot, final pose (+blink), end card
+ ['T17',4],['T18',4],['T19',14],['T19b',2],['T19c',2],['T19b',2],['T19',4],[null,64],
+];
+const seq = []; for (const [id, n] of XS) for (let i = 0; i < n; i++) seq.push(id);
+const DURATION = seq.length / FPS;           // 21.0 s
+const SHOT = f => f < 120 ? 1 : f < 124 ? 1.5 : f < 192 ? 2 : f < 312 ? 3 : f < 408 ? 4 : f < 440 ? 5 : 6;
+
+// ===== drawings =====
+const imgs = {};
+for (const id of new Set(seq.filter(Boolean))) {
+  const i = new Image(); i.src = `../../../assets/characters/mrx/poses_draft/fixed/${id}.png`;
+  (id.startsWith('T20') ? $('cu') : $('draw')).appendChild(i); imgs[id] = i;
+}
+// product (real asset if supplied)
+const prod = new Image(); let hasProd = false;
+await new Promise(r => { prod.onload = () => { hasProd = true; r(); }; prod.onerror = r; prod.src = '../../../assets/products/zscents_bottle.png'; });
+if (hasProd) { for (const [im, sl] of [['prodImg','slot'],['cProdImg','cSlot']]) { $(im).src = prod.src; $(im).style.display = 'block'; $(sl).style.display = 'none'; } $('tag').style.display = 'none'; }
+
+// ===== static decor =====
+const rays = (g, cx, cy, n, R) => { for (let i = 0; i < n; i++) { const a0 = i / n * Math.PI * 2, a1 = a0 + Math.PI / n * .55;
+  mk('path', { d: `M${cx} ${cy}L${cx + Math.cos(a0) * R} ${cy + Math.sin(a0) * R}L${cx + Math.cos(a1) * R} ${cy + Math.sin(a1) * R}Z`, fill: '#e2d9ff' }, g); } };
+rays($('cuRays'), 0, 0, 28, 2400); rays($('shRays'), 0, 0, 24, 2400); rays($('cRays'), 540, 700, 30, 2400);
+for (let y = 1380; y < 1940; y += 34) for (let x = -10; x < 540; x += 34) { const r = Math.max(0, 1 - Math.hypot(x + 40, y - 1960) / 700) * 11; if (r > .8) mk('circle', { cx: x + (y / 34 % 2) * 17, cy: y, r, fill: '#cfc4ff' }, $('dots')); }
+const streaks = [0,1,2,3,4].map(i => mk('rect', { x: -900, y: 560 + i * 170, width: 900, height: 10 + (i % 2) * 8, rx: 9, fill: 'url(#streak)', opacity: 0 }, $('streaks')));
+for (let i = 0; i < 10; i++) mk('rect', { x: -200, y: 1020 + i * 52 + (i % 2) * 18, width: 300 + (i % 3) * 170, height: 7, rx: 4, fill: '#fff', opacity: .5 }, $('speed'));
+const dust = []; for (let i = 0; i < 7; i++) dust.push(mk('circle', { fill: '#cfc4ff', opacity: 0 }, $('fx')));
+const ring = mk('ellipse', { fill: 'none', stroke: '#fff', 'stroke-width': 10, opacity: 0 }, $('fx'));
+
+// ===== GSAP: typography, camera, FX (on ones) =====
+const T = ['t1a','t1b','t2a','t2b','t2c','t3a','t3b','t3c','t4a','t4b','c1','c2','c3','c4'];
+const st = {}; for (const id of T) st[id] = { s: 0, o: 0, y: 0, r: 0 };
+const K = { prodY: 1, prodS: .9, streak: 0, glint: -1, pg: .25, card: 0, flash: 0, cuZ: 1.25, cuX: 0, shake: 0, plate: 0 };
+const tl = gsap.timeline({ paused: true });
+const f = n => n / FPS;
+const pop = (id, at, out, rot = -2, ease = 'back.out(2.6)') => {
+  tl.fromTo(st[id], { s: 0, o: 1, r: rot * 3 }, { s: 1, r: rot, duration: .22, ease }, f(at));
+  if (out !== null) tl.to(st[id], { s: 1.15, o: 0, duration: .14, ease: 'power2.in' }, f(out));
+};
+const slam = (id, at, out, rot = -3) => {
+  tl.fromTo(st[id], { s: 2.4, o: 0, r: rot }, { s: 1, o: 1, duration: .16, ease: 'power3.in' }, f(at));
+  if (out !== null) tl.to(st[id], { s: 1.15, o: 0, duration: .14, ease: 'power2.in' }, f(out));
+};
+// shot 1
+pop('t1a', 3, 104, -4); pop('t1b', 12, 104, 2);
+// shot 2
+slam('t2a', 130, 188, 0); pop('t2b', 146, 188, -3); pop('t2c', 152, 188, 2);
+tl.fromTo(K, { cuZ: 1.22 }, { cuZ: 1.0, duration: f(7), ease: 'power3.out' }, f(124)).to(K, { cuZ: 1.06, duration: f(60), ease: 'sine.inOut' }, f(131));
+// shot 3
+tl.fromTo(K, { prodY: 1, prodS: .9 }, { prodY: -0.03, prodS: 1, duration: f(12), ease: 'power3.out' }, f(194)).to(K, { prodY: 0, duration: f(8), ease: 'sine.out' }, f(206));
+tl.to(K, { prodS: 1.06, duration: f(100), ease: 'sine.inOut' }, f(214));
+pop('t3a', 220, 308, -2);
+tl.to(K, { streak: 1, duration: f(22), ease: 'power1.in' }, f(224));
+slam('t3b', 246, 308, -3); slam('t3c', 250, 308, -4);
+tl.to(K, { shake: 1, duration: f(1) }, f(250)).to(K, { shake: 0, duration: f(8), ease: 'power2.out' }, f(251));
+tl.to(K, { pg: .55, duration: f(3) }, f(250)).to(K, { pg: .25, duration: f(20) }, f(253));
+tl.fromTo(K, { glint: -1 }, { glint: 1, duration: f(14), ease: 'sine.inOut' }, f(272));
+// shot 4
+pop('t4a', 340, 404, -3); pop('t4b', 374, 404, 2);
+// shot 5 → end card
+tl.to(K, { flash: 1, duration: f(3), ease: 'power2.in' }, f(437)).to(K, { flash: 0, duration: f(8), ease: 'power2.out' }, f(440));
+slam('c1', 444, null, 0); pop('c2', 452, null, 0); tl.fromTo(K, { plate: 0 }, { plate: 1, duration: f(6), ease: 'back.out(2)' }, f(458)); pop('c3', 460, null, -1.5, 'back.out(1.8)'); pop('c4', 472, null, 0);
+tl.to(K, { card: 1, duration: f(60), ease: 'none' }, f(444));
+tl.set({}, {}, DURATION);
+
+// ===== frame render =====
+const SC = .62, GX = 540 - 1000 * SC, GY = 1640 - 1760 * SC;
+const key = [[0,-40],[24,-40],[28,10],[32,50],[40,90]];
+const rootX = fr => { if (fr >= 40) return 90; for (let i = 1; i < key.length; i++) if (fr <= key[i][0]) { const [a, x0] = key[i - 1], [b, x1] = key[i]; return x0 + (x1 - x0) * (fr - a) / (b - a); } return 90; };
+let shown = null;
+function seek(t) {
+  t = Math.min(Math.max(t, 0), DURATION - 1e-6);
+  const fr = Math.floor(t * FPS + 1e-6), id = seq[fr], sh = SHOT(fr);
+  tl.seek(t, false);
+  if (id !== shown) { if (shown) imgs[shown].style.visibility = 'hidden'; if (id) imgs[id].style.visibility = 'visible'; shown = id; }
+  const studio = sh === 1 || sh === 1.5 || sh === 4 || sh === 5;
+  $('studio').style.display = studio ? '' : 'none'; $('close').style.display = sh === 2 ? '' : 'none';
+  $('show').style.display = sh === 3 ? '' : 'none'; $('card').style.display = sh === 6 ? '' : 'none';
+  $('tag').style.display = (!hasProd && fr >= 70 && sh !== 6 && sh !== 3) ? '' : 'none';
+  if (studio) {
+    const rx = sh === 1 ? rootX(fr) : 90;
+    $('draw').style.transform = `translate(${GX + rx}px,${GY}px) scale(${SC})`;
+    const air = (sh === 1 && fr >= 24 && fr < 34) ? 1 - Math.abs(fr - 29) / 6 : 0;
+    $('shadow').setAttribute('cx', 560 + rx); $('shadow').setAttribute('rx', 230 - 90 * air); $('shadow').setAttribute('opacity', 1 - .5 * air);
+    let cs, cy = 0, cx = 0;
+    if (sh === 1) { const k = Math.min(1, t / 1.6), e = 1 - Math.pow(1 - k, 3); cs = 1.18 - .18 * e; cy = -60 * (1 - e); if (fr >= 70) cs += .06 * Math.min(1, (fr - 70) / 14); }
+    else if (sh === 1.5) cs = 1.08;
+    else if (sh === 4) { const k = (fr - 312) / 96; cs = 1.0 + .05 * k; cx = -20 * k; }
+    else { cs = 1.06 + (fr < 412 ? .05 * (412 - fr) / 4 : 0); }
+    const s1 = sh === 1 && fr >= 34 && fr < 40 ? (40 - fr) * 3 : (sh === 5 && fr >= 408 && fr < 412 ? (412 - fr) * 3 : 0);
+    cx += Math.sin(fr * 2.3) * s1; cy += Math.cos(fr * 3.1) * s1;
+    $('cam').style.transform = `translate(${cx}px,${cy}px) scale(${cs})`;
+    $('bgcam').style.transform = `translate(${cx * .4}px,${cy * .4}px) scale(${1 + (cs - 1) * .5})`;
+    const sp = sh === 1 && fr >= 24 && fr < 32; $('speed').style.opacity = sp ? 1 : 0; $('speed').style.transform = `translateX(${(fr - 24) * 90 + rx}px)`;
+    const fd = Math.floor((fr - 34) / 2) * 2, u = fd / 12;
+    dust.forEach((d, i) => { const a = (i - 3) * .45, on = sh === 1 && fr >= 34 && u < 1;
+      d.setAttribute('cx', 560 + rx + Math.sin(a) * (60 + 260 * u)); d.setAttribute('cy', 1635 - 20 * u * Math.cos(a * .5) - (i % 2) * 14);
+      d.setAttribute('r', (18 + (i % 3) * 8) * (1 - u * .6)); d.setAttribute('opacity', on ? .85 * (1 - u) : 0); });
+    const ur = (fr - 34) / 5; ring.setAttribute('cx', 560 + rx); ring.setAttribute('cy', 1640); ring.setAttribute('rx', 120 + 320 * ur); ring.setAttribute('ry', 22 + 50 * ur); ring.setAttribute('opacity', sh === 1 && fr >= 34 && ur < 1 ? 1 - ur : 0);
+  }
+  if (sh === 2) {
+    $('cuRays').setAttribute('transform', `translate(600 1150) rotate(${t * 8})`);
+    // close-up: T20 drawing at 0.8 (bottle + pointing hand fill the frame), bottom edge below the frame
+    $('cu').style.transform = `translate(${-120}px,${1920 - 1730 * .8 + 30}px) scale(.8)`;
+    $('cuCam').style.transform = `scale(${K.cuZ})`;
+  }
+  if (sh === 3) {
+    $('shRays').setAttribute('transform', `translate(540 1000) rotate(${t * 6})`);
+    const shk = K.shake * 10;
+    $('prod').style.transform = `translate(${Math.sin(fr * 2.1) * shk}px, ${K.prodY * 1300 + Math.cos(fr * 2.9) * shk}px) scale(${K.prodS})`;
+    $('pglow').setAttribute('opacity', K.pg);
+    streaks.forEach((s, i) => { const p = Math.min(1, Math.max(0, K.streak * 1.4 - i * .1)); s.setAttribute('x', -900 + p * 2100); s.setAttribute('opacity', p > 0 && p < 1 ? .9 : 0); });
+    const g = K.glint; $('gl').setAttribute('transform', `translate(${600 + g * 40} ${760 + g * 90}) rotate(${g * 90}) scale(${Math.max(0, 1 - Math.abs(g)) * 1.1})`);
+  }
+  if (sh === 6) {
+    $('cRays').setAttribute('transform', `rotate(${t * 5} 540 700)`);
+    $('cPlate').setAttribute('transform', `translate(540 1220) scale(${K.plate}) translate(-540 -1220)`);
+    $('cProd').style.transform = `translateY(${Math.sin(K.card * Math.PI * 2) * -8}px)`;
+  }
+  for (const id of T) { const s = st[id], e = $(id);
+    e.style.opacity = s.o * (s.s > .02 ? 1 : 0); e.style.transform = `rotate(${s.r}deg) scale(${s.s})`;
+    e.style.transformOrigin = '540px 50%'; }
+  $('flash').style.opacity = K.flash;
+}
+await Promise.all(Object.values(imgs).map(i => i.decode().catch(() => {})));
+await document.fonts.load('120px Bangers').catch(() => {});
+window.seek = seek; window.DURATION = DURATION;
+const tp = P.get('t');
+if (tp !== null) seek(+tp);
+else if (!capture) { document.body.classList.add('fit'); const t0 = performance.now(); const L = n => { seek(((n - t0) / 1000) % DURATION); requestAnimationFrame(L); }; requestAnimationFrame(L); }
+else seek(0);
+})();
+</script></body></html>
