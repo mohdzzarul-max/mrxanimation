@@ -820,7 +820,7 @@ def rant(ctx, x, lid, style):
 
 @reg
 def sh07g(ctx=None):
-    return xbot_talk_shot("sh07g", "s07_xb_claim80", (1.35, 0.82, -12), lens=32,
+    return xbot_talk_shot("sh07g", "s07_xb_claim80", (1.35, 0.82, 6), lens=32,
                           gesture=lambda c, x, m: rant(c, x, "s07_xb_claim80", "point"))
 
 
@@ -832,7 +832,7 @@ def sh07h(ctx=None):
 
 @reg
 def sh07i(ctx=None):
-    return xbot_talk_shot("sh07i", "s07_xb_packaging", (1.2, 0.6, -30), lens=30,
+    return xbot_talk_shot("sh07i", "s07_xb_packaging", (1.2, 0.6, 38), lens=30,
                           gesture=lambda c, x, m: rant(c, x, "s07_xb_packaging", "checkout"))
 
 
@@ -1153,11 +1153,11 @@ def sh09b(ctx=None):
     pose(x.arm, "body", F(4), rot=(10, 0, 0), scale=(0.95, 0.95, 1.08))
     n = (math.sin(math.radians(rz)), -math.cos(math.radians(rz)))
     eye = (XPOS8[0] + n[0] * 0.16, XPOS8[1] + n[1] * 0.16, 0.80)
-    cpos = (XPOS8[0] + n[0] * 0.7, XPOS8[1] + n[1] * 0.7, 0.86)
+    cpos = (XPOS8[0] + n[0] * 1.0, XPOS8[1] + n[1] * 1.0, 0.86)
     ctx.cam(lens=40, fstop=2.0)
     ctx.ck(0, cpos, eye, focus=eye)
-    ctx.ck(4, (XPOS8[0] + n[0] * 0.5, XPOS8[1] + n[1] * 0.5, 0.84), eye, focus=eye, interp="BACK")
-    ctx.ck(30, (XPOS8[0] + n[0] * 0.46, XPOS8[1] + n[1] * 0.46, 0.84), eye, focus=eye)
+    ctx.ck(4, (XPOS8[0] + n[0] * 0.72, XPOS8[1] + n[1] * 0.72, 0.84), eye, focus=eye, interp="BACK")
+    ctx.ck(30, (XPOS8[0] + n[0] * 0.68, XPOS8[1] + n[1] * 0.68, 0.84), eye, focus=eye)
     return ctx
 
 

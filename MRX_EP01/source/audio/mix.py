@@ -71,10 +71,12 @@ def main():
             x[-xf:] *= np.linspace(1, 0, xf)
         S.place(mus, x, ta, 1.0)
     # ---- ducking: music dips under dialogue
-    env = np.abs(dia)
-    k = int(0.05 * SR)
-    env = np.convolve(env, np.ones(k) / k, mode="same")
-    env = np.convolve((env > 0.02).astype(float), np.ones(int(0.25 * SR)) / int(0.25 * SR), mode="same")
+    def movavg(x, k):
+        c = np.cumsum(np.concatenate([np.zeros(k // 2 + 1), x, np.zeros(k)]))
+        return (c[k:k + len(x)] - c[:len(x)]) / k
+
+    env = movavg(np.abs(dia), int(0.05 * SR))
+    env = movavg((env > 0.02).astype(float), int(0.25 * SR))
     mus *= 1 - 0.55 * np.clip(env, 0, 1)
     sfx_s = sfx * 0.9
     dia_s = dia * 1.0

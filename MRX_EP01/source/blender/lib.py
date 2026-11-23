@@ -20,6 +20,8 @@ def new_scene(res=(540, 960), samples=20):
     sc.cycles.adaptive_threshold = 0.04
     sc.cycles.use_denoising = True
     sc.cycles.denoiser = "OPENIMAGEDENOISE"
+    sc.cycles.denoising_prefilter = "FAST"
+    sc.cycles.denoising_quality = "FAST"
     sc.cycles.max_bounces = 5
     sc.cycles.diffuse_bounces = 2
     sc.cycles.glossy_bounces = 2

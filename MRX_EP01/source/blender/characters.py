@@ -461,7 +461,7 @@ def head_material_uncle():
 def build_uncle(prefix="UNCLE"):
     _collect(prefix)
     skin = mat("uncle_skin", SKIN_UNCLE, rough=0.5, sss=0.15)
-    hair = mat("uncle_hair", (0.004, 0.0035, 0.0035), rough=0.35, bump=0.9, bump_scale=700, coat=0.3)
+    hair = mat("uncle_hair", (0.004, 0.0035, 0.0035), rough=0.55, bump=0.9, bump_scale=700, spec=0.25)
     shirt = mat("uncle_shirt", (0.006, 0.006, 0.007), rough=0.8, bump=0.3, bump_scale=200, sheen=0.02, spec=0.25)
     apron = mat("uncle_apron", (0.022, 0.021, 0.024), rough=0.85, bump=0.5, bump_scale=120)
     leather = mat("leather", (0.28, 0.12, 0.04), rough=0.45, coat=0.2)
@@ -686,8 +686,8 @@ def build_xbot(prefix="XBOT"):
     # angry eyes (flat glowing shapes on the panel)
     for s, sx in (("L", 1), ("R", -1)):
         pts = [(-0.075, 0.03), (0.075, -0.005), (0.06, -0.03), (0.02, -0.055), (-0.03, -0.055), (-0.07, -0.02)]
-        pts = [(sx * x, z) for x, z in pts]
-        if sx < 0:
+        pts = [(-sx * x, z) for x, z in pts]   # inner corners low = angry slant (reference)
+        if sx > 0:
             pts = pts[::-1]
         eye = poly_prism(f"{prefix}_eye{s}", pts, 0.008, m=eye_m, loc=(sx * 0.105, -0.16, 0.79))
         core = poly_prism(f"{prefix}_eyecore{s}", [(x * 0.45, z * 0.45 - 0.008) for x, z in pts], 0.004, m=eye_core,
