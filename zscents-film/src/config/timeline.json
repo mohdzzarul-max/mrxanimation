@@ -4,30 +4,82 @@
   "width": 1080,
   "height": 1920,
   "scenes": [
-    { "id": "s01-nasihat-ayah",        "from": 0,    "duration": 270, "overlapOut": 24 },
-    { "id": "s02-termenung",           "from": 270,  "duration": 240, "overlapOut": 30 },
-    { "id": "s03-bilik-kayu",          "from": 510,  "duration": 300, "overlapOut": 20 },
-    { "id": "s04-tapak-pertama",       "from": 810,  "duration": 300, "overlapOut": 16 },
-    { "id": "s05-kenalkan-perfume",    "from": 1110, "duration": 240, "overlapOut": 10 },
-    { "id": "s06-booth-ramai",         "from": 1350, "duration": 270, "overlapOut": 10 },
-    { "id": "s07-live",                "from": 1620, "duration": 300, "overlapOut": 20 },
-    { "id": "s08-koleksi-terakhir",    "from": 1920, "duration": 270, "overlapOut": 30 },
-    { "id": "s09-kematian-zscents",    "from": 2190, "duration": 420, "overlapOut": 0 },
-    { "id": "s10-kelahiran-semula",    "from": 2610, "duration": 540, "overlapOut": 0 }
+    {
+      "id": "s01-nasihat-ayah",
+      "from": 0,
+      "duration": 270,
+      "overlapOut": 24
+    },
+    {
+      "id": "s02-termenung",
+      "from": 270,
+      "duration": 240,
+      "overlapOut": 30
+    },
+    {
+      "id": "s03-bilik-kayu",
+      "from": 510,
+      "duration": 300,
+      "overlapOut": 20
+    },
+    {
+      "id": "s04-tapak-pertama",
+      "from": 810,
+      "duration": 300,
+      "overlapOut": 16
+    },
+    {
+      "id": "s05-kenalkan-perfume",
+      "from": 1110,
+      "duration": 240,
+      "overlapOut": 10
+    },
+    {
+      "id": "s06-booth-ramai",
+      "from": 1350,
+      "duration": 270,
+      "overlapOut": 10
+    },
+    {
+      "id": "s07-live",
+      "from": 1620,
+      "duration": 300,
+      "overlapOut": 20
+    },
+    {
+      "id": "s08-koleksi-terakhir",
+      "from": 1920,
+      "duration": 270,
+      "overlapOut": 30
+    },
+    {
+      "id": "s09-kematian-zscents",
+      "from": 2190,
+      "duration": 420,
+      "overlapOut": 0
+    },
+    {
+      "id": "s10-kelahiran-semula",
+      "from": 2610,
+      "duration": 630,
+      "overlapOut": 0
+    }
   ],
   "events": {
     "_comment": "Absolute seconds. Used by the sound design.",
     "musicGone": 81.2,
     "tapiReveal": 82.4,
     "namaReveal": 84.0,
-    "silverLight": 87.6,
-    "impact": 91.6,
-    "wordmarkReveal": 94.0,
-    "statement1": 96.6,
-    "statement2": 97.6,
-    "statement3": 98.6,
-    "tagline": 101.0,
-    "fadeOutStart": 104.2,
-    "end": 105.0
+    "permulaanReveal": 87.5,
+    "baruReveal": 88.6,
+    "silverLight": 90.6,
+    "impact": 94.6,
+    "wordmarkReveal": 97.0,
+    "statement1": 99.6,
+    "statement2": 100.6,
+    "statement3": 101.6,
+    "tagline": 104.0,
+    "fadeOutStart": 107.2,
+    "end": 108.0
   }
 }

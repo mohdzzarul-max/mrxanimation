@@ -2,7 +2,6 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { ASSETS } from "../config/assets";
 import { ZS_ERA } from "../config/brand";
-import script from "../config/script.json";
 import { Captions } from "../components/Captions";
 import { CaptionScrim, Vignette } from "../components/FilmTexture";
 import { Glow, Photo } from "../components/Photo";
@@ -48,23 +47,6 @@ export const S01NasihatAyah: React.FC = () => {
       <Vignette strength={0.7} />
       <CaptionScrim opacity={k(f, [90, 110], [0, 1])} />
       <Captions scene="s01-nasihat-ayah" />
-      {!script.fatherQuoteApproved && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: 110,
-            width: "100%",
-            textAlign: "center",
-            fontFamily: "Inter",
-            fontSize: 20,
-            letterSpacing: 4,
-            color: "rgba(241,230,210,0.45)",
-            opacity: k(f, [100, 115], [0, 1]) * k(f, [262, 272], [1, 0]),
-          }}
-        >
-          {script.titles.draftMarker}
-        </div>
-      )}
     </AbsoluteFill>
   );
 };

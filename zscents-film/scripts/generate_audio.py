@@ -377,6 +377,10 @@ music_env = env_curve([(0, 1), (EV["musicGone"] - 6.0, 1), (EV["musicGone"], 0),
 # --- Scene 9 reveals: single low notes in the silence
 place(mus2, piano("D2", 7.0, 0.32, bright=0.5), EV["tapiReveal"], pan=-0.1)
 place(mus2, piano("A2", 7.0, 0.22, bright=0.5), EV["namaReveal"], pan=0.1)
+# "INI PERMULAAN... YANG BARU." — first hint of the major key
+place(mus2, piano("D3", 6.0, 0.2, bright=0.6), EV["permulaanReveal"], pan=-0.1)
+place(mus2, piano("A3", 6.0, 0.16, bright=0.6), EV["permulaanReveal"] + 0.05, pan=0.1)
+place(mus2, piano("F#4", 6.0, 0.2), EV["baruReveal"], pan=0.05)
 
 # --- Scene 10: rebirth — uplifting climax after impact
 imp = EV["impact"]

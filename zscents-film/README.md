@@ -1,6 +1,6 @@
 # ZSCENTS — The Final Chapter
 
-A cinematic brand documentary film (1080×1920, 30 fps, 105 s), built in Remotion.
+A cinematic brand documentary film (1080×1920, 30 fps, 108 s), built in Remotion.
 The story runs from a father's advice to the end of ZSCENTS, and then to the birth of **EXPERIMENTAL PERFUMERY**.
 
 ## Deliverables (`out/`)
@@ -45,7 +45,7 @@ Rendering never touches the network: fonts, images and audio are all local.
 | 07 | LIVE | 0:54–1:04 | 07 | Screenshot split into layers; comments and purchases animate in one by one |
 | 08 | Koleksi Terakhir | 1:04–1:13 | 08 | Label close-ups, pull-back, colour drains, farewell typography |
 | 09 | Kematian ZSCENTS | 1:13–1:27 | 09 logo | Gold dims; emblem disintegrates into ember → ash particles; silence; text |
-| 10 | Kelahiran Semula | 1:27–1:45 | 10 logo | Silver light; the same particles regather into the X; exact logo revealed on impact; wordmark; statements; tagline |
+| 10 | Kelahiran Semula | 1:27–1:48 | 10 logo | "INI PERMULAAN… YANG BARU."; silver light; the same particles regather into the X; exact logo revealed on impact; wordmark; statements; tagline |
 
 `timeline.json` is the single source of truth for timing. The audio generator reads it too.
 **After changing the timing, run `npm run audio` again** so the score stays in sync with the picture.
@@ -64,8 +64,7 @@ Drop the original in at that path (and delete `03-wooden-room.STANDIN.txt`), upd
 ### Words / captions / father's advice
 Everything said on screen lives in **`src/config/script.json`**: narration lines (with frame timings per scene) and all title texts.
 
-The father's lines are a **proposed draft, not a real quote**. While `"fatherQuoteApproved": false`, scene 01 shows a small `DRAF DIALOG · MENUNGGU KELULUSAN` marker.
-Replace the two `father` lines with his actual words, set the flag to `true`, then run `npm run subtitles` and `npm run render`.
+The father's lines are a **proposed draft, not a real quote**. To change them, edit the two `father` lines, then run `npm run subtitles` and `npm run render`.
 
 ### Voice-over
 No recording was supplied, and no synthetic voice was used. Nothing in the film pretends to be the father's voice or the owner's voice.

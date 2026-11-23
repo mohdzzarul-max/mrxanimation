@@ -16,6 +16,7 @@ cues.push(
   { a: s("s08-koleksi-terakhir") + 160 / fps, b: s("s08-koleksi-terakhir") + 300 / fps, t: T.gratitude },
   { a: ev.tapiReveal, b: s("s09-kematian-zscents") + 414 / fps, t: T.notTheEnd },
   { a: ev.namaReveal, b: s("s09-kematian-zscents") + 414 / fps, t: T.onlyAName },
+  { a: ev.permulaanReveal, b: ev.silverLight - 0.2, t: `${T.newBeginning[0]} ${T.newBeginning[1]}` },
   { a: ev.statement1, b: ev.tagline - 0.1, t: T.statements[0] },
   { a: ev.statement2, b: ev.tagline - 0.1, t: T.statements[1] },
   { a: ev.statement3, b: ev.tagline - 0.1, t: T.statements[2] },

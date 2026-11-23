@@ -32,6 +32,8 @@ export const S10KelahiranSemula: React.FC = () => {
   const st = [eventFrame("statement1", ID), eventFrame("statement2", ID), eventFrame("statement3", ID)];
   const tagline = eventFrame("tagline", ID);
   const fadeOut = eventFrame("fadeOutStart", ID);
+  const perm = eventFrame("permulaanReveal", ID);
+  const baru = eventFrame("baruReveal", ID);
 
   const R0 = light + 22; // particles begin to gather
   const R1 = impact - 4; // ...and lock into the X just before the impact
@@ -113,6 +115,45 @@ export const S10KelahiranSemula: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: X_ERA.black, opacity: end }}>
+      {/* INI PERMULAAN... / YANG BARU.  — before the light appears */}
+      <AbsoluteFill style={{ alignItems: "center", opacity: k(f, [light - 26, light - 4], [1, 0]) }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 800,
+            width: 940,
+            textAlign: "center",
+            fontFamily: "Cormorant",
+            fontStyle: "italic",
+            fontWeight: 500,
+            fontSize: 84,
+            color: X_ERA.silver,
+            letterSpacing: k(f, [perm, perm + 80], [12, 4], OUT),
+            opacity: k(f, [perm, perm + 22], [0, 1]),
+            filter: `blur(${k(f, [perm, perm + 20], [10, 0])}px)`,
+          }}
+        >
+          {script.titles.newBeginning[0]}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: 940,
+            width: 940,
+            textAlign: "center",
+            fontFamily: "Inter",
+            fontWeight: 300,
+            fontSize: 58,
+            color: X_ERA.silver,
+            letterSpacing: k(f, [baru, baru + 60], [26, 16], OUT),
+            opacity: k(f, [baru, baru + 20], [0, 1]),
+            translate: `0px ${k(f, [baru, baru + 26], [14, 0], OUT)}px`,
+          }}
+        >
+          {script.titles.newBeginning[1]}
+        </div>
+      </AbsoluteFill>
+
       {/* the faint silver light in the darkness, later a soft backlight */}
       <div
         style={{
