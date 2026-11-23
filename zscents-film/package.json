@@ -1,0 +1,46 @@
+{
+  "name": "zscents-final-chapter",
+  "version": "1.0.0",
+  "description": "ZSCENTS — The Final Chapter: cinematic brand documentary (Remotion)",
+  "repository": {},
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.545",
+    "@remotion/google-fonts": "4.0.545",
+    "@remotion/media": "4.0.545",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.545"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.545",
+    "@types/react": "19.3.0",
+    "@types/web": "0.0.166",
+    "eslint": "10.12.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc",
+    "prepare-assets": "python3 scripts/prepare_assets.py",
+    "audio": "python3 scripts/generate_audio.py",
+    "subtitles": "node scripts/export_subtitles.mjs",
+    "render": "remotion render ZscentsFinalChapter out/_master.mp4 --codec=h264 --crf=14 --audio-codec=aac --audio-bitrate=320k --concurrency=4 && npm run finalize",
+    "render:preview": "ffmpeg -y -i out/zscents-final-chapter.mp4 -vf scale=540:960 -c:v libx264 -crf 26 -preset slow -c:a aac -b:a 128k -movflags +faststart out/zscents-final-chapter-preview.mp4",
+    "preview:opening": "remotion render ZscentsFinalChapter out/qc-opening.mp4 --frames=0-539 --crf=20 --concurrency=4",
+    "preview:farewell": "remotion render ZscentsFinalChapter out/qc-farewell.mp4 --frames=1900-2620 --crf=20 --concurrency=4",
+    "preview:rebirth": "remotion render ZscentsFinalChapter out/qc-rebirth.mp4 --frames=2580-3149 --crf=20 --concurrency=4",
+    "stills": "node scripts/stills.mjs out/stills",
+    "finalize": "ffmpeg -y -i out/_master.mp4 -vf scale=in_range=full:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 15 -profile:v high -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart out/zscents-final-chapter.mp4 && rm out/_master.mp4"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}

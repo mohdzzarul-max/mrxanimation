@@ -1,0 +1,41 @@
+{
+  "_comment": "EDITABLE NARRATION + CAPTIONS (Bahasa Melayu). Frames are relative to the start of each scene (30 fps). This file drives the on-screen captions AND the exported subtitle file (npm run subtitles). If a real voice-over is recorded, re-time `start`/`end` to the recording.",
+  "fatherQuoteApproved": false,
+  "_fatherNote": "The father's words below are a PROPOSED DRAFT, not a historical quote. Replace them with his actual advice and set fatherQuoteApproved to true; until then the film shows a small 'DRAF' marker on scene 01.",
+  "lines": [
+    { "scene": "s01-nasihat-ayah", "start": 104, "end": 184, "role": "father", "text": "“Nak, besar kecil modal itu bukan ukuran rezeki.”" },
+    { "scene": "s01-nasihat-ayah", "start": 190, "end": 266, "role": "father", "text": "“Yang penting — sabar, dan jujur dengan apa yang kau buat.”" },
+
+    { "scene": "s02-termenung", "start": 40, "end": 126, "role": "narration", "text": "Kata-kata itu aku bawa sampai hari ini." },
+    { "scene": "s02-termenung", "start": 134, "end": 232, "role": "narration", "text": "Petang itu, aku membuat satu keputusan." },
+
+    { "scene": "s03-bilik-kayu", "start": 18, "end": 104, "role": "narration", "text": "Semuanya bermula di sebuah bilik kayu kecil." },
+    { "scene": "s03-bilik-kayu", "start": 196, "end": 292, "role": "narration", "text": "Beberapa botol, satu meja, dan satu impian." },
+
+    { "scene": "s04-tapak-pertama", "start": 26, "end": 132, "role": "narration", "text": "Malam demi malam, aku buka tapak sendiri." },
+    { "scene": "s04-tapak-pertama", "start": 160, "end": 292, "role": "narration", "text": "Penat. Tidak pasti. Tapi aku tidak berhenti." },
+
+    { "scene": "s05-kenalkan-perfume", "start": 24, "end": 116, "role": "narration", "text": "Aku kenalkan bauan ini, dari tangan ke tangan." },
+    { "scene": "s05-kenalkan-perfume", "start": 126, "end": 232, "role": "narration", "text": "Di masjid. Di surau. Satu botol pada satu masa." },
+
+    { "scene": "s06-booth-ramai", "start": 16, "end": 126, "role": "narration", "text": "Perlahan-lahan, orang mula datang." },
+    { "scene": "s06-booth-ramai", "start": 136, "end": 262, "role": "narration", "text": "Mencuba. Kembali. Dan membawa kawan." },
+
+    { "scene": "s07-live", "start": 18, "end": 128, "role": "narration", "text": "Kemudian, ZSCENTS dibawa ke siaran langsung." },
+    { "scene": "s07-live", "start": 146, "end": 290, "role": "narration", "text": "Dan suara kecil itu didengari lebih ramai." },
+
+    { "scene": "s08-koleksi-terakhir", "start": 16, "end": 108, "role": "narration", "text": "Setiap botol menyimpan sebuah cerita." }
+  ],
+  "titles": {
+    "rm100": { "value": "RM100", "label": "MODAL PERMULAAN" },
+    "finalChapter": "SEMUA INI TAMAT DI SINI...",
+    "gratitude": "Terima kasih kerana menjadi sebahagian daripada perjalanan ZSCENTS.",
+    "notTheEnd": "TAPI BUKAN PENGAKHIRAN...",
+    "onlyAName": "YANG BERAKHIR HANYALAH SEBUAH NAMA.",
+    "statements": ["NO MORE DUPES.", "NO MORE CLONES.", "ONLY ORIGINAL CREATIONS."],
+    "tagline": "We don't follow scents. We create them.",
+    "reconstructionLabel": "VISUAL ILUSTRASI",
+    "liveDisclaimer": "VISUAL ILUSTRASI · BUKAN DATA JUALAN SEBENAR",
+    "draftMarker": "DRAF DIALOG · MENUNGGU KELULUSAN"
+  }
+}
