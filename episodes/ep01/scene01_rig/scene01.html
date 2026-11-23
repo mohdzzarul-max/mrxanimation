@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZSCENTS Clearance — Ep01 Scene 01 (rig)</title>
+<!--
+  EPISODE 01 / SCENE 01 — sprite rig version. 12 s · 1080x1920 · 24 fps.
+  Character pixels: approved Mr X art only (assets/characters/mrx/rig + sprites_4x/pose_hold_bottle).
+  Character timeline on twos; camera and graphics on ones. GSAP drives all timing.
+    A  0.00–3.42  medium, push-in, smug look + arm gesture          "Weh! ZSCENTS tengah CLEARANCE!"
+    B  3.42–7.00  insert: Mr X raising the bottle (approved sheet pose) + supers  "Korang kena tengok offer kali ni!"
+    C  7.00–12.0  medium, skeptical look + pause, X-BOT shout off right → head turn to screen-right, hold
+  URL: ?t=11.99 hold a frame · ?bg=1 empty set (camera of shot C end) · ?capture=1
+-->
+<style>
+  @font-face { font-family: 'Bangers'; src: url('../../../assets/fonts/Bangers.woff2') format('woff2'); font-display: block; }
+  html, body { margin: 0; background: #0b0820; overflow: hidden; }
+  #frame { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #140e3a; }
+  body.fit { display: grid; place-items: center; height: 100vh; }
+  body.fit #frame { transform: scale(calc(100vh / 1920px)); }
+  .abs { position: absolute; left: 0; top: 0; }
+  #cam, #bgcam { width: 1080px; height: 1920px; transform-origin: 540px 760px; }
+  #char { width: 1340px; height: 3056px; transform-origin: 670px 1700px; }
+  #arm { transform-origin: 968px 1190px; }
+  #head { width: 1600px; height: 1400px; transform-origin: 800px 1200px; }
+  #head img { position: absolute; left: 0; top: 0; visibility: hidden; }
+  .t { font-family: 'Bangers', Impact, sans-serif; position: absolute; left: 0; width: 1080px; text-align: center; white-space: nowrap;
+       color: #fff; -webkit-text-stroke: 14px #0a0710; paint-order: stroke fill; letter-spacing: 4px; }
+  #shotB { width: 1080px; height: 1920px; display: none; }
+  #pose { transform-origin: 50% 100%; }
+</style></head>
+<body>
+<div id="frame">
+  <!-- SHOT A / C : studio, rig -->
+  <div id="shotAC" class="abs" style="width:1080px;height:1920px">
+    <div id="bgcam" class="abs"><img class="abs" src="../../../assets/sets/studio/studio_back.png" width="1080" height="1920"></div>
+    <div id="cam" class="abs">
+      <div id="charpos" class="abs" style="transform: translate(128px, 330px) scale(0.6152)">
+        <div id="char" class="abs">
+          <img id="arm" class="abs" src="../../../assets/characters/mrx/rig/arm_front_R.png" width="1340" height="3056">
+          <img class="abs" src="../../../assets/characters/mrx/rig/body_front_noRarm.png" width="1340" height="3056">
+          <div id="head" class="abs" style="left:-110px; top:-374px"></div>
+        </div>
+      </div>
+      <img class="abs" src="../../../assets/sets/studio/studio_counter.png" width="1080" height="1920">
+    </div>
+  </div>
+  <!-- SHOT B : bottle insert -->
+  <div id="shotB" class="abs">
+    <svg class="abs" width="1080" height="1920" viewBox="0 0 1080 1920">
+      <defs><radialGradient id="gCU" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#6e5cff"/><stop offset=".45" stop-color="#3a2a9e"/><stop offset="1" stop-color="#120c38"/></radialGradient></defs>
+      <rect width="1080" height="1920" fill="url(#gCU)"/>
+      <g id="rays" opacity=".15"></g>
+      <g id="dots" opacity=".18"></g>
+    </svg>
+    <div id="speed" class="abs" style="width:1080px;height:1920px"></div>
+    <img id="pose" class="abs" src="../../../assets/characters/mrx/sprites_4x/pose_hold_bottle.png">
+    <svg id="sparks" class="abs" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+    <div id="brand" class="t" style="top:120px; font-size:150px; transform-origin:540px 90px;">ZSCENTS</div>
+    <div id="banner" class="abs" style="width:1080px;height:1920px; transform-origin:540px 1700px;">
+      <svg class="abs" width="1080" height="1920" viewBox="0 0 1080 1920">
+        <path d="M 120 1606 L 960 1590 L 940 1790 L 100 1806 Z" fill="#7b5cff" stroke="#0a0710" stroke-width="12" stroke-linejoin="round"/>
+        <path d="M 140 1622 L 938 1608 L 934 1630 L 137 1643 Z" fill="#b3a2ff"/>
+      </svg>
+      <div class="t" style="top:1622px; font-size:150px;">CLEARANCE!</div>
+    </div>
+    <div id="sub" class="t" style="top:1800px; font-size:92px; color:#ffcf4a; -webkit-text-stroke: 12px #0a0710; transform-origin:540px 50px;">OFFER KALI NI!</div>
+  </div>
+</div>
+<script src="../../../rig/vendor/gsap.min.js"></script>
+<script>
+(() => {
+const P = new URLSearchParams(location.search), capture = P.get('capture') === '1';
+const DURATION = 12, CUT_B = 3.42, CUT_C = 7.0;
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const mk = (tag, at, par) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); par.appendChild(e); return e; };
+
+// ---------- assets ----------
+const STATES = ['front_open', 'front_smug', 'front_half', 'front_closed', 'front_skeptic', 'front_skepticCam', 'front_lookR', 'front_anticR', '34R_open'];
+const imgs = {};
+for (const s of STATES) { const i = new Image(); i.src = `../../../assets/characters/mrx/rig/states/${s}.png`; i.width = 1600; i.height = 1400; $('head').appendChild(i); imgs[s] = i; }
+const pose = $('pose'); const POSE_H = 1420;          // pose_hold_bottle (1004x1372 at 4x) scaled to frame
+pose.style.height = POSE_H + 'px'; pose.style.width = (1004 * POSE_H / 1372) + 'px';
+// close-up decor (graphics only)
+for (let i = 0; i < 24; i++) { const a0 = i / 24 * Math.PI * 2, a1 = a0 + Math.PI / 48, R = 1900;
+  mk('path', { d: `M0 0L${Math.cos(a0) * R} ${Math.sin(a0) * R}L${Math.cos(a1) * R} ${Math.sin(a1) * R}Z`, fill: '#d6ccff' }, $('rays')); }
+for (let y = 1300; y < 1940; y += 34) for (let x = -10; x < 520; x += 34) {
+  const r = Math.max(0, 1 - Math.hypot(x + 40, y - 1960) / 700) * 11; if (r > 0.8) mk('circle', { cx: x + (y / 34 % 2) * 17, cy: y, r, fill: '#cfc4ff' }, $('dots')); }
+for (let i = 0; i < 9; i++) { const d = document.createElement('div'); Object.assign(d.style, { position: 'absolute', left: (250 + i * 70 + (i % 2) * 20) + 'px', top: '420px', width: '8px', height: (700 + (i % 3) * 200) + 'px', borderRadius: '4px', background: 'rgba(255,255,255,.35)' }); $('speed').appendChild(d); }
+const star = s => `M0 ${-s}L${s * .22} ${-s * .22}L${s} 0L${s * .22} ${s * .22}L0 ${s}L${-s * .22} ${s * .22}L${-s} 0L${-s * .22} ${-s * .22}Z`;
+const SPARKS = [[830, 640, 4.35], [250, 900, 4.95], [800, 1180, 5.6], [300, 520, 6.2]].map(([x, y, at]) => ({ el: mk('path', { d: star(42), fill: '#fff' }, $('sparks')), x, y, at }));
+
+// ---------- character timeline (shots A + C), sampled on twos ----------
+const C = { head: 0, hx: 0, hy: 0, hr: 0, arm: 0, bx: 0, by: 0, lean: 0 };
+const ch = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+const swap = (t, n) => ch.set(C, { head: STATES.indexOf(n) }, t);
+// A: settle, smug look, confident arm gesture, anticipation into the lift
+swap(0, 'front_open');
+ch.to(C, { hy: 8, hr: -1.5, duration: 0.18, ease: 'power1.in' }, 0.30)
+  .to(C, { hy: -4, hr: 3.5, hx: 4, duration: 0.24, ease: 'back.out(2)' }, 0.48);
+swap(0.50, 'front_smug');
+ch.to(C, { lean: -0.8, bx: -6, duration: 0.5 }, 0.5)
+  .to(C, { arm: 1.2, duration: 0.16, ease: 'power1.inOut' }, 1.0)
+  .to(C, { arm: -4.6, duration: 0.26, ease: 'power3.out' }, 1.16)
+  .to(C, { arm: -3.6, duration: 0.24, ease: 'sine.inOut' }, 1.42)
+  .to(C, { hr: 2, duration: 0.6, ease: 'sine.inOut' }, 1.5)
+  .to(C, { arm: 0, duration: 0.4 }, 2.45);
+swap(2.10, 'front_half'); swap(2.18, 'front_closed'); swap(2.26, 'front_half'); swap(2.34, 'front_open');
+ch.to(C, { hy: 12, by: 8, hr: -1, lean: 0, bx: 0, duration: 0.3, ease: 'power2.in' }, 3.0);   // dip before the lift (cut on action)
+// C: back in the medium; skeptical look down at the bottle side, beat, deadpan to camera, then the shout
+ch.set(C, { hy: 0, by: 0, hr: -2, hx: -4, arm: 0, lean: -0.6, bx: -4 }, CUT_C);
+swap(CUT_C, 'front_open');
+swap(7.30, 'front_skeptic');
+ch.to(C, { hr: -7, hx: -10, hy: 6, duration: 0.55, ease: 'power2.inOut' }, 7.25)
+  .to(C, { hr: -8, duration: 1.1, ease: 'sine.inOut' }, 7.8);
+swap(8.95, 'front_skepticCam');
+ch.to(C, { hr: -5, hy: 3, duration: 0.3, ease: 'power2.out' }, 8.95);
+// shout at 10.10: eyes snap right, jolt, anticipation, swap to 3/4-right, overshoot, settle, hold
+swap(10.14, 'front_lookR');
+ch.to(C, { by: -10, hy: -8, duration: 0.08, ease: 'power2.out' }, 10.12);
+swap(10.24, 'front_anticR');
+ch.to(C, { hy: 8, hr: -7, by: 2, duration: 0.1, ease: 'power1.in' }, 10.22);
+swap(10.34, '34R_open');
+ch.to(C, { hy: -8, hr: 5, hx: 12, lean: 1.4, bx: 10, by: 0, duration: 0.14, ease: 'power2.out' }, 10.34)
+  .to(C, { hy: 0, hr: 1.5, hx: 8, lean: 0.8, bx: 8, duration: 0.34, ease: 'sine.inOut' }, 10.48);
+ch.set({}, {}, DURATION);
+
+// ---------- camera + graphics (on ones) ----------
+const K = { cs: 1, cx: 0, cy: 0, shake: 0, rise: 1, rot: -8, z: 1, bob: 0, brand: 0, ban: 0, sub: 0, glint: 0, spd: 1 };
+const cam = gsap.timeline({ paused: true });
+cam.to(K, { cs: 1.06, cy: -10, duration: 3.0, ease: 'sine.inOut' }, 0)
+   .to(K, { cs: 1.085, cy: -24, duration: 0.42, ease: 'power2.in' }, 3.0)
+   // B
+   .set(K, { cs: 1, cx: 0, cy: 0 }, CUT_B)
+   .to(K, { rise: -0.04, rot: 3, duration: 0.34, ease: 'power3.out' }, CUT_B)
+   .to(K, { rise: 0.01, rot: -1, duration: 0.24, ease: 'sine.inOut' }, CUT_B + 0.34)
+   .to(K, { rise: 0, rot: 0, duration: 0.18, ease: 'sine.out' }, CUT_B + 0.58)
+   .to(K, { spd: 0, duration: 0.3, ease: 'power1.out' }, CUT_B)
+   .to(K, { z: 1.07, duration: CUT_C - CUT_B - 0.6, ease: 'sine.inOut' }, CUT_B + 0.6)
+   .to(K, { bob: 1, duration: CUT_C - CUT_B, ease: 'none' }, CUT_B)
+   .to(K, { brand: 1, duration: 0.26, ease: 'back.out(2)' }, 3.85)
+   .to(K, { ban: 1, duration: 0.2, ease: 'back.out(2.4)' }, 4.05)
+   .to(K, { shake: 1, duration: 0.01 }, 4.05).to(K, { shake: 0, duration: 0.15, ease: 'power2.out' }, 4.06)
+   .to(K, { sub: 1, duration: 0.22, ease: 'back.out(2.5)' }, 4.75)
+   // C
+   .set(K, { cs: 1.045, cx: 14, cy: 6, shake: 0 }, CUT_C)
+   .to(K, { cs: 1.075, cx: 8, cy: -4, duration: 3.0, ease: 'sine.inOut' }, CUT_C)
+   .to(K, { shake: 1, duration: 0.01 }, 10.1).to(K, { shake: 0, duration: 0.14, ease: 'power2.out' }, 10.11)
+   .to(K, { cs: 1.07, cx: -26, cy: -4, duration: 0.42, ease: 'power3.out' }, 10.12);
+cam.set({}, {}, DURATION);
+
+let shown = -1;
+function render(t) {
+  const inB = t >= CUT_B && t < CUT_C;
+  $('shotAC').style.display = inB ? 'none' : ''; $('shotB').style.display = inB ? 'block' : 'none';
+  const tc = Math.floor(t * 12 + 1e-6) / 12;
+  const sh = K.shake * 7, sx = Math.sin(t * 140) * sh, sy = Math.cos(t * 170) * sh;
+  if (inB) {
+    const u = t - CUT_B, uc = tc - CUT_B;
+    $('rays').setAttribute('transform', `translate(540 860) rotate(${u * 6})`);
+    const bob = Math.sin(uc / 1.6 * Math.PI * 2) * 5;          // held pose breathes on twos
+    pose.style.left = (540 - pose.offsetWidth / 2 + 70) + 'px'; pose.style.top = (1920 - POSE_H + 60) + 'px';
+    pose.style.transform = `translate(${sx}px, ${K.rise * 1400 + bob + sy}px) rotate(${K.rot}deg) scale(${K.z})`;
+    $('speed').style.opacity = K.spd; $('speed').style.transform = `translateY(${K.rise * 700}px)`;
+    $('brand').style.opacity = Math.min(1, K.brand * 3); $('brand').style.transform = `translateY(${(1 - K.brand) * -240}px)`;
+    $('banner').style.opacity = Math.min(1, K.ban * 4); $('banner').style.transform = `translate(${sx}px, ${sy}px) rotate(-4deg) scale(${1.8 - 0.8 * K.ban})`;
+    $('sub').style.opacity = K.sub > 0.02 ? 1 : 0; $('sub').style.transform = `rotate(-3deg) scale(${Math.max(0, K.sub)})`;
+    for (const s of SPARKS) { const k = (t - s.at) / 0.45, v = k <= 0 || k >= 1 ? 0 : Math.sin(Math.PI * k);
+      s.el.setAttribute('transform', `translate(${s.x} ${s.y}) rotate(${k * 90}) scale(${v})`); }
+    return;
+  }
+  $('cam').style.transform = `translate(${K.cx + sx}px, ${K.cy + sy}px) scale(${K.cs})`;
+  $('bgcam').style.transform = `translate(${K.cx * 0.5}px, ${K.cy * 0.5}px) scale(${1 + (K.cs - 1) * 0.5})`;
+  if (P.get('bg') === '1') { $('charpos').style.display = 'none'; return; }
+  const br = Math.sin(tc / 2.6 * Math.PI * 2);
+  $('char').style.transform = `translate(${C.bx}px, ${C.by}px) rotate(${C.lean}deg) scale(1, ${1 + 0.004 * br})`;
+  $('arm').style.transform = `rotate(${C.arm}deg)`;
+  $('head').style.transform = `translate(${C.hx}px, ${C.hy - 3 * br}px) rotate(${C.hr}deg)`;
+  const hi = Math.round(C.head);
+  if (hi !== shown) { if (shown >= 0) imgs[STATES[shown]].style.visibility = 'hidden'; imgs[STATES[hi]].style.visibility = 'visible'; shown = hi; }
+}
+function seek(t) {
+  t = Math.min(Math.max(t, 0), DURATION - 1e-6);
+  ch.seek(Math.floor(t * 12 + 1e-6) / 12, false); cam.seek(t, false); render(t);
+}
+async function boot() {
+  await Promise.all([...Object.values(imgs), pose].map(i => i.decode().catch(() => {})));
+  await document.fonts.load('150px Bangers').catch(() => {});
+  window.seek = seek; window.DURATION = DURATION;
+  const tp = P.get('t');
+  if (tp !== null) seek(parseFloat(tp));
+  else if (!capture) { document.body.classList.add('fit'); const t0 = performance.now(); const loop = n => { seek(((n - t0) / 1000) % DURATION); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  else seek(0);
+}
+boot();
+})();
+</script></body></html>
