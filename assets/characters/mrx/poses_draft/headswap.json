@@ -1,0 +1,88 @@
+{
+ "_note": "Draft body poses (src/, user's 20-pose draft pack) with every draft head replaced by an approved rig head state. Coordinates in the 2000x2000 draft canvas BEFORE the ground shift. pivot = draft chin/neck point where the approved head's neck pivot lands; rot in degrees (+ = clockwise); erase = ellipses [cx,cy,rx,ry] and boxes [x0,y0,x1,y1] removing the draft head and tuft.",
+ "head_scale": 0.48,
+ "ground_shift": {
+  "T01-T05": -88,
+  "T06-T15": 38,
+  "T16-T19": 32
+ },
+ "T01": {
+  "state": "34R_open",
+  "pivot": [
+   1175,
+   772
+  ],
+  "rot": -4,
+  "erase": {
+   "ell": [
+    [
+     1175,
+     590,
+     192,
+     196
+    ]
+   ],
+   "box": [
+    [
+     930,
+     320,
+     1170,
+     440
+    ]
+   ]
+  }
+ },
+ "T03": {
+  "state": "34R_open",
+  "pivot": [
+   1160,
+   1390
+  ],
+  "rot": 26,
+  "erase": {
+   "ell": [
+    [
+     1240,
+     1150,
+     258,
+     238
+    ]
+   ],
+   "box": [
+    [
+     950,
+     795,
+     1235,
+     935
+    ]
+   ]
+  },
+  "scale": 0.6
+ },
+ "T16": {
+  "state": "34R_open",
+  "pivot": [
+   1105,
+   795
+  ],
+  "rot": -4,
+  "erase": {
+   "ell": [
+    [
+     1068,
+     623,
+     212,
+     182
+    ]
+   ],
+   "box": [
+    [
+     810,
+     370,
+     1040,
+     460
+    ]
+   ]
+  }
+ }
+}
