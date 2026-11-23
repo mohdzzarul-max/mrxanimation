@@ -2,6 +2,7 @@ import React from 'react';
 import {Img} from 'remotion';
 import {A} from '../config/assets';
 import rig from '../../public/characters/mrx/rig.json';
+import poses from '../../public/characters/mrx/poses/poses.json';
 
 /**
  * MR X — cut-out rig built from the official front turnaround (4x upscaled).
@@ -47,6 +48,14 @@ const layer = (key: keyof typeof L, src: string, extra?: React.CSSProperties) =>
   />
 );
 
+const POSE_SRC: Record<keyof typeof poses, string> = {
+  gembira: A.mrx.poses.gembira,
+  terkejut: A.mrx.poses.terkejut,
+  marah: A.mrx.poses.marah,
+  malu: A.mrx.poses.malu,
+  fikir: A.mrx.poses.fikir,
+};
+
 const SPRITE: Record<Exclude<MrXView, 'front'>, {src: string; h: number}> = {
   '34': {src: A.mrx.view34, h: 2813},
   side: {src: A.mrx.viewSide, h: 2807},
@@ -63,7 +72,7 @@ export const MrX: React.FC<MrXProps> = ({
   const uid = React.useId().replace(/:/g, '');
   const sq = squash * (1 + breathe * 0.012);
   const sx = 1 / Math.sqrt(sq);
-  const exprData = expr !== 'normal' ? (rig.exprHeads as Record<string, {cx: number; cy: number; r: number; w: number; h: number}>)[expr] : null;
+  const poseKey = expr === 'normal' || expr === 'biasa' ? null : (expr as keyof typeof poses);
 
   const shadowEl = shadow ? (
     <div
@@ -76,7 +85,19 @@ export const MrX: React.FC<MrXProps> = ({
   ) : null;
 
   let inner: React.ReactNode;
-  if (view !== 'front') {
+  if (view === 'front' && poseKey) {
+    // official full-body expression pose, scaled so its head matches the rig head, feet on the ground
+    const P2 = poses[poseKey];
+    const k = HC.r / P2.headR;
+    const h = P2.h * k;
+    const w = P2.w * k;
+    const left = CW / 2 - P2.headCx * k + headX * 0.6;
+    inner = (
+      <div style={{position: 'absolute', left: 0, top: 0, width: CW, height: CH, transformOrigin: `${CW / 2}px ${GROUND}px`, transform: `rotate(${lean + headRot * 0.35}deg) scale(${sx * headScale},${sq * headScale}) translateY(${headY * 0.5}px)`}}>
+        <Img src={POSE_SRC[poseKey]} style={{position: 'absolute', left, top: GROUND - h + 14 * k, width: w, height: h}} />
+      </div>
+    );
+  } else if (view !== 'front') {
     const sp = SPRITE[view];
     const k = 2760 / sp.h; // normalise sprite height to rig height
     inner = (
@@ -111,15 +132,7 @@ export const MrX: React.FC<MrXProps> = ({
             transform: `translate(${headX}px, ${headY}px) rotate(${headRot}deg) scale(${headScale})`,
           }}
         >
-          {exprData ? (
-            <Img
-              src={A.mrx.heads[expr as Exclude<MrXExpr, 'normal'>]}
-              style={{
-                position: 'absolute', left: HC.cx - exprData.cx * (HC.r / exprData.r), top: HC.cy - exprData.cy * (HC.r / exprData.r),
-                width: exprData.w * (HC.r / exprData.r), height: exprData.h * (HC.r / exprData.r),
-              }}
-            />
-          ) : (
+          {(
             <>
               {layer('head', A.mrx.head)}
               {blink > 0.02 ? (

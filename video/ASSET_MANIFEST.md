@@ -4,9 +4,10 @@
 | File | Contents | Used for |
 |---|---|---|
 | `ref_mrx_turnaround.png` | Mr X front / ¾ / side / back | Mr X cut-out rig (front) + ¾ / side / back sprites |
-| `ref_combined_sheet.png` | Brand sheet: Mr X pose, 6 expressions, X-BOT, logo | Expression heads, thumb-chin pose, EXPERIMENTAL PERFUMERY wordmark |
+| `ref_combined_sheet.png` | Brand sheet: Mr X pose, 6 expressions, X-BOT, logo | Thumb-chin pose, EXPERIMENTAL PERFUMERY wordmark |
 | `ref_xbot_hero.png` | X-BOT thumbs-up hero (RGBA) | X-BOT silhouette/proportions, gloves, sneakers, brush-X marks |
 | `ref_xbot_sheet.png` | X-BOT expressions, turnaround, poses, layer assets | Glove sprites (point, point-up, open palm), eye-expression designs |
+| `ref_mrx_poses.png` | Mr X official expression poses (thumbs-up wink, shocked, angry, love, thinking) | Full-body expression poses (`tools/extract_mrx_poses.py`) |
 
 All references were upscaled 4× with Real-ESRGAN x4plus anime 6B (BSD-3, `tools/models/`, `tools/upscale.py`) before cutting, so characters stay sharp at 1080×1920.
 
@@ -16,7 +17,7 @@ All references were upscaled 4× with Real-ESRGAN x4plus anime 6B (BSD-3, `tools
 | `mrx/head.png, body.png, armL.png, armR.png, sleeveL.png, sleeveR.png` | front turnaround | Cut-out rig. Pivots, eye sockets, head circle in `mrx/rig.json` (`tools/build_mrx_rig.py`) |
 | `mrx/eyeMask.png` + `rig.json.eyeClip` | front turnaround | Blink lids (vector clip) |
 | `mrx/mrx_34.png, mrx_side.png, mrx_back.png` | turnaround | Turn / travel sprites |
-| `mrx/heads/{biasa,gembira,terkejut,marah,malu,fikir}.png` | combined sheet "EKSPRESI" | Expression swaps (circle-matched to rig head) |
+| `mrx/poses/{gembira,terkejut,marah,malu,fikir}.png` + `poses.json` | ref_mrx_poses.png | Full-body expression poses, auto-scaled so the head matches the rig head (replaced the old low-res cropped heads) |
 | `mrx/poses/thumb_chin.png` | combined sheet main pose | End-card pose |
 | `xbot/shoeL.png, shoeR.png, handFist.png, handThumb.png` | X-BOT hero | Official sneakers & gloves |
 | `xbot/xbot_hand_0…5.png` | X-BOT sheet "Hands" layer assets | 0 = point, 4 = point-up, 5 = open (others spare) |

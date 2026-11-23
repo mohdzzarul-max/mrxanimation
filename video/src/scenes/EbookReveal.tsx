@@ -72,7 +72,7 @@ export const EbookReveal: React.FC = () => {
         x={250 + noise1(f * 0.05, 4) * 5}
         y={1900}
         height={620}
-        expr={f < 150 ? 'normal' : 'gembira'}
+        expr={f < 150 ? 'normal' : 'malu'}
         headRot={-6 + tk * 3}
         headY={-tk * 16}
         armR={f > 36 && f < 150 ? 70 + Math.sin(f * 0.2) * 4 : 10}

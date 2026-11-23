@@ -89,7 +89,7 @@ export const Claims: React.FC = () => {
   const fold = ramp(f, 372, 390, E.in);
   const tX = talk(f + from, 1010, 1170, 4);
   // expressions & gestures
-  const mexpr: MrXExpr = f < 50 ? 'biasa' : f < 96 ? 'terkejut' : f < 330 ? 'fikir' : 'gembira';
+  const mexpr: MrXExpr = f < 50 ? 'biasa' : f < 96 ? 'terkejut' : f < 150 ? 'fikir' : f < 200 ? 'marah' : f < 330 ? 'fikir' : 'gembira';
   const activeItem = T0.reduce((a, t, i) => (f >= t ? i : a), -1);
   let armR: Arm = {x: 905, y: -60 + 200, hand: 'fist', flip: true, rot: 180};
   let armL: Arm = {x: 300, y: 700, hand: 'fist'};
@@ -158,7 +158,7 @@ export const Claims: React.FC = () => {
               height={600}
               expr={mexpr}
               headRot={f >= 96 && f < 330 ? 8 + Math.sin(f * 0.08) * 3 : -4}
-              headScale={f >= 50 && f < 54 ? 1.08 : f >= 330 && f < 334 ? 1.08 : 1}
+              headScale={[50, 96, 150, 200, 330].some((t) => f >= t && f < t + 4) ? 1.06 : 1}
               armL={f >= 336 ? 45 : f >= 50 && f < 96 ? 35 : 0}
               armR={f >= 336 ? 45 : f >= 50 && f < 96 ? 35 : 0}
               squash={f >= 336 && f < 346 ? 1.06 : 1}

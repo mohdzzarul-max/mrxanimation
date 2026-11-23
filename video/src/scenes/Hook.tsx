@@ -101,8 +101,8 @@ export const Hook: React.FC = () => {
             <div style={{position: 'absolute', inset: 0, transformOrigin: '730px 1500px', transform: `scale(${punch}) translateY(${(1 - mrxIn) * 700}px)`}}>
               <MrX
                 x={730 + noise1(f * 0.3, 2) * 4}
-                y={2400}
-                height={1000}
+                y={2140}
+                height={900}
                 expr={f < 40 ? 'normal' : f < 150 ? 'terkejut' : 'biasa'}
                 headRot={-3 + tk * 2 + (f > 112 && f < 150 ? noise1(f * 0.8, 5) * 1.2 : 0)}
                 headY={-tk * 14}

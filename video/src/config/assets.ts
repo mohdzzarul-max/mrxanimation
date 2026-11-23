@@ -14,13 +14,13 @@ export const A = {
     viewSide: staticFile('characters/mrx/mrx_side.png'),
     viewBack: staticFile('characters/mrx/mrx_back.png'),
     thumbChin: staticFile('characters/mrx/poses/thumb_chin.png'),
-    heads: {
-      biasa: staticFile('characters/mrx/heads/biasa.png'),
-      gembira: staticFile('characters/mrx/heads/gembira.png'),
-      terkejut: staticFile('characters/mrx/heads/terkejut.png'),
-      marah: staticFile('characters/mrx/heads/marah.png'),
-      malu: staticFile('characters/mrx/heads/malu.png'),
-      fikir: staticFile('characters/mrx/heads/fikir.png'),
+    // official expression poses (ref_mrx_poses.png)
+    poses: {
+      gembira: staticFile('characters/mrx/poses/gembira.png'),
+      terkejut: staticFile('characters/mrx/poses/terkejut.png'),
+      marah: staticFile('characters/mrx/poses/marah.png'),
+      malu: staticFile('characters/mrx/poses/malu.png'),
+      fikir: staticFile('characters/mrx/poses/fikir.png'),
     },
   },
   xbot: {
