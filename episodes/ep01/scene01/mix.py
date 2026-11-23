@@ -2,7 +2,8 @@
 restrained music bed and two soft SFX, then writes:
   out/scene01_mix.wav   48 kHz stereo master for the 12 s scene
 Mr X wears a full mask, so there is no lip-sync; CUES only place the lines against the picture."""
-import json, numpy as np, scipy.io.wavfile as w
+import json, sys, numpy as np, scipy.io.wavfile as w
+NO_VOICE = "--no-voice" in sys.argv   # music + SFX only (writes out/scene01_music_sfx.wav)
 from scipy.signal import resample_poly, butter, lfilter
 
 SR, DUR, FPS = 48000, 12.0, 24
@@ -33,8 +34,9 @@ voice = np.zeros((N, 2)); music = np.zeros((N, 2)); sfx = np.zeros((N, 2))
 
 # ---- dialogue ----
 l1, l2 = load("mrx_l1"), load("mrx_l2")
-place(voice, hp(l1, 90), CUES["mrx_l1"], 0.78, -0.05)
-place(voice, hp(l2, 90), CUES["mrx_l2"], 0.78, -0.05)
+if not NO_VOICE:
+    place(voice, hp(l1, 90), CUES["mrx_l1"], 0.78, -0.05)
+    place(voice, hp(l2, 90), CUES["mrx_l2"], 0.78, -0.05)
 
 # X-BOT: metallic comb + light ring-mod + saturation, slightly distant, panned off-screen right
 x = load("xbot_l3"); tt = np.arange(len(x)) / SR
@@ -45,7 +47,14 @@ y = np.tanh(2.4 * hp(y, 250) / (np.abs(y).max() + 1e-9))
 y = np.concatenate([y, np.zeros(int(0.5 * SR))])
 for dl, g in [(0.07, 0.25), (0.15, 0.12)]:  # small-room slap: he's just out of frame
     k = int(dl * SR); y[k:] += g * y[:-k]
-place(voice, y / np.abs(y).max(), CUES["xbot_l3"], 0.85, 0.75)
+if not NO_VOICE:
+    place(voice, y / np.abs(y).max(), CUES["xbot_l3"], 0.85, 0.75)
+else:
+    # X-BOT's call is replaced by an off-screen-right alert: two quick robotic blips, panned right
+    for k, f in enumerate([1320, 1760]):
+        tb = np.arange(int(0.09 * SR)) / SR
+        blip = np.sign(np.sin(2 * np.pi * f * tb)) * np.exp(-tb * 18) * 0.6
+        place(sfx, lp(blip, 5000), 10.04 + k * 0.11, 0.22, 0.8)
 
 # ---- music bed: 100 bpm, C minor, soft pad + bass + brushed kit ----
 bpm = 100; beat = 60 / bpm
@@ -98,14 +107,19 @@ st = np.zeros(int(0.9 * SR)); ts = np.arange(len(st)) / SR
 for f in [hz(55), hz(62), hz(67)]: st += np.sin(2 * np.pi * f * ts) * np.exp(-ts * 4)
 place(sfx, lp(st, 2500) / 3, 10.12, 0.16, 0.2)
 
+if NO_VOICE:
+    for at, f0 in [(3.85, 520), (4.75, 660)]:            # ZSCENTS drop, OFFER KALI NI! pop
+        tb = np.arange(int(0.16 * SR)) / SR
+        place(sfx, np.sin(2 * np.pi * (f0 + 900 * np.exp(-tb * 30)) * tb) * np.exp(-tb * 22), at, 0.12, 0.0)
+
 # ---- duck music under dialogue ----
 vabs = np.abs(voice).sum(1); win = int(0.12 * SR)
 vlev = np.convolve(vabs, np.ones(win) / win, "same")
-duck = 1 - 0.55 * np.clip(vlev / (vlev.max() * 0.25), 0, 1)
+duck = 1 - 0.55 * np.clip(vlev / (vlev.max() * 0.25), 0, 1) if vlev.max() > 0 else np.ones(N)   # no dialogue: no ducking
 duck = np.convolve(duck, np.ones(int(0.15 * SR)) / int(0.15 * SR), "same")
 mix = voice + music * duck[:, None] + sfx
 mix *= 0.89 / np.abs(mix).max()
 fade = np.clip((DUR - t) / 0.02, 0, 1)[:, None]
-w.write("out/scene01_mix.wav", SR, (mix * fade * 32767).astype(np.int16))
+w.write("out/scene01_music_sfx.wav" if NO_VOICE else "out/scene01_mix.wav", SR, (mix * fade * 32767).astype(np.int16))
 
 print("mix ok", {k: round(v, 2) for k, v in CUES.items()})
