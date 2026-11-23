@@ -5,32 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ZSCENTS Clearance — Ep01 Scene 01</title>
 <!--
-  ZSCENTS CLEARANCE — EPISODE 01 / SCENE 01  (12 s, 1080x1920, 24 fps, character on twos)
+  ZSCENTS CLEARANCE — EPISODE 01 / SCENE 01   (rebuild v2)
+  12 s · 1080x1920 · 24 fps. Mr X is animated on twos (12 drawings/s); camera and motion graphics on ones.
 
-  The whole frame is a pure function of time: window.seek(t). render.js captures it frame by frame.
-  URL options:  ?t=11.99  hold one frame     ?bg=1  background plate only (no character)
-                ?capture=1  set by render.js (no live playback, no fit-to-window)
+  Shots
+    A  0.00–3.42  medium shot, push-in. "Weh! ZSCENTS tengah CLEARANCE!" + point at the bottle.
+                  Anticipation dip, then the bottle is lifted toward camera → cut on action.
+    B  3.42–7.00  close-up insert of the bottle, ZSCENTS / CLEARANCE supers, glint, sparkles.
+                  "Korang kena tengok offer kali ni!" (voice over the insert).
+    C  7.00–12.0  medium shot. Examines the bottle, skeptical look, pause, glance at camera.
+                  X-BOT (off-screen right) "MR X!!" → eyes snap wide, head turn to screen-right, hold.
 
-  Product bottle: put the real ZSCENTS product cut-out at assets/zscents-bottle.png (transparent PNG,
-  bottle standing upright, bottom edge = bottom of the image). Without it, a plain UNLABELLED
-  placeholder bottle is drawn so no label is ever invented.
+  Mr X design follows the four-view turnaround: full black mask (no mouth, ever), skin-coloured eye
+  openings, blue eyes, white horn markings over the brows + cheek stripes, black tee, wristbands.
+  Head views are separate drawings (front, 3/4-right, and a shut-eye inbetween for the turn).
 
-  CONTINUITY LOCK (end state at 12.0 s, carried into Scene 02):
-    camera  medium shot, scale 1.065, offset (-24, -6) about (540, 760)
-    Mr X    bottle in his right hand (screen-left) at chest height; head turned to screen-right (turn = 1),
-            eyes wide, gaze screen-right; X-BOT still off-screen right.
+  URL:  ?t=11.99 hold a frame · ?sheet=1 model sheet · ?bg=1 empty set · ?capture=1 (render.js)
+  Product: assets/zscents-bottle.png (transparent PNG, upright, bottom edge = bottle base) replaces
+  the drawn bottle in both shots when present.
 -->
-<script src="lipsync.js"></script>
 <style>
+  @font-face { font-family: 'Bangers'; src: url('assets/fonts/Bangers.woff2') format('woff2'); font-display: block; }
   :root { color-scheme: dark; }
   html, body { margin: 0; background: #0b0820; overflow: hidden; }
   svg { display: block; width: 1080px; height: 1920px; }
   body.fit { display: grid; place-items: center; height: 100vh; }
   body.fit svg { height: 100vh; width: auto; }
+  .ns { vector-effect: non-scaling-stroke; }
+  text { font-family: 'Bangers', Impact, sans-serif; }
 </style>
 </head>
 <body>
-<svg id="v" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg id="v" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <linearGradient id="gWall" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#110b30"/><stop offset=".55" stop-color="#2a1f6e"/><stop offset="1" stop-color="#1b1450"/>
@@ -39,7 +45,10 @@
     <stop offset="0" stop-color="#3b2e92"/><stop offset="1" stop-color="#271d6c"/>
   </linearGradient>
   <radialGradient id="gGlow" cx=".5" cy=".5" r=".5">
-    <stop offset="0" stop-color="#9a8bff" stop-opacity=".55"/><stop offset=".6" stop-color="#6a5af0" stop-opacity=".18"/><stop offset="1" stop-color="#6a5af0" stop-opacity="0"/>
+    <stop offset="0" stop-color="#9a8bff" stop-opacity=".5"/><stop offset=".6" stop-color="#6a5af0" stop-opacity=".16"/><stop offset="1" stop-color="#6a5af0" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="gCU" cx=".5" cy=".42" r=".75">
+    <stop offset="0" stop-color="#6e5cff"/><stop offset=".45" stop-color="#3a2a9e"/><stop offset="1" stop-color="#120c38"/>
   </radialGradient>
   <linearGradient id="gCounter" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#2a1f66"/><stop offset="1" stop-color="#120d33"/>
@@ -48,99 +57,38 @@
     <stop offset="0" stop-color="#cfc6ff" stop-opacity=".10"/><stop offset="1" stop-color="#cfc6ff" stop-opacity="0"/>
   </linearGradient>
   <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#26232f"/><stop offset=".5" stop-color="#121118"/><stop offset="1" stop-color="#050507"/>
+    <stop offset="0" stop-color="#2a2733"/><stop offset=".45" stop-color="#121118"/><stop offset="1" stop-color="#060609"/>
   </linearGradient>
   <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#ffd76a"/><stop offset=".5" stop-color="#e8a823"/><stop offset="1" stop-color="#9c6a0c"/>
+    <stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#e8a823"/><stop offset="1" stop-color="#9c6a0c"/>
+  </linearGradient>
+  <linearGradient id="gGlint" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
   </linearGradient>
   <filter id="fOutline" x="-20%" y="-20%" width="140%" height="140%">
-    <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="4.5" result="d"/>
     <feFlood flood-color="#d8ccff"/>
     <feComposite in2="d" operator="in" result="o"/>
     <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
   <filter id="fBlur20" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="20"/></filter>
   <filter id="fBlur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
-  <!-- head-local shapes -->
-  <path id="hoodShape" d="M 0 -210 C 110 -210 178 -140 178 -30 C 178 60 160 120 110 170 C 80 200 45 215 0 218 C -45 215 -80 200 -110 170 C -160 120 -178 60 -178 -30 C -178 -140 -110 -210 0 -210 Z"/>
-  <clipPath id="cHood"><use href="#hoodShape"/></clipPath>
-  <path id="almond" d="M 12 12 C 30 -26 96 -42 140 -24 C 132 16 98 42 56 42 C 34 42 18 30 12 12 Z"/>
-  <path id="sclera" d="M 26 11 C 44 -16 96 -27 124 -15 C 117 12 92 30 60 30 C 42 30 31 22 26 11 Z"/>
-  <clipPath id="cAlmond"><use href="#almond"/></clipPath>
-  <clipPath id="cSclera"><use href="#sclera"/></clipPath>
+  <!-- eye shapes, in eye-side local space (screen-right eye; the left eye is mirrored) -->
+  <path id="pOpen" d="M 12 14 Q 14 -10 34 -20 L 124 -40 Q 148 -44 152 -24 L 144 16 Q 138 36 116 40 L 54 44 Q 18 42 12 14 Z"/>
+  <path id="pScl" d="M 26 12 Q 30 -6 44 -12 L 120 -30 Q 136 -32 140 -20 L 134 12 Q 128 28 112 30 L 58 34 Q 30 32 26 12 Z"/>
+  <clipPath id="cOpen"><use href="#pOpen"/></clipPath>
+  <clipPath id="cScl"><use href="#pScl"/></clipPath>
 </defs>
 
-<g id="bgCam"><g id="bg"></g></g>
-
-<g id="cam">
-  <g id="char" filter="url(#fOutline)">
-    <g id="body">
-      <!-- screen-right arm (his left), hanging -->
-      <g id="armR"><path class="upLine"/><path class="foLine"/><path class="up"/><path class="fo"/><path class="upShade"/><path class="foShade"/><path class="band"/><g class="fist"></g></g>
-      <!-- screen-left upper arm (his right), behind torso -->
-      <g id="armLup"><path class="upLine"/><path class="up"/><path class="upShade"/></g>
-
-      <path id="neck" d="M -44 740 L 44 740 L 52 884 Q 0 902 -52 884 Z" fill="#14131b" stroke="#030305" stroke-width="7" stroke-linejoin="round"/>
-      <path id="torso" fill="#1b1a24" stroke="#040407" stroke-width="8" stroke-linejoin="round"
-        d="M -92 866 Q 0 920 92 866 L 222 898 C 256 908 270 936 266 972 L 236 1090 C 222 1250 206 1420 196 1760 L -196 1760 C -206 1420 -222 1250 -236 1090 L -266 972 C -270 936 -256 908 -222 898 Z"/>
-      <path d="M -236 1090 C -222 1250 -206 1420 -196 1760 L -136 1760 C -146 1500 -150 1300 -150 1080 Z" fill="#0b0a11" opacity=".75"/>
-      <path d="M 262 990 L 236 1090 C 222 1250 206 1420 196 1760" fill="none" stroke="#8f7dff" stroke-width="7" opacity=".8"/>
-      <g fill="none" stroke="#35304c" stroke-width="5" stroke-linecap="round">
-        <path d="M -120 1230 Q -92 1290 -108 1370"/><path d="M 96 1170 Q 130 1230 120 1310"/>
-        <path d="M 30 1460 Q 56 1510 46 1570"/><path d="M -150 960 Q -110 1000 -90 1060"/><path d="M 150 960 Q 120 1000 104 1040"/>
-      </g>
-      <path d="M -94 864 Q 0 926 94 864" fill="none" stroke="#040407" stroke-width="11" stroke-linecap="round"/>
-      <path d="M -82 878 Q 0 934 82 878" fill="none" stroke="#35304c" stroke-width="5" stroke-linecap="round"/>
-      <path id="sleeveR" fill="#1b1a24" stroke="#040407" stroke-width="8" stroke-linejoin="round"/>
-      <path id="sleeveRrim" fill="none" stroke="#8f7dff" stroke-width="6" opacity=".75"/>
-      <path id="sleeveL" fill="#1b1a24" stroke="#040407" stroke-width="8" stroke-linejoin="round"/>
-
-      <!-- head -->
-      <g id="head">
-        <g id="hoodWrap">
-          <path id="tuft" fill="#14131b" stroke="#030305" stroke-width="7" stroke-linejoin="round"
-            d="M -64 -186 L -36 -246 L -14 -204 L 14 -268 L 34 -200 L 66 -238 L 74 -184 Z"/>
-          <use href="#hoodShape" fill="#14131b" stroke="#030305" stroke-width="8"/>
-          <path d="M -150 -60 C -150 -150 -90 -195 -10 -198 C -80 -180 -125 -130 -130 -60 Z" fill="#2c2843"/>
-          <path d="M 120 -170 C 165 -130 182 -60 176 0 C 172 70 150 125 110 170" fill="none" stroke="#8f7dff" stroke-width="6" opacity=".85"/>
-          <path id="jawPlane" d="M -132 40 Q -108 130 -46 192" fill="none" stroke="#3a3556" stroke-width="6" stroke-linecap="round" opacity="0"/>
-        </g>
-        <g clip-path="url(#cHood)">
-          <g id="face">
-            <g id="eyeR"></g>
-            <g id="eyeL"></g>
-            <g id="markR"></g>
-            <g id="markL"></g>
-            <path id="mouth" fill="#07070b" stroke="#3d3756" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-          </g>
-        </g>
-      </g>
-
-      <!-- screen-left forearm + bottle + fist, in front -->
-      <g id="armLfo"><path class="foLine"/><path class="fo"/><path class="foShade"/><path class="band"/>
-        <g id="bottle">
-          <g id="bottleVec">
-            <ellipse cx="0" cy="4" rx="80" ry="12" fill="#000" opacity=".0"/>
-            <path d="M -60 -96 L -30 -98 L -24 -120 L 24 -120 L 30 -98 L 60 -96 Z" fill="none"/>
-            <!-- cap -->
-            <path d="M -46 -262 L 46 -262 L 48 -200 L -48 -200 Z" fill="#141319" stroke="#030305" stroke-width="7" stroke-linejoin="round"/>
-            <path d="M -36 -254 L -24 -254 L -24 -208 L -36 -208 Z" fill="#3a3650"/>
-            <!-- collar -->
-            <path d="M -36 -200 L 36 -200 L 36 -172 L -36 -172 Z" fill="url(#gGold)" stroke="#030305" stroke-width="6" stroke-linejoin="round"/>
-            <!-- chamfered glass body, deliberately blank: no invented label -->
-            <path d="M -60 -172 L 60 -172 L 76 -156 L 76 -16 L 60 0 L -60 0 L -76 -16 L -76 -156 Z" fill="url(#gGlass)" stroke="#030305" stroke-width="8" stroke-linejoin="round"/>
-            <path d="M -60 -158 L 60 -158 L 62 -14 L -62 -14 Z" fill="none" stroke="#3a3650" stroke-width="3" opacity=".9"/>
-            <path d="M -52 -150 L -38 -150 L -46 -24 L -58 -24 Z" fill="#fff" opacity=".35"/>
-            <path d="M 52 -150 L 60 -150 L 60 -40 L 54 -40 Z" fill="#8f7dff" opacity=".7"/>
-          </g>
-          <image id="bottleImg" x="-110" y="-280" width="220" height="280" preserveAspectRatio="xMidYMax meet" style="display:none"/>
-        </g>
-        <g class="fist"></g>
-      </g>
-    </g>
+<g id="shotA">
+  <g id="bgCam"><g id="bg"></g></g>
+  <g id="cam">
+    <g id="charLayer"></g>
+    <g id="fg"></g>
   </g>
-  <g id="fg"></g>
 </g>
+<g id="shotB" style="display:none"></g>
+<g id="sheet" style="display:none"></g>
 </svg>
 
 <script>
@@ -150,25 +98,24 @@ const capture = P.get('capture') === '1';
 const NS = 'http://www.w3.org/2000/svg';
 const $ = id => document.getElementById(id);
 const DURATION = 12;
+const CUT_B = 3.42, CUT_C = 7.0;
 
-// ---------------- helpers ----------------
+// ================= helpers =================
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const EASE = {
   lin: p => p,
   io: p => 0.5 - 0.5 * Math.cos(Math.PI * p),
   out: p => 1 - Math.pow(1 - p, 3),
   in: p => p * p * p,
-  back: p => { const c = 1.6; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); },
+  back: p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); },
+  hold: p => (p < 1 ? 0 : 1),
 };
-const lerp = (a, b, k) => Array.isArray(a) ? a.map((v, i) => v + (b[i] - v) * k) : a + (b - a) * k;
-// keys: [[time, value, easeIntoThisKey]]
+const lerp = (a, b, k) => Array.isArray(a) ? a.map((v, i) => lerp(v, b[i], k)) : a + (b - a) * k;
 function track(t, keys) {
   if (t <= keys[0][0]) return keys[0][1];
-  for (let i = 1; i < keys.length; i++) {
-    if (t <= keys[i][0]) {
-      const a = keys[i - 1], b = keys[i];
-      return lerp(a[1], b[1], EASE[b[2] || 'io']((t - a[0]) / (b[0] - a[0])));
-    }
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+    const a = keys[i - 1], b = keys[i];
+    return lerp(a[1], b[1], EASE[b[2] || 'io']((t - a[0]) / (b[0] - a[0])));
   }
   return keys[keys.length - 1][1];
 }
@@ -179,54 +126,284 @@ function mk(tag, attrs, parent) {
   return e;
 }
 function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let r = Math.imul(seed ^ (seed >>> 15), 1 | seed); r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r; return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
-const f1 = n => n.toFixed(1);
-
-// tapered capsule from a to b
-function capsule(a, b, ra, rb) {
-  const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
-  const p1 = [a[0] + nx * ra, a[1] + ny * ra], p2 = [b[0] + nx * rb, b[1] + ny * rb];
-  const p3 = [b[0] - nx * rb, b[1] - ny * rb], p4 = [a[0] - nx * ra, a[1] - ny * ra];
-  return `M ${f1(p1[0])} ${f1(p1[1])} L ${f1(p2[0])} ${f1(p2[1])} A ${rb} ${rb} 0 0 0 ${f1(p3[0])} ${f1(p3[1])} L ${f1(p4[0])} ${f1(p4[1])} A ${ra} ${ra} 0 0 0 ${f1(p1[0])} ${f1(p1[1])} Z`;
-}
-// half of a capsule (one side), used as the cel-shade band
-function halfBand(a, b, ra, rb, side) {
-  const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L * side, ny = dx / L * side;
-  const k = 0.25;
-  return `M ${f1(a[0] + nx * ra * k)} ${f1(a[1] + ny * ra * k)} L ${f1(b[0] + nx * rb * k)} ${f1(b[1] + ny * rb * k)} L ${f1(b[0] + nx * rb)} ${f1(b[1] + ny * rb)} L ${f1(a[0] + nx * ra)} ${f1(a[1] + ny * ra)} Z`;
+const f1 = n => (Math.round(n * 10) / 10).toString();
+let uid = 0;
+// polygon with rounded corners: angular design, clean vector finish
+function roundPoly(pts, r = 10) {
+  const n = pts.length, rr = i => (Array.isArray(r) ? r[i] : r);
+  const cut = (p, q, d) => { const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, k = Math.min(d / L, 0.5); return [p[0] + dx * k, p[1] + dy * k]; };
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const p = pts[i], a = cut(p, pts[(i - 1 + n) % n], rr(i)), b = cut(p, pts[(i + 1) % n], rr(i));
+    d += (i ? ' L ' : 'M ') + f1(a[0]) + ' ' + f1(a[1]) + ' Q ' + f1(p[0]) + ' ' + f1(p[1]) + ' ' + f1(b[0]) + ' ' + f1(b[1]);
+  }
+  return d + ' Z';
 }
 const along = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
 const angleOf = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+const nrm = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1; return [-dy / L, dx / L]; };
+function quadPts(a, b, ra, rb) { const n = nrm(a, b); return [[a[0] + n[0] * ra, a[1] + n[1] * ra], [b[0] + n[0] * rb, b[1] + n[1] * rb], [b[0] - n[0] * rb, b[1] - n[1] * rb], [a[0] - n[0] * ra, a[1] - n[1] * ra]]; }
+const quad = (a, b, ra, rb) => 'M ' + quadPts(a, b, ra, rb).map(p => f1(p[0]) + ' ' + f1(p[1])).join(' L ') + ' Z';
+function halfQuad(a, b, ra, rb, side) {
+  const n = nrm(a, b).map(v => v * side), k = 0.15;
+  return `M ${f1(a[0] + n[0] * ra * k)} ${f1(a[1] + n[1] * ra * k)} L ${f1(b[0] + n[0] * rb * k)} ${f1(b[1] + n[1] * rb * k)} L ${f1(b[0] + n[0] * rb)} ${f1(b[1] + n[1] * rb)} L ${f1(a[0] + n[0] * ra)} ${f1(a[1] + n[1] * ra)} Z`;
+}
+const set = (el, attrs) => { for (const k in attrs) el.setAttribute(k, attrs[k]); };
+const star = (x, y, s) => `M ${x} ${y - s} L ${x + s * 0.22} ${y - s * 0.22} L ${x + s} ${y} L ${x + s * 0.22} ${y + s * 0.22} L ${x} ${y + s} L ${x - s * 0.22} ${y + s * 0.22} L ${x - s} ${y} L ${x - s * 0.22} ${y - s * 0.22} Z`;
 
-const SKIN = '#f2c29a', SKIN_SH = '#d6966c', INK = '#120a0c', SHIRT = '#1b1a24', MASK = '#14131b';
+// palette (from the turnaround)
+const C = {
+  ink: '#0a0710', mask: '#17161e', maskSh: '#0b0a10', rim: '#a594ff',
+  skin: '#f4c49a', skinSh: '#d99a6c', lidSkin: '#e0a57c',
+  shirt: '#1b1a23', shirtSh: '#0e0d13', white: '#f6f3ff', iris: '#2fb3f2', irisDk: '#0f5d9a', band: '#121118',
+};
+const LW = 8; // main line weight
 
-// ---------------- background (static set, reused by later scenes) ----------------
+// ================= MR X: HEAD =================
+// silhouettes share point order so the turn inbetween can blend between them
+const SKULL_FRONT = [[0, -222], [64, -214], [130, -182], [170, -124], [184, -44], [178, 30], [152, 84], [92, 160], [30, 212], [0, 222], [-30, 212], [-92, 160], [-152, 84], [-178, 30], [-184, -44], [-170, -124], [-130, -182], [-64, -214]];
+const SKULL_34    = [[14, -222], [82, -214], [148, -180], [184, -116], [196, -40], [190, 30], [166, 86], [112, 162], [56, 212], [30, 222], [-20, 212], [-96, 174], [-156, 110], [-188, 24], [-194, -60], [-176, -132], [-130, -186], [-60, -216]];
+const SKULL_R   = [60, 40, 36, 22, 12, 10, 10, 10, 8, 8, 8, 10, 10, 10, 12, 22, 36, 40];
+const SKULL_R34 = [60, 40, 36, 26, 16, 14, 14, 12, 10, 8, 30, 50, 60, 60, 60, 50, 40, 40];
+// side placement per view: [tx, sx] for the screen-right side group and the screen-left side group
+const SIDES = { 0: { R: [0, 1], L: [0, -1] }, 1: { R: [94, 0.54], L: [70, -1.04] } };
+
+function makeHead(parent) {
+  const id = ++uid;
+  const g = mk('g', {}, parent);
+  const tuft = mk('path', { fill: C.mask, stroke: C.ink, 'stroke-width': LW, 'stroke-linejoin': 'round' }, g);
+  const clip = mk('clipPath', { id: `cSkull${id}` }, g);
+  const clipP = mk('path', {}, clip);
+  const rimFill = mk('path', { fill: C.rim }, g);
+  const inner = mk('g', { 'clip-path': `url(#cSkull${id})` }, g);
+  const darkFill = mk('path', { fill: C.mask }, inner);
+  const shade = mk('path', { fill: C.maskSh }, inner);
+  const sheen = mk('path', { fill: '#2b2840' }, inner);
+  const sides = {};
+  for (const s of ['R', 'L']) {
+    const sg = mk('g', {}, inner);
+    const brow = mk('g', {}, sg);
+    const W = { fill: C.white, stroke: C.ink, 'stroke-width': 5, 'stroke-linejoin': 'round' };
+    // horn marking: sweeps from the forehead centre out over the brow to the temple
+    mk('path', Object.assign({ d: 'M 30 -206 C 112 -200 170 -142 172 -64 C 172 -40 164 -22 150 -12 C 148 -44 144 -82 126 -114 C 106 -150 74 -180 30 -206 Z' }, W), brow);
+    // inner spike rising from above the inner eye corner
+    mk('path', Object.assign({ d: 'M 14 -26 C 24 -72 56 -122 100 -154 C 84 -118 68 -78 58 -34 Z' }, W), brow);
+    // cheek stripe down to the jaw
+    mk('path', Object.assign({ d: 'M 98 50 L 128 46 C 124 102 104 152 70 198 C 86 148 96 98 98 50 Z' }, W), sg);
+    // eye
+    const eye = mk('g', {}, sg);
+    mk('use', { href: '#pOpen', fill: C.skin }, eye);
+    mk('path', { d: 'M 14 18 Q 24 40 56 44 L 118 40', fill: 'none', stroke: C.skinSh, 'stroke-width': 8, 'clip-path': 'url(#cOpen)' }, eye);
+    mk('use', { href: '#pScl', fill: '#fff' }, eye);
+    const irisClip = mk('g', { 'clip-path': 'url(#cScl)' }, eye);
+    const iris = mk('g', {}, irisClip);
+    mk('circle', { r: 29, fill: C.iris, stroke: C.irisDk, 'stroke-width': 5 }, iris);
+    mk('path', { d: 'M -18 16 A 24 24 0 0 0 20 14', fill: 'none', stroke: '#9fe6ff', 'stroke-width': 4, 'stroke-linecap': 'round' }, iris);
+    const pupil = mk('circle', { r: 11, fill: '#05070c' }, iris);
+    mk('circle', { cx: -9, cy: -10, r: 6, fill: '#fff' }, iris);
+    const lowLine = mk('path', { fill: 'none', stroke: C.ink, 'stroke-width': 4, 'stroke-linecap': 'round' }, eye);
+    const lidG = mk('g', { 'clip-path': 'url(#cOpen)' }, eye);
+    const lid = mk('path', { fill: C.lidSkin }, lidG);
+    const lowLid = mk('path', { fill: C.lidSkin }, lidG);
+    mk('use', { href: '#pOpen', fill: 'none', stroke: C.ink, 'stroke-width': 5 }, eye);
+    const lidLine = mk('path', { fill: 'none', stroke: C.ink, 'stroke-width': 10, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, eye);
+    sides[s] = { sg, brow, iris, pupil, lid, lidLine, lowLid, lowLine };
+  }
+  const nose = mk('path', { fill: 'none', stroke: '#2e2a44', 'stroke-width': 6, 'stroke-linecap': 'round' }, inner);
+  const outline = mk('path', { fill: 'none', stroke: C.ink, 'stroke-width': LW, 'stroke-linejoin': 'round' }, g);
+
+  // p: { view 0..1, eyes: {R:{o,low,gx,gy,iris,pupil,brow}, L:{...}}, tuftRot }
+  function update(p) {
+    const v = p.view;
+    const pts = lerp(SKULL_FRONT, SKULL_34, v), rad = lerp(SKULL_R, SKULL_R34, v);
+    const d = roundPoly(pts, rad);
+    clipP.setAttribute('d', d); rimFill.setAttribute('d', d); outline.setAttribute('d', d);
+    set(darkFill, { d, transform: `translate(${f1(-10 + 2 * v)} 4)` });
+    shade.setAttribute('d', `M -260 -260 L ${f1(-120 + 70 * v)} -260 C ${f1(-156 + 40 * v)} -150 ${f1(-168 + 40 * v)} 20 ${f1(-60 + 60 * v)} 260 L -260 260 Z`);
+    sheen.setAttribute('d', `M ${f1(-120 + 60 * v)} -150 C ${f1(-90 + 60 * v)} -190 ${f1(-30 + 60 * v)} -202 ${f1(20 + 60 * v)} -204 C ${f1(-40 + 60 * v)} -184 ${f1(-84 + 60 * v)} -160 ${f1(-104 + 60 * v)} -128 Z`);
+    const tx = 12 * v;
+    tuft.setAttribute('d', `M ${f1(-26 + tx)} -208 C ${f1(-16 + tx)} -238 ${f1(6 + tx)} -264 ${f1(38 + tx)} -282 C ${f1(28 + tx)} -258 ${f1(26 + tx)} -236 ${f1(30 + tx)} -206 Z`);
+    tuft.setAttribute('transform', `rotate(${f1(p.tuftRot || 0)} ${f1(tx)} -210)`);
+    nose.setAttribute('d', 'M 112 4 L 128 54 L 112 70');
+    nose.setAttribute('opacity', '0');
+    const sp = { R: lerp(SIDES[0].R, SIDES[1].R, v), L: lerp(SIDES[0].L, SIDES[1].L, v) };
+    for (const s of ['R', 'L']) {
+      const S = sides[s], e = p.eyes[s], [tx2, sx] = sp[s];
+      S.sg.setAttribute('transform', `translate(${f1(tx2)} 0) scale(${sx.toFixed(3)} 1)`);
+      // eye openness: 0 shut, 1 his confident half-lid, 1.35 wide
+      const o = e.o;
+      const lin = o <= 1 ? lerp(38, 0, o) : lerp(0, -24, (o - 1) / 0.35);
+      const lout = o <= 1 ? lerp(30, -22, o) : lerp(-22, -50, (o - 1) / 0.35);
+      S.lid.setAttribute('d', `M 0 -80 L 170 -80 L 170 ${f1(lout - 4)} L 150 ${f1(lout)} L 16 ${f1(lin)} L 0 ${f1(lin)} Z`);
+      S.lidLine.setAttribute('d', `M 14 ${f1(lin + 2)} L 150 ${f1(lout)} L 162 ${f1(lout - 9)}`);
+      const low = e.low || 0; // lower-lid squint
+      S.lowLid.setAttribute('d', `M 0 70 L 170 70 L 170 ${f1(30 - low * 18)} L 0 ${f1(40 - low * 18)} Z`);
+      S.lowLine.setAttribute('d', `M 36 ${f1(32 - low * 16)} Q 90 ${f1(36 - low * 18)} 132 ${f1(16 - low * 14)}`);
+      const gxl = e.gx * Math.sign(sx); // mirrored side flips gaze
+      S.iris.setAttribute('transform', `translate(${f1(86 + gxl * 24)} ${f1(2 + e.gy * 9)}) scale(${(e.iris || 1).toFixed(3)})`);
+      S.pupil.setAttribute('r', f1(11 * (e.pupil || 1)));
+      S.brow.setAttribute('transform', `translate(0 ${f1(-(e.brow || 0))}) rotate(${f1(-(e.brow || 0) * 0.2)} 90 -100)`);
+    }
+  }
+  return { g, update };
+}
+
+// ================= MR X: HANDS (separate drawings, swapped per pose) =================
+// local space: wrist at origin, forearm direction = +y
+function drawHand(g, kind) {
+  g.innerHTML = '';
+  const S = { fill: C.skin, stroke: C.ink, 'stroke-width': 7, 'stroke-linejoin': 'round' };
+  const L = { fill: 'none', stroke: C.ink, 'stroke-width': 5, 'stroke-linecap': 'round' };
+  if (kind === 'fist') {
+    mk('path', Object.assign({ d: roundPoly([[-34, -2], [36, -2], [44, 38], [38, 84], [-26, 92], [-44, 46]], 12) }, S), g);
+    mk('path', { d: 'M 22 0 L 40 40 L 34 82 L 14 88 Z', fill: C.skinSh }, g);
+    mk('path', Object.assign({ d: 'M -8 58 L -4 90 M 14 56 L 18 88' }, L), g);
+    mk('path', Object.assign({ d: roundPoly([[-44, 8], [-26, 4], [-18, 50], [-36, 62]], 10) }, S), g);
+  } else if (kind === 'point') {
+    mk('path', Object.assign({ d: roundPoly([[-30, -2], [32, -2], [40, 44], [30, 70], [-26, 72], [-36, 40]], 12) }, S), g);
+    mk('path', { d: 'M 18 0 L 36 44 L 28 66 L 12 68 Z', fill: C.skinSh }, g);
+    mk('path', Object.assign({ d: roundPoly([[-30, 50], [-8, 50], [-6, 150], [-26, 152]], 10) }, S), g);
+    mk('path', Object.assign({ d: 'M -4 62 L 26 64 M -2 46 L 30 46' }, L), g);
+    mk('path', Object.assign({ d: roundPoly([[24, 6], [52, -26], [64, -18], [40, 26]], 10) }, S), g);
+  } else if (kind === 'grip') {
+    // knuckles to camera, fingers wrapped round the bottle
+    mk('path', Object.assign({ d: roundPoly([[-52, -50], [52, -50], [56, 6], [46, 40], [-46, 40], [-56, 6]], 14) }, S), g);
+    mk('path', { d: 'M 30 -50 L 54 -48 L 56 6 L 44 38 L 24 38 Z', fill: C.skinSh }, g);
+    mk('path', Object.assign({ d: 'M -50 -26 L 50 -28 M -52 -4 L 52 -6 M -48 18 L 48 16' }, L), g);
+    mk('path', Object.assign({ d: roundPoly([[-56, -54], [-4, -62], [10, -50], [-40, -34]], 10) }, S), g);
+  }
+}
+
+// ================= BOTTLE (from the character sheet: black glass, gold collar, white brush X) =================
+let productImg = null;
+const BOTTLE_BODY = roundPoly([[-74, -178], [74, -178], [88, -162], [88, -14], [74, 0], [-74, 0], [-88, -14], [-88, -162]], 5);
+function drawBottle(g) {
+  g.innerHTML = '';
+  if (productImg) { mk('image', { href: productImg, x: -130, y: -300, width: 260, height: 300, preserveAspectRatio: 'xMidYMax meet' }, g); return; }
+  const I = { stroke: C.ink, 'stroke-width': 7, 'stroke-linejoin': 'round', class: 'ns' };
+  mk('path', Object.assign({ d: roundPoly([[-46, -272], [46, -272], [48, -204], [-48, -204]], 6), fill: '#141319' }, I), g);
+  for (const x of [-30, -15, 0, 15, 30]) mk('path', { d: `M ${x} -264 L ${x} -212`, stroke: '#2f2b44', 'stroke-width': 4, class: 'ns' }, g);
+  mk('path', { d: 'M -38 -266 L -30 -266 L -30 -210 L -38 -210 Z', fill: '#4a4566' }, g);
+  mk('path', Object.assign({ d: roundPoly([[-36, -204], [36, -204], [36, -178], [-36, -178]], 3), fill: 'url(#gGold)' }, I), g);
+  mk('path', Object.assign({ d: BOTTLE_BODY, fill: 'url(#gGlass)' }, I), g);
+  mk('path', { d: roundPoly([[-70, -164], [70, -164], [74, -14], [-74, -14]], 4), fill: 'none', stroke: '#3c3756', 'stroke-width': 3, class: 'ns' }, g);
+  mk('path', { d: 'M -44 -132 L -30 -140 L 46 -42 L 30 -36 Z', fill: C.white, stroke: C.ink, 'stroke-width': 3, class: 'ns' }, g);
+  mk('path', { d: 'M 40 -138 L 50 -128 L -32 -38 L -46 -46 Z', fill: C.white, stroke: C.ink, 'stroke-width': 3, class: 'ns' }, g);
+  mk('path', { d: 'M -64 -154 L -50 -154 L -58 -24 L -70 -24 Z', fill: '#fff', opacity: 0.28 }, g);
+  mk('path', { d: 'M 66 -152 L 76 -150 L 76 -26 L 68 -26 Z', fill: C.rim, opacity: 0.8 }, g);
+}
+
+// ================= MR X: BODY RIG (medium shot) =================
+function makeArm(parent) {
+  const g = mk('g', {}, parent);
+  const o1 = mk('path', { fill: C.ink, stroke: C.ink, 'stroke-width': 14, 'stroke-linejoin': 'round' }, g);
+  const o2 = mk('path', { fill: C.ink, stroke: C.ink, 'stroke-width': 14, 'stroke-linejoin': 'round' }, g);
+  const oe = mk('circle', { r: 33, fill: C.ink }, g);
+  const up = mk('path', { fill: C.skin }, g), fo = mk('path', { fill: C.skin }, g), el = mk('circle', { r: 26, fill: C.skin }, g);
+  const s1 = mk('path', { fill: C.skinSh }, g), s2 = mk('path', { fill: C.skinSh }, g);
+  const band = mk('path', { fill: C.band, stroke: C.ink, 'stroke-width': 7, 'stroke-linejoin': 'round' }, g);
+  const bandHi = mk('path', { fill: 'none', stroke: '#4b4570', 'stroke-width': 5, 'stroke-linecap': 'round' }, g);
+  return {
+    g, set(S, E, Wr, shadeSide = 1) {
+      set(o1, { d: quad(S, E, 34, 30) }); set(o2, { d: quad(E, Wr, 30, 26) }); set(oe, { cx: f1(E[0]), cy: f1(E[1]), r: 30 });
+      set(up, { d: quad(S, E, 34, 30) }); set(fo, { d: quad(E, Wr, 30, 26) }); set(el, { cx: f1(E[0]), cy: f1(E[1]), r: 27 });
+      set(s1, { d: halfQuad(S, E, 34, 30, shadeSide) }); set(s2, { d: halfQuad(E, Wr, 30, 26, shadeSide) });
+      const long = Math.hypot(Wr[0] - E[0], Wr[1] - E[1]) > 1;
+      band.style.display = bandHi.style.display = long ? '' : 'none';
+      if (!long) return;
+      const b0 = along(E, Wr, 0.70), b1 = along(E, Wr, 1.0);
+      set(band, { d: roundPoly(quadPts(b0, b1, 38, 38), 6) });
+      const h0 = along(E, Wr, 0.74), h1 = along(E, Wr, 0.96), n = nrm(E, Wr);
+      set(bandHi, { d: `M ${f1(h0[0] + n[0] * 26)} ${f1(h0[1] + n[1] * 26)} L ${f1(h1[0] + n[0] * 26)} ${f1(h1[1] + n[1] * 26)}` });
+    }
+  };
+}
+function sleevePts(S, E) {
+  const dx = E[0] - S[0], dy = E[1] - S[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  const side = S[0] < 0 ? -1 : 1;
+  let nx = -uy, ny = ux; if (nx * side < 0) { nx = -nx; ny = -ny; }
+  const end = along(S, E, 0.5);
+  return [[S[0] - ux * 36 - nx * 14, S[1] - uy * 36 - ny * 14], [S[0] + nx * 36 - ux * 18, S[1] + ny * 36 - uy * 18],
+          [end[0] + nx * 54, end[1] + ny * 54], [end[0] - nx * 46, end[1] - ny * 46], [S[0] - nx * 44 + ux * 64, S[1] - ny * 44 + uy * 64]];
+}
+
+const TORSO = [[-78, 866], [78, 866], [214, 900], [248, 934], [240, 1070], [214, 1290], [200, 1760], [-200, 1760], [-214, 1290], [-240, 1070], [-248, 934], [-214, 900]];
+const TORSO_R = [10, 10, 26, 30, 16, 12, 2, 2, 12, 16, 30, 26];
+function makeMrX(parent) {
+  const root = mk('g', { filter: 'url(#fOutline)' }, parent);
+  const body = mk('g', {}, root);
+  const armLup = makeArm(body);               // screen-left upper arm (his right), behind torso
+  mk('path', { d: roundPoly([[-40, 740], [40, 740], [46, 884], [-46, 884]], 4), fill: C.mask, stroke: C.ink, 'stroke-width': LW }, body);
+  // torso: rim colour underneath, shirt shifted left on top = hard rim light on the right edge
+  const tclip = mk('clipPath', { id: 'cTorso' }, body); mk('path', { d: roundPoly(TORSO, TORSO_R) }, tclip);
+  mk('path', { d: roundPoly(TORSO, TORSO_R), fill: C.rim }, body);
+  const tin = mk('g', { 'clip-path': 'url(#cTorso)' }, body);
+  mk('path', { d: roundPoly(TORSO, TORSO_R), fill: C.shirt, transform: 'translate(-9 2)' }, tin);
+  mk('path', { d: 'M -260 900 L -150 900 C -170 1100 -160 1400 -136 1800 L -260 1800 Z', fill: C.shirtSh }, tin);
+  mk('path', { d: 'M -80 1000 L 40 1030 L 110 1000 L 60 1060 Z', fill: C.shirtSh, opacity: 0.9 }, tin);
+  for (const d of ['M -112 1210 L -90 1290 L -104 1360', 'M 104 1160 L 128 1230 L 118 1300', 'M 20 1470 L 40 1530']) mk('path', { d, fill: 'none', stroke: '#34304a', 'stroke-width': 5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, tin);
+  mk('path', { d: roundPoly(TORSO, TORSO_R), fill: 'none', stroke: C.ink, 'stroke-width': LW, 'stroke-linejoin': 'round' }, body);
+  mk('path', { d: 'M -80 864 L 0 914 L 80 864', fill: 'none', stroke: C.ink, 'stroke-width': 10, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, body);
+  mk('path', { d: 'M -64 880 L 0 922 L 64 880', fill: 'none', stroke: '#35304c', 'stroke-width': 4, 'stroke-linecap': 'round' }, body);
+  const armR = makeArm(body);                 // screen-right arm (his left): in front of the torso so the point reads
+  const handR = mk('g', {}, body);
+  const sleeveR = mk('path', { fill: C.shirt, stroke: C.ink, 'stroke-width': LW, 'stroke-linejoin': 'round' }, body);
+  const sleeveRrim = mk('path', { fill: 'none', stroke: C.rim, 'stroke-width': 6, 'stroke-linecap': 'round' }, body);
+  const sleeveL = mk('path', { fill: C.shirt, stroke: C.ink, 'stroke-width': LW, 'stroke-linejoin': 'round' }, body);
+  const sleeveLsh = mk('path', { fill: C.shirtSh }, body);
+  const headG = mk('g', {}, body);
+  const head = makeHead(headG);
+  const armLfo = makeArm(body);               // screen-left forearm, in front
+  const bottle = mk('g', {}, body);
+  const handL = mk('g', {}, body);
+  drawHand(handL, 'grip'); drawBottle(bottle);
+  let handRkind = '';
+  const SL = [-226, 948], SR = [226, 948];
+  function pose(q) {
+    body.setAttribute('transform', `translate(${f1(540 + q.bx)} ${f1(q.by)}) rotate(${f1(q.lean)} 0 1700) translate(0 1760) scale(${q.sx.toFixed(4)} ${q.sy.toFixed(4)}) translate(0 -1760)`);
+    armR.set(SR, q.rE, q.rW, 1);
+    const sp = sleevePts(SR, q.rE);
+    set(sleeveR, { d: roundPoly(sp, 8) });
+    set(sleeveRrim, { d: `M ${f1(sp[1][0])} ${f1(sp[1][1])} L ${f1(sp[2][0])} ${f1(sp[2][1])}` });
+    if (q.rHand !== handRkind) { drawHand(handR, q.rHand); handRkind = q.rHand; }
+    const rAng = angleOf(q.rE, q.rW) - 90 + (q.rHandRot || 0);
+    handR.setAttribute('transform', `translate(${f1(q.rW[0])} ${f1(q.rW[1])}) rotate(${f1(rAng)})`);
+    armLup.set(SL, q.lE, q.lE, 1);
+    armLfo.set(q.lE, q.lE, q.lW, 1);
+    const sl = sleevePts(SL, q.lE);
+    set(sleeveL, { d: roundPoly(sl, 8) });
+    set(sleeveLsh, { d: `M ${f1(sl[1][0])} ${f1(sl[1][1])} L ${f1(sl[2][0])} ${f1(sl[2][1])} L ${f1(lerp(sl[2][0], sl[3][0], 0.35))} ${f1(lerp(sl[2][1], sl[3][1], 0.35))} Z` });
+    handL.setAttribute('transform', `translate(${f1(q.lW[0])} ${f1(q.lW[1])}) rotate(${f1(q.bRot)}) scale(${(0.92 + 0.08 * q.bScale).toFixed(3)})`);
+    bottle.setAttribute('transform', `translate(${f1(q.lW[0])} ${f1(q.lW[1])}) rotate(${f1(q.bRot)}) translate(0 -46) scale(${q.bScale.toFixed(3)})`);
+    headG.setAttribute('transform', `translate(${f1(q.hx)} ${f1(590 + q.hy)}) rotate(${f1(q.hr)} 0 190)`);
+    head.update(q.head);
+  }
+  return { root, pose };
+}
+
+// ================= SET (static, reused by later scenes) =================
 function buildBackground() {
   const bg = $('bg');
   mk('rect', { x: -200, y: -200, width: 1480, height: 2320, fill: 'url(#gWall)' }, bg);
-  // vertical wall slats
   for (let x = -160; x < 1240; x += 64) mk('rect', { x, y: -200, width: 2, height: 2320, fill: '#8c7cff', opacity: 0.07 }, bg);
-  // soft beam from upper left
   mk('path', { d: 'M -200 -200 L 260 -200 L 820 1500 L 420 1500 Z', fill: 'url(#gBeam)' }, bg);
-  // arch panel framing the character
   mk('path', { d: 'M 200 1760 L 200 560 A 340 340 0 0 1 880 560 L 880 1760 Z', fill: 'url(#gArch)', stroke: '#5a4bc4', 'stroke-width': 4 }, bg);
   mk('path', { d: 'M 222 1760 L 222 562 A 318 318 0 0 1 858 562 L 858 1760', fill: 'none', stroke: '#7a6af0', 'stroke-width': 2, opacity: 0.55 }, bg);
   mk('circle', { cx: 540, cy: 700, r: 560, fill: 'url(#gGlow)' }, bg);
-  // shelves with generic, unlabelled bottles (set dressing only)
   const R = rng(11);
   const shelves = [[-40, 250, 650], [-40, 250, 1080], [830, 1120, 650], [830, 1120, 1080]];
   const tints = ['#7a5cff', '#4fc3ff', '#c39bff', '#2f2766', '#9b7bff', '#5ad1e6'];
   for (const [x0, x1, y] of shelves) {
-    // LED strip glow under the plank
-    mk('rect', { x: x0, y: y + 10, width: x1 - x0, height: 26, fill: '#6fd3ff', opacity: 0.35, filter: 'url(#fBlur6)' }, bg);
+    mk('rect', { x: x0, y: y + 10, width: x1 - x0, height: 26, fill: '#6fd3ff', opacity: 0.32, filter: 'url(#fBlur6)' }, bg);
     let x = x0 + 30 + R() * 10;
     while (x < x1 - 50) {
       const w = 46 + R() * 34, h = 80 + R() * 70, tint = tints[Math.floor(R() * tints.length)], kind = Math.floor(R() * 3);
       const g = mk('g', { transform: `translate(${f1(x + w / 2)} ${y})` }, bg);
-      let body;
-      if (kind === 0) body = `M ${-w / 2} 0 L ${-w / 2} ${-h * 0.8} Q ${-w / 2} ${-h * 0.86} ${-w / 2 + 8} ${-h * 0.86} L ${w / 2 - 8} ${-h * 0.86} Q ${w / 2} ${-h * 0.86} ${w / 2} ${-h * 0.8} L ${w / 2} 0 Z`;
-      else if (kind === 1) body = `M ${-w * 0.2} ${-h * 0.86} L ${w * 0.2} ${-h * 0.86} C ${w * 0.6} ${-h * 0.7} ${w / 2} ${-h * 0.1} ${w * 0.35} 0 L ${-w * 0.35} 0 C ${-w / 2} ${-h * 0.1} ${-w * 0.6} ${-h * 0.7} ${-w * 0.2} ${-h * 0.86} Z`;
-      else body = `M ${-w * 0.3} ${-h * 0.86} L ${w * 0.3} ${-h * 0.86} L ${w / 2} ${-h * 0.6} L ${w / 2} ${-h * 0.15} L ${w * 0.3} 0 L ${-w * 0.3} 0 L ${-w / 2} ${-h * 0.15} L ${-w / 2} ${-h * 0.6} Z`;
-      mk('path', { d: body, fill: tint, 'fill-opacity': 0.85, stroke: '#0d0a22', 'stroke-width': 3, 'stroke-linejoin': 'round' }, g);
+      let pts;
+      if (kind === 0) pts = [[-w / 2, 0], [-w / 2, -h * 0.86], [w / 2, -h * 0.86], [w / 2, 0]];
+      else if (kind === 1) pts = [[-w * 0.2, -h * 0.86], [w * 0.2, -h * 0.86], [w / 2, -h * 0.45], [w * 0.35, 0], [-w * 0.35, 0], [-w / 2, -h * 0.45]];
+      else pts = [[-w * 0.3, -h * 0.86], [w * 0.3, -h * 0.86], [w / 2, -h * 0.6], [w / 2, -h * 0.15], [w * 0.3, 0], [-w * 0.3, 0], [-w / 2, -h * 0.15], [-w / 2, -h * 0.6]];
+      mk('path', { d: roundPoly(pts, 6), fill: tint, 'fill-opacity': 0.85, stroke: '#0d0a22', 'stroke-width': 3, 'stroke-linejoin': 'round' }, g);
       mk('path', { d: `M ${-w * 0.3} ${-h * 0.7} L ${-w * 0.18} ${-h * 0.7} L ${-w * 0.22} ${-h * 0.18} L ${-w * 0.32} ${-h * 0.18} Z`, fill: '#fff', opacity: 0.35 }, g);
       const capW = w * (0.3 + R() * 0.15), capH = 14 + R() * 18;
       mk('rect', { x: -capW / 2, y: -h * 0.86 - capH, width: capW, height: capH, rx: 3, fill: R() < 0.5 ? '#e8b23a' : '#17142a', stroke: '#0d0a22', 'stroke-width': 3 }, g);
@@ -235,270 +412,218 @@ function buildBackground() {
     mk('rect', { x: x0, y, width: x1 - x0, height: 18, fill: '#4a3aa6', stroke: '#0d0a22', 'stroke-width': 3 }, bg);
     mk('rect', { x: x0, y, width: x1 - x0, height: 4, fill: '#a99bff' }, bg);
   }
-  // two restrained sparkle accents
-  for (const [x, y, s] of [[905, 380, 26], [170, 1290, 18]]) {
-    mk('path', { d: `M ${x} ${y - s} L ${x + s * 0.25} ${y - s * 0.25} L ${x + s} ${y} L ${x + s * 0.25} ${y + s * 0.25} L ${x} ${y + s} L ${x - s * 0.25} ${y + s * 0.25} L ${x - s} ${y} L ${x - s * 0.25} ${y - s * 0.25} Z`, fill: '#cfc4ff', opacity: 0.55 }, bg);
-  }
-  // soft contact shadow of Mr X on the arch panel (light comes from upper right)
-  mk('ellipse', { id: 'wallShadow', cx: 500, cy: 1150, rx: 330, ry: 620, fill: '#0a0626', opacity: 0.35, filter: 'url(#fBlur20)' }, bg);
-
-  // foreground display counter
+  for (const [x, y, s] of [[905, 380, 26], [170, 1290, 18]]) mk('path', { d: star(x, y, s), fill: '#cfc4ff', opacity: 0.5 }, bg);
+  mk('ellipse', { cx: 470, cy: 1150, rx: 320, ry: 620, fill: '#0a0626', opacity: 0.35, filter: 'url(#fBlur20)' }, bg);
   const fg = $('fg');
-  mk('path', { d: 'M -120 1652 L 1200 1652 L 1200 2100 L -120 2100 Z', fill: 'url(#gCounter)', stroke: '#06041a', 'stroke-width': 4 }, fg);
-  mk('path', { d: 'M -120 1626 L 1200 1626 L 1200 1656 L -120 1656 Z', fill: '#5847bd', stroke: '#06041a', 'stroke-width': 4 }, fg);
-  mk('rect', { x: -120, y: 1628, width: 1320, height: 5, fill: '#c2b6ff' }, fg);
-  for (const x of [120, 540, 960]) mk('rect', { x: x - 1, y: 1690, width: 2, height: 400, fill: '#8c7cff', opacity: 0.35 }, fg);
-  mk('rect', { x: -120, y: 1760, width: 1320, height: 3, fill: '#8c7cff', opacity: 0.3 }, fg);
+  mk('path', { d: 'M -160 1652 L 1240 1652 L 1240 2140 L -160 2140 Z', fill: 'url(#gCounter)', stroke: '#06041a', 'stroke-width': 4 }, fg);
+  mk('path', { d: 'M -160 1626 L 1240 1626 L 1240 1656 L -160 1656 Z', fill: '#5847bd', stroke: '#06041a', 'stroke-width': 4 }, fg);
+  mk('rect', { x: -160, y: 1628, width: 1400, height: 5, fill: '#c2b6ff' }, fg);
+  for (const x of [120, 540, 960]) mk('rect', { x: x - 1, y: 1690, width: 2, height: 450, fill: '#8c7cff', opacity: 0.35 }, fg);
+  mk('rect', { x: -160, y: 1760, width: 1400, height: 3, fill: '#8c7cff', opacity: 0.3 }, fg);
 }
 
-// ---------------- face parts ----------------
-const eyes = {};
-function buildEye(side) {
-  const root = $(side > 0 ? 'eyeR' : 'eyeL');
-  const mirror = mk('g', { transform: side > 0 ? '' : 'scale(-1 1)' }, root);
-  const squash = mk('g', {}, mirror);
-  mk('use', { href: '#almond', fill: SKIN, stroke: INK, 'stroke-width': 6 }, squash);
-  mk('path', { d: 'M 14 14 C 26 30 40 40 58 42', fill: 'none', stroke: SKIN_SH, 'stroke-width': 6, 'stroke-linecap': 'round' }, squash);
-  mk('use', { href: '#sclera', fill: '#ffffff' }, squash);
-  const inner = mk('g', { 'clip-path': 'url(#cSclera)' }, squash);
-  const iris = mk('g', {}, inner);
-  mk('circle', { r: 20, fill: '#3fb7ec', stroke: '#145a8c', 'stroke-width': 5 }, iris);
-  mk('circle', { r: 20, fill: 'none', stroke: '#8fe0ff', 'stroke-width': 3, 'stroke-dasharray': '18 200', transform: 'rotate(60)' }, iris);
-  const pupil = mk('circle', { r: 8.5, fill: '#05070c' }, iris);
-  mk('circle', { cx: -6, cy: -7, r: 5, fill: '#fff' }, iris);
-  mk('use', { href: '#sclera', fill: 'none', stroke: INK, 'stroke-width': 5 }, squash);
-  mk('path', { d: 'M 18 12 C 40 -20 98 -34 134 -18', fill: 'none', stroke: INK, 'stroke-width': 10, 'stroke-linecap': 'round' }, squash);
-  const lidG = mk('g', { 'clip-path': 'url(#cAlmond)' }, squash);
-  const lid = mk('path', { fill: '#e4aa80' }, lidG);
-  const lidLine = mk('path', { fill: 'none', stroke: INK, 'stroke-width': 10, 'stroke-linecap': 'round' }, lidG);
-  eyes[side] = { squash, iris, pupil, lid, lidLine };
-}
-function buildMarks(side) {
-  const root = $(side > 0 ? 'markR' : 'markL');
-  const mirror = mk('g', { transform: side > 0 ? '' : 'scale(-1 1)' }, root);
-  const brow = mk('g', {}, mirror);
-  const W = { fill: '#f4f1ff', stroke: INK, 'stroke-width': 4, 'stroke-linejoin': 'round' };
-  mk('path', Object.assign({ d: 'M 14 -30 C 30 -72 80 -114 158 -152 C 146 -130 138 -116 132 -104 C 152 -110 168 -118 182 -130 C 166 -88 120 -60 78 -48 C 52 -42 32 -36 14 -30 Z' }, W), brow);
-  mk('path', Object.assign({ d: 'M 30 -66 C 48 -114 70 -152 98 -198 C 106 -160 92 -112 62 -74 Z' }, W), brow);
-  const cheek = mk('g', {}, mirror);
-  mk('path', Object.assign({ d: 'M 114 54 C 126 78 124 106 106 134 C 102 106 100 80 104 56 Z' }, W), cheek);
-  eyes[side].brow = brow; eyes[side].markRoot = mirror;
-}
-
-// fist: local origin at wrist end, pointing along +y (down) before rotation
-function buildFist(g, grip) {
-  g.innerHTML = '';
-  const s = mk('g', {}, g);
-  if (grip) {
-    // knuckles to camera, fingers wrapped horizontally around the bottle
-    mk('path', { d: 'M -50 -46 Q -54 -6 -44 34 Q 0 50 44 34 Q 56 -6 50 -46 Q 0 -60 -50 -46 Z', fill: SKIN, stroke: INK, 'stroke-width': 7, 'stroke-linejoin': 'round' }, s);
-    mk('path', { d: 'M 50 -46 Q 56 -6 44 34 Q 30 40 20 42 Q 34 0 30 -50 Z', fill: SKIN_SH }, s);
-    for (const y of [-26, -4, 18]) mk('path', { d: `M -46 ${y} Q 0 ${y + 10} 46 ${y}`, fill: 'none', stroke: INK, 'stroke-width': 5, 'stroke-linecap': 'round' }, s);
-    mk('path', { d: 'M -52 -44 Q -20 -64 18 -50 Q 4 -34 -36 -30 Z', fill: SKIN, stroke: INK, 'stroke-width': 6, 'stroke-linejoin': 'round' }, s);
-  } else {
-    // relaxed fist hanging down
-    mk('path', { d: 'M -40 -4 Q -50 50 -36 84 Q 0 104 38 84 Q 52 50 42 -4 Z', fill: SKIN, stroke: INK, 'stroke-width': 7, 'stroke-linejoin': 'round' }, s);
-    mk('path', { d: 'M 42 -4 Q 52 50 38 84 Q 30 90 22 92 Q 32 50 24 -2 Z', fill: SKIN_SH }, s);
-    for (const x of [-14, 10]) mk('path', { d: `M ${x} 58 Q ${x + 2} 76 ${x + 4} 92`, fill: 'none', stroke: INK, 'stroke-width': 5, 'stroke-linecap': 'round' }, s);
-    mk('path', { d: 'M -40 6 Q -58 34 -40 58 Q -26 46 -26 22 Z', fill: SKIN, stroke: INK, 'stroke-width': 6, 'stroke-linejoin': 'round' }, s);
+// ================= SHOT B: bottle close-up =================
+const CU = {};
+function buildCloseup() {
+  const g = $('shotB');
+  mk('rect', { x: -100, y: -100, width: 1280, height: 2120, fill: 'url(#gCU)' }, g);
+  CU.rays = mk('g', { opacity: 0.16 }, g);
+  for (let i = 0; i < 24; i++) {
+    const a0 = (i / 24) * Math.PI * 2, a1 = a0 + Math.PI / 48, R = 1800;
+    mk('path', { d: `M 0 0 L ${f1(Math.cos(a0) * R)} ${f1(Math.sin(a0) * R)} L ${f1(Math.cos(a1) * R)} ${f1(Math.sin(a1) * R)} Z`, fill: '#d6ccff' }, CU.rays);
   }
-  return s;
+  const dots = mk('g', { opacity: 0.18 }, g); // halftone corner, as on the character sheets
+  for (let y = 1300; y < 1940; y += 34) for (let x = -10; x < 520; x += 34) {
+    const r = clamp(1 - Math.hypot(x + 40, y - 1960) / 700) * 11;
+    if (r > 0.8) mk('circle', { cx: x + ((y / 34) % 2) * 17, cy: y, r: f1(r), fill: '#cfc4ff' }, dots);
+  }
+  CU.zoom = mk('g', {}, g);
+  CU.speed = mk('g', {}, CU.zoom);
+  for (let i = 0; i < 9; i++) mk('rect', { x: 250 + i * 70 + (i % 2) * 20, y: 300, width: 8, height: 700 + (i % 3) * 200, rx: 4, fill: '#fff', opacity: 0.35 }, CU.speed);
+  CU.obj = mk('g', { filter: 'url(#fOutline)' }, CU.zoom);
+  CU.arm = mk('g', {}, CU.obj);
+  mk('path', { d: 'M -46 60 L 46 60 L 70 520 L -40 520 Z', fill: C.skin, stroke: C.ink, 'stroke-width': 7, class: 'ns' }, CU.arm);
+  mk('path', { d: 'M 14 60 L 46 60 L 70 520 L 40 520 Z', fill: C.skinSh }, CU.arm);
+  mk('path', { d: roundPoly([[-56, 44], [56, 44], [60, 120], [-60, 120]], 8), fill: C.band, stroke: C.ink, 'stroke-width': 7, class: 'ns' }, CU.arm);
+  mk('path', { d: 'M 40 54 L 44 110', fill: 'none', stroke: '#4b4570', 'stroke-width': 5, class: 'ns' }, CU.arm);
+  CU.bottle = mk('g', {}, CU.obj);
+  CU.hand = mk('g', {}, CU.obj);
+  drawHand(CU.hand, 'grip');
+  for (const p of CU.hand.querySelectorAll('path')) p.classList.add('ns');
+  const cp = mk('clipPath', { id: 'cBottleBody' }, g); mk('path', { d: BOTTLE_BODY }, cp);
+  CU.sparks = [[790, 560, 0.95], [300, 840, 1.6], [760, 1180, 2.3], [330, 470, 2.9]].map(([x, y, at]) => ({ el: mk('path', { d: star(0, 0, 40), fill: '#fff' }, g), x, y, at }));
+  CU.brand = mk('g', {}, g);
+  mk('text', { x: 540, y: 300, 'text-anchor': 'middle', 'font-size': 150, fill: C.white, stroke: C.ink, 'stroke-width': 16, 'paint-order': 'stroke', 'letter-spacing': 6 }, CU.brand).textContent = 'ZSCENTS';
+  mk('rect', { x: 330, y: 326, width: 420, height: 8, fill: '#ffcf4a', stroke: C.ink, 'stroke-width': 3 }, CU.brand);
+  CU.banner = mk('g', {}, g);
+  mk('path', { d: 'M -330 -86 L 350 -100 L 330 86 L -350 100 Z', fill: '#7b5cff', stroke: C.ink, 'stroke-width': 10, 'stroke-linejoin': 'round' }, CU.banner);
+  mk('path', { d: 'M -310 -66 L 330 -78 L 316 -60 L -318 -48 Z', fill: '#b3a2ff' }, CU.banner);
+  mk('text', { x: 0, y: 52, 'text-anchor': 'middle', 'font-size': 150, fill: C.white, stroke: C.ink, 'stroke-width': 14, 'paint-order': 'stroke', 'letter-spacing': 4 }, CU.banner).textContent = 'CLEARANCE!';
+  CU.sub = mk('g', {}, g);
+  mk('text', { x: 0, y: 0, 'text-anchor': 'middle', 'font-size': 92, fill: '#ffcf4a', stroke: C.ink, 'stroke-width': 12, 'paint-order': 'stroke', 'letter-spacing': 3 }, CU.sub).textContent = 'OFFER KALI NI!';
+}
+function finishCloseupBottle() {
+  drawBottle(CU.bottle);
+  const gc = mk('g', { 'clip-path': 'url(#cBottleBody)' }, CU.bottle);
+  CU.glint = mk('rect', { x: -60, y: -260, width: 60, height: 360, fill: 'url(#gGlint)' }, gc);
+}
+function seekCloseup(t, tc) {
+  const u = t - CUT_B, uc = tc - CUT_B;
+  CU.rays.setAttribute('transform', `translate(540 860) rotate(${f1(u * 6)})`);
+  const z = track(t, [[CUT_B, 1.0], [CUT_B + 0.6, 1.0], [CUT_C, 1.07]]);
+  CU.zoom.setAttribute('transform', `translate(540 900) scale(${z.toFixed(4)}) translate(-540 -900)`);
+  // the lift from shot A continues: bottle rises into frame, overshoots, settles (on twos)
+  const rise = track(uc, [[0, 980], [0.34, -46, 'out'], [0.58, 10], [0.75, 0]]);
+  const rot = track(uc, [[0, -8], [0.34, 4, 'out'], [0.75, 0], [2.2, -2.5], [3.58, 1.5]]);
+  CU.obj.setAttribute('transform', `translate(540 ${f1(1460 + rise)}) rotate(${f1(rot)}) scale(2.7)`);
+  CU.speed.setAttribute('opacity', (uc < 0.34 ? 1 - uc / 0.34 : 0).toFixed(2));
+  CU.speed.setAttribute('transform', `translate(0 ${f1(rise * 0.5)})`);
+  CU.bottle.setAttribute('transform', 'translate(0 -46)');
+  CU.arm.setAttribute('transform', 'rotate(-14)');
+  const gl = clamp((u - 1.05) / 0.5);
+  CU.glint.setAttribute('transform', `translate(${f1(-180 + 380 * EASE.io(gl))} 0) skewX(-20)`);
+  CU.glint.setAttribute('opacity', gl > 0 && gl < 1 ? '1' : '0');
+  for (const s of CU.sparks) {
+    const k = (u - s.at) / 0.45, sv = k <= 0 || k >= 1 ? 0 : Math.sin(Math.PI * k);
+    s.el.setAttribute('transform', `translate(${s.x} ${s.y}) rotate(${f1(k * 90)}) scale(${sv.toFixed(3)})`);
+  }
+  const bIn = track(u, [[0.42, 0], [0.68, 1, 'back']]);
+  CU.brand.setAttribute('transform', `translate(0 ${f1((1 - bIn) * -260)})`);
+  CU.brand.setAttribute('opacity', clamp(bIn * 3).toFixed(2));
+  const slam = track(u, [[0.62, 0], [0.8, 1, 'back']]);
+  CU.banner.setAttribute('transform', `translate(540 1690) rotate(-5) scale(${lerp(1.8, 1, slam).toFixed(3)})`);
+  CU.banner.setAttribute('opacity', clamp(slam * 4).toFixed(2));
+  const sub = track(u, [[1.25, 0], [1.45, 1, 'back']]);
+  CU.sub.setAttribute('transform', `translate(540 1850) rotate(-3) scale(${Math.max(0, sub).toFixed(3)})`);
 }
 
-function setArm(root, S, E, Wr, opt) {
-  const q = c => root.querySelector(c);
-  if (q('.up')) {
-    q('.up').setAttribute('d', capsule(S, E, 40, 35));
-    q('.up').setAttribute('fill', SKIN);
-    q('.upShade').setAttribute('d', halfBand(S, E, 40, 35, opt.shadeSide));
-    q('.upShade').setAttribute('fill', SKIN_SH);
-    Object.entries({ d: capsule(S, E, 40, 35), fill: 'none', stroke: INK, 'stroke-width': 14 }).forEach(([k, v]) => q('.upLine').setAttribute(k, v));
-  }
-  if (q('.fo')) {
-    q('.fo').setAttribute('d', capsule(E, Wr, 35, 30));
-    q('.fo').setAttribute('fill', SKIN);
-    q('.foShade').setAttribute('d', halfBand(E, Wr, 35, 30, opt.shadeSide));
-    q('.foShade').setAttribute('fill', SKIN_SH);
-    Object.entries({ d: capsule(E, Wr, 35, 30), fill: 'none', stroke: INK, 'stroke-width': 14 }).forEach(([k, v]) => q('.foLine').setAttribute(k, v));
-    // wristband: last fifth of the forearm
-    const b0 = along(E, Wr, 0.72), b1 = along(E, Wr, 0.98);
-    Object.entries({ d: capsule(b0, b1, 40, 40), fill: '#111017', stroke: '#030305', 'stroke-width': 7, 'stroke-linejoin': 'round' }).forEach(([k, v]) => q('.band').setAttribute(k, v));
-  }
-}
-function sleeve(el, S, E) {
-  const dx = E[0] - S[0], dy = E[1] - S[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
-  const side = S[0] < 0 ? -1 : 1; // outer normal points away from the torso
-  let nx = -uy, ny = ux; if (nx * side < 0) { nx = -nx; ny = -ny; }
-  const end = along(S, E, 0.5);
-  const pts = [
-    [S[0] - ux * 34 - nx * 10, S[1] - uy * 34 - ny * 10],            // shoulder seam, top
-    [S[0] + nx * 40 - ux * 14, S[1] + ny * 40 - uy * 14],             // shoulder point
-    [end[0] + nx * 60, end[1] + ny * 60],                             // hem, outer
-    [end[0] - nx * 52, end[1] - ny * 52],                             // hem, inner
-    [S[0] - nx * 46 + ux * 60, S[1] - ny * 46 + uy * 60],             // armpit
-  ];
-  el.setAttribute('d', 'M ' + pts.map(p => f1(p[0]) + ' ' + f1(p[1])).join(' L ') + ' Z');
-}
-
-// ---------------- timeline ----------------
-// Mr X performs on twos (12 drawings/s); camera moves on ones, like TV animation of the period.
-const K = {
-  cam: [[0, [1.0, 0, 0]], [3.0, [1.07, 0, 0]], [4.4, [1.06, 22, 14]], [7.0, [1.06, 22, 14]], [8.6, [1.075, 10, -6]],
-        [10.1, [1.075, 10, -6]], [10.7, [1.065, -24, -6], 'out'], [12, [1.065, -24, -6]]],
-  headRot: [[0, 0], [0.32, -2.5, 'out'], [0.9, 2], [2.0, 1], [2.7, 0], [3.2, -1.5], [4.2, -3], [5.0, -1], [5.6, 0], [6.9, 0],
-            [7.6, -9], [8.1, -8], [8.6, -13], [9.9, -12], [10.17, -12], [10.27, -14, 'out'], [10.44, 6, 'out'], [10.66, 4], [12, 4]],
-  turn: [[0, 0], [10.17, 0], [10.27, -0.08, 'out'], [10.44, 1.07, 'out'], [10.66, 1], [12, 1]],
-  headY: [[0, 0], [10.17, 0], [10.3, -12, 'out'], [10.62, -3], [12, -3]],
-  gaze: [[0, [0, 0]], [3.1, [0, 0]], [3.35, [-0.35, -0.2]], [3.7, [0, 0]], [4.8, [0, 0]], [5.0, [-0.6, -0.25]], [5.35, [0, 0]],
-         [6.9, [0, 0]], [7.35, [-0.6, 0.75]], [9.0, [-0.45, 0.7]], [10.15, [-0.45, 0.7]], [10.22, [0.5, -0.1], 'out'],
-         [10.42, [1, -0.1], 'out'], [12, [0.95, -0.12]]],
-  // [lid screen-left eye, lid screen-right eye]  (lower = more open; -12 is his confident resting lid)
-  lids: [[0, [-12, -12]], [0.28, [-12, -12]], [0.5, [-2, -24], 'out'], [2.3, [-4, -22]], [2.9, [-12, -12]],
-         [3.4, [-16, -16]], [6.6, [-16, -16]], [7.4, [-3, -3]], [10.12, [-3, -3]], [10.2, [-44, -44], 'out'], [12, [-42, -42]]],
-  // brow (mask marking) raise [screen-left, screen-right]
-  brows: [[0, [0, 0]], [0.28, [0, 0]], [0.5, [-4, 18], 'back'], [2.4, [-3, 15]], [2.9, [0, 0]], [3.4, [3, 3]], [6.6, [3, 3]],
-          [7.4, [0, 0]], [8.6, [2, -2]], [10.12, [2, -2]], [10.22, [14, 14], 'out'], [12, [12, 12]]],
-  irisScale: [[0, 1], [10.12, 1], [10.22, 0.84, 'out'], [12, 0.86]],
-  // holding arm (screen-left): elbow xy, wrist xy, bottle rotation, bottle scale
-  armL: [[0, [-287, 1225, -164, 1130, -4, 1]], [2.95, [-287, 1225, -164, 1130, -4, 1]],
-         [3.2, [-287, 1245, -172, 1168, -9, 0.97]],
-         [3.72, [-324, 1112, -254, 846, 7, 1.43], 'out'], [3.95, [-322, 1122, -250, 862, 3, 1.38]],
-         [4.6, [-322, 1116, -250, 852, 5, 1.4]], [5.05, [-322, 1122, -250, 862, 2, 1.38]],
-         [5.2, [-324, 1110, -254, 840, 6, 1.41], 'out'], [5.5, [-322, 1122, -250, 860, 3, 1.38]],
-         [6.85, [-322, 1122, -250, 860, 3, 1.38]], [7.05, [-322, 1114, -252, 848, 5, 1.39]],
-         [7.65, [-282, 1225, -164, 1110, -6, 1.1]], [8.25, [-282, 1225, -164, 1110, 5, 1.1]],
-         [8.95, [-282, 1223, -162, 1108, -3, 1.1]], [9.6, [-282, 1225, -164, 1110, 2, 1.1]], [10.17, [-282, 1225, -164, 1110, 2, 1.1]],
-         [10.32, [-285, 1212, -167, 1094, -4, 1.1], 'out'], [10.62, [-283, 1220, -164, 1104, -1, 1.1]], [12, [-283, 1220, -164, 1104, -1, 1.1]]],
-  armR: [[0, [278, 1222, 294, 1468]], [10.17, [278, 1222, 294, 1468]], [10.32, [286, 1206, 310, 1450], 'out'], [10.62, [280, 1216, 298, 1462]], [12, [280, 1216, 298, 1462]]],
-  bodyY: [[0, 0], [3.0, 0], [3.2, 6], [3.72, -6, 'out'], [4.0, 0], [10.17, 0], [10.3, -8, 'out'], [10.62, -2], [12, -2]],
-  bodyS: [[0, [1, 1]], [3.0, [1, 1]], [3.2, [1.01, 0.986]], [3.72, [0.995, 1.01], 'out'], [4.0, [1, 1]],
-          [10.17, [1, 1]], [10.3, [0.99, 1.012], 'out'], [10.62, [1, 1]], [12, [1, 1]]],
+// ================= TIMELINE (shots A and C) =================
+// eyes: [o, low, gx, gy, iris, pupil, brow]
+//   o = openness (0 shut, 1 his half-lidded confident look, 1.35 wide), low = lower-lid squint,
+//   gx/gy = gaze, iris/pupil = size, brow = horn marking raise (mask fabric over the brow)
+const EYE_KEYS = {
+  L: [[0, [1, 0, 0, 0, 1, 1, 0]], [0.36, [1, 0, 0, 0.1, 1, 1, 0]], [0.5, [0.9, 0.15, 0, 0, 1, 1, -2], 'out'], [2.5, [0.9, 0.15, 0, 0, 1, 1, -2]],
+      [2.9, [1, 0, 0, 0, 1, 1, 0]], [3.15, [1.05, 0, -0.3, -0.2, 1, 1, 2]],
+      [7.0, [1, 0, -0.5, 0.4, 1, 1, 0]], [7.5, [0.55, 0.45, -0.75, 0.55, 1, 1, -6]], [8.9, [0.55, 0.45, -0.7, 0.55, 1, 1, -6]],
+      [9.05, [0.6, 0.4, 0.05, 0.05, 1, 1, -6], 'out'], [10.12, [0.6, 0.4, 0.05, 0.05, 1, 1, -6]],
+      [10.2, [1.35, 0, 0.3, -0.1, 0.84, 0.7, 12], 'out'], [10.5, [1.33, 0, 1, -0.1, 0.84, 0.7, 12]], [12, [1.3, 0, 0.95, -0.1, 0.85, 0.72, 11]]],
+  R: [[0, [1, 0, 0, 0, 1, 1, 0]], [0.36, [1, 0, 0, 0.1, 1, 1, 0]], [0.5, [1.18, 0, 0, 0, 1, 1, 14], 'back'], [2.5, [1.15, 0, 0, 0, 1, 1, 12]],
+      [2.9, [1, 0, 0, 0, 1, 1, 0]], [3.15, [1.05, 0, -0.3, -0.2, 1, 1, 2]],
+      [7.0, [1, 0, -0.5, 0.4, 1, 1, 0]], [7.5, [1.08, 0, -0.75, 0.55, 1, 1, 12], 'back'], [8.9, [1.08, 0, -0.7, 0.55, 1, 1, 12]],
+      [9.05, [1.1, 0, 0.05, 0.05, 1, 1, 14], 'out'], [10.12, [1.1, 0, 0.05, 0.05, 1, 1, 14]],
+      [10.2, [1.35, 0, 0.3, -0.1, 0.84, 0.7, 12], 'out'], [10.5, [1.33, 0, 1, -0.1, 0.84, 0.7, 12]], [12, [1.3, 0, 0.95, -0.1, 0.85, 0.72, 11]]],
 };
-const BLINKS = [2.7, 6.45, 8.35];
-
-let LS = window.LIPSYNC || { fps: 24, mrx: [] };
-function mouthAt(tc) {
-  const i = Math.round(tc * LS.fps);
-  return Math.max(LS.mrx[i] || 0, LS.mrx[i + 1] || 0);
+const BLINK = 2.62; // the one natural blink; the head turn has its own shut-eye inbetween
+const K = {
+  camA: [[0, [1.0, 0, 0]], [3.0, [1.06, 0, 0]], [3.42, [1.075, 6, 10], 'in']],
+  camC: [[7.0, [1.06, 18, 10]], [10.05, [1.075, 10, 6]], [10.5, [1.07, -26, 4], 'out'], [12, [1.07, -26, 4]]],
+  // body: [bx, by, lean, sx, sy]
+  body: [[0, [0, 0, 0, 1, 1]], [0.36, [0, 6, 0.5, 1.008, 0.99]], [0.56, [0, -4, -0.8, 0.994, 1.008], 'out'], [0.8, [-4, 0, -1.6, 1, 1]],
+         [1.05, [-8, -2, -2.4, 1, 1], 'out'], [2.5, [-6, 0, -2, 1, 1]], [2.95, [0, 0, 0, 1, 1]],
+         [3.12, [0, 10, 1.2, 1.012, 0.986]], [3.42, [-10, -8, -2.5, 0.99, 1.012], 'out'],
+         [7.0, [-6, -2, -1.5, 1, 1]], [7.6, [-10, 2, -2.6, 1, 1]], [10.12, [-10, 2, -2.6, 1, 1]],
+         [10.2, [-10, 8, -2, 1.012, 0.988]], [10.34, [-14, 4, -3, 1, 1]], [10.5, [12, -8, 2.4, 0.992, 1.012], 'out'], [10.75, [8, -2, 1.6, 1, 1]], [12, [8, -2, 1.6, 1, 1]]],
+  // head: [hx, hy, rot]
+  head: [[0, [0, 0, 0]], [0.36, [0, 6, -3]], [0.56, [0, -6, 3], 'out'], [1.0, [-2, 0, 2]], [1.9, [-2, 0, 1]], [2.05, [-2, 4, 3]], [2.5, [0, 0, 1]],
+         [2.95, [0, 0, 0]], [3.12, [0, 8, -2]], [3.42, [-4, -6, -4], 'out'],
+         [7.0, [-6, 0, -3]], [7.6, [-10, 6, -8]], [8.6, [-12, 8, -10]], [9.05, [-10, 6, -8]], [10.12, [-10, 6, -8]],
+         [10.2, [-8, -4, -4], 'out'], [10.28, [-14, 4, -7]], [10.42, [10, -6, 8], 'out'], [10.58, [12, -4, 5]], [10.8, [10, -4, 4]], [12, [10, -4, 4]]],
+  view: [[0, 0], [10.3, 0, 'hold'], [10.32, 0.5, 'hold'], [10.42, 1, 'hold'], [12, 1]],
+  tuft: [[0, 0], [0.36, 0], [0.56, -8, 'out'], [0.8, 5], [1.05, 0], [3.12, 0], [3.42, 10, 'out'], [7.0, 0], [10.2, 0], [10.3, 8], [10.42, -14, 'out'], [10.6, 8], [10.8, -3], [11.0, 0]],
+  // free arm: elbow xy, wrist xy
+  rArm: [[0, [266, 1218, 286, 1452]], [0.62, [266, 1218, 286, 1452]], [0.78, [282, 1250, 300, 1470]],
+         [0.98, [318, 1150, 160, 1040], 'out'], [1.14, [310, 1140, 140, 1024], 'out'], [1.3, [312, 1146, 150, 1034]],
+         [1.86, [312, 1146, 150, 1034]], [1.98, [314, 1136, 136, 1012], 'out'], [2.16, [312, 1146, 150, 1034]], [2.5, [312, 1146, 150, 1034]],
+         [2.95, [266, 1218, 286, 1452]], [10.2, [266, 1218, 286, 1452]], [10.34, [262, 1228, 270, 1462]],
+         [10.54, [278, 1208, 316, 1440], 'out'], [10.8, [270, 1216, 296, 1450]], [12, [270, 1216, 296, 1450]]],
+  // holding arm: elbow xy, wrist xy, bottle rotation, bottle scale
+  lArm: [[0, [-280, 1222, -166, 1128, -4, 1]], [0.5, [-280, 1222, -166, 1124, -3, 1]], [1.1, [-282, 1218, -170, 1118, -6, 1.02]], [2.6, [-280, 1222, -166, 1128, -4, 1]],
+         [2.95, [-280, 1222, -166, 1128, -4, 1]], [3.12, [-280, 1246, -172, 1170, -9, 0.97]], [3.42, [-300, 1110, -210, 880, 6, 1.5], 'in'],
+         [7.0, [-300, 1150, -206, 930, 4, 1.18]], [7.6, [-292, 1196, -176, 1012, -6, 1.12]], [8.0, [-292, 1196, -176, 1012, -6, 1.12]],
+         [8.35, [-292, 1194, -174, 1008, 8, 1.12]], [8.9, [-292, 1196, -176, 1012, 4, 1.12]], [10.12, [-292, 1196, -176, 1012, 4, 1.12]],
+         [10.3, [-296, 1180, -182, 990, -4, 1.12], 'out'], [10.6, [-294, 1190, -178, 1004, 1, 1.12]], [12, [-294, 1190, -178, 1004, 1, 1.12]]],
+};
+function eyeAt(side, tc) {
+  const [o, low, gx, gy, iris, pupil, brow] = track(tc, EYE_KEYS[side]);
+  let oo = o;
+  const d = tc - BLINK; // drawings: half, shut, half
+  if (d >= -1e-6 && d < 1 / 12) oo = o * 0.45; else if (d >= 1 / 12 && d < 2 / 12) oo = 0; else if (d >= 2 / 12 && d < 3 / 12) oo = o * 0.6;
+  return { o: oo, low, gx, gy, iris, pupil, brow };
 }
-function blinkAt(tc) {
-  // drawings on twos: half, closed, half, open
-  for (const b of BLINKS) {
-    const d = tc - b;
-    if (d >= -1e-6 && d < 1 / 12) return 0.55;
-    if (d >= 1 / 12 && d < 2 / 12) return 1;
-    if (d >= 2 / 12 && d < 3 / 12) return 0.5;
-  }
-  return 0;
-}
 
+let mrx;
 function seek(t) {
   t = clamp(t, 0, DURATION - 1e-6);
-  const tc = Math.floor(t * 12 + 1e-6) / 12; // on twos
-
-  // camera (on ones, smooth)
-  const [cs, cx, cy] = track(t, K.cam);
+  const tc = Math.floor(t * 12 + 1e-6) / 12;
+  const inB = t >= CUT_B && t < CUT_C;
+  $('shotA').style.display = inB ? 'none' : '';
+  $('shotB').style.display = inB ? '' : 'none';
+  if (inB) { seekCloseup(t, tc); return; }
+  const [cs, cx, cy] = t < CUT_B ? track(t, K.camA) : track(t, K.camC);
   $('cam').setAttribute('transform', `translate(${f1(540 + cx)} ${f1(760 + cy)}) scale(${cs.toFixed(4)}) translate(-540 -760)`);
   const ps = 1 + (cs - 1) * 0.5;
   $('bgCam').setAttribute('transform', `translate(${f1(540 + cx * 0.5)} ${f1(760 + cy * 0.5)}) scale(${ps.toFixed(4)}) translate(-540 -760)`);
-  if (P.get('bg') === '1') { $('char').style.display = 'none'; return; }
-
-  // body: breathing + squash/stretch
-  const breathe = Math.sin(tc / 3.2 * Math.PI * 2) * 3;
-  const by = track(tc, K.bodyY) + breathe;
-  const [sx, sy] = track(tc, K.bodyS);
-  $('body').setAttribute('transform', `translate(540 ${f1(by)}) translate(0 1760) scale(${sx.toFixed(4)} ${sy.toFixed(4)}) translate(0 -1760)`);
-
-  // arms
-  const SL = [-228, 945], SR = [228, 945];
-  const [ex, ey, wx, wy, brot, bsc] = track(tc, K.armL);
-  const EL = [ex, ey], WL = [wx, wy];
-  setArm($('armLup'), SL, EL, null, { shadeSide: 1 });
-  setArm($('armLfo'), SL, EL, WL, { shadeSide: 1 });
-  sleeve($('sleeveL'), SL, EL);
-  const fistL = $('armLfo').querySelector('.fist');
-  const fistAt = along(EL, WL, 1.12);
-  fistL.setAttribute('transform', `translate(${f1(fistAt[0])} ${f1(fistAt[1])}) rotate(${brot.toFixed(2)}) scale(${(0.9 + 0.1 * bsc).toFixed(3)})`);
-  $('bottle').setAttribute('transform', `translate(${f1(fistAt[0])} ${f1(fistAt[1] + 30)}) rotate(${brot.toFixed(2)}) scale(${bsc.toFixed(3)})`);
-
-  const [rex, rey, rwx, rwy] = track(tc, K.armR);
-  const sway = Math.sin(tc / 3.2 * Math.PI * 2 + 0.6) * 3;
-  const ER = [rex + sway * 0.3, rey], WR = [rwx + sway, rwy];
-  setArm($('armR'), SR, ER, WR, { shadeSide: 1 });
-  sleeve($('sleeveR'), SR, ER);
-  $('sleeveRrim').setAttribute('d', `M ${f1(SR[0] + 26)} ${f1(SR[1] - 30)} Q ${f1(SR[0] + 52)} ${f1(SR[1] + 10)} ${f1(along(SR, ER, 0.5)[0] + 54)} ${f1(along(SR, ER, 0.5)[1])}`);
-  const fistR = $('armR').querySelector('.fist');
-  fistR.setAttribute('transform', `translate(${f1(WR[0])} ${f1(WR[1] - 4)}) rotate(${(angleOf(ER, WR) - 90).toFixed(2)})`);
-
-  // head
-  const m = mouthAt(tc);
-  const turn = track(tc, K.turn);
-  const hr = track(tc, K.headRot) + m * 1.2;
-  const hy = track(tc, K.headY) - m * 5;
-  const hsx = 1 - 0.035 * Math.max(0, Math.min(1, 1 - Math.abs(turn - 0.5) * 2)); // stretch through the fast turn
-  $('head').setAttribute('transform', `translate(${f1(turn * 6)} ${f1(600 + hy)}) rotate(${hr.toFixed(2)} 0 200) scale(${hsx.toFixed(3)} 1)`);
-  $('tuft').setAttribute('transform', `translate(${f1(-turn * 26)} 0)`);
-  $('jawPlane').setAttribute('opacity', clamp(turn).toFixed(2));
-  $('face').setAttribute('transform', `translate(${f1(turn * 62)} ${f1(turn * 2)})`);
-  $('hoodWrap').setAttribute('transform', `translate(${f1(-turn * 10)} 0)`);
-
-  const [gx, gy] = track(tc, K.gaze);
-  const lids = track(tc, K.lids), brows = track(tc, K.brows), isc = track(tc, K.irisScale);
-  const blink = blinkAt(tc);
-  for (const side of [-1, 1]) {
-    const e = eyes[side];
-    // near/far eye width during the head turn (screen-right eye is the far one)
-    const ws = side > 0 ? 1 - 0.38 * clamp(turn) : 1 + 0.06 * clamp(turn);
-    const pv = side > 0 ? 20 : 78; // far eye folds toward the nose
-    const wide = 1 + 0.16 * clamp((-lids[side > 0 ? 1 : 0] - 20) / 22); // surprise opens the whole eye
-    e.squash.setAttribute('transform', `translate(${pv} 8) scale(${ws.toFixed(3)} ${wide.toFixed(3)}) translate(${-pv} -8)`);
-    const ix = 76 + side * gx * 20, iy = 6 + gy * 9;
-    e.iris.setAttribute('transform', `translate(${f1(ix)} ${f1(iy)}) scale(${isc.toFixed(3)})`);
-    let L = lids[side > 0 ? 1 : 0];
-    L = L + (40 - L) * blink;
-    const li = L + 14, lo = L - 4; // slanted lid: lower toward the nose = determined look
-    e.lid.setAttribute('d', `M 0 -90 L 160 -90 L 160 ${f1(lo)} L 0 ${f1(li)} Z`);
-    e.lidLine.setAttribute('d', `M 8 ${f1(li - 0.5)} L 150 ${f1(lo - 1)}`);
-    const b = brows[side > 0 ? 1 : 0];
-    e.brow.setAttribute('transform', `translate(0 ${f1(-b)}) rotate(${(-b * 0.25).toFixed(2)} 80 -60)`);
-    e.markRoot.parentNode.setAttribute('transform', `translate(${side * pv} 0) scale(${ws.toFixed(3)} 1) translate(${-side * pv} 0)`);
-  }
-  // mouth under the mask: fabric crease that opens with the voice
-  if (m < 0.1) $('mouth').setAttribute('d', 'M -34 140 Q 0 148 38 132');
-  else {
-    const o = m;
-    $('mouth').setAttribute('d', `M -30 138 Q 0 ${f1(134 - o * 2)} 32 134 Q ${f1(28 + o * 2)} ${f1(140 + o * 22)} 0 ${f1(142 + o * 24)} Q ${f1(-26 - o * 2)} ${f1(140 + o * 20)} -30 138 Z`);
-  }
-  $('mouth').setAttribute('fill', m < 0.1 ? 'none' : '#07070b');
+  if (P.get('bg') === '1') { $('charLayer').style.display = 'none'; return; }
+  const [bx, by, lean, sx, sy] = track(tc, K.body);
+  const [hx, hy, hr] = track(tc, K.head);
+  const [rex, rey, rwx, rwy] = track(tc, K.rArm);
+  const [lex, ley, lwx, lwy, bRot, bScale] = track(tc, K.lArm);
+  const breathe = Math.sin(tc / 3.4 * Math.PI * 2) * 2;
+  const view = track(tc, K.view);
+  const eyes = { L: eyeAt('L', tc), R: eyeAt('R', tc) };
+  if (view === 0.5) { eyes.L.o = 0; eyes.R.o = 0; }
+  const pointing = tc >= 0.78 && tc < 2.8;
+  mrx.pose({
+    bx, by: by + breathe, lean, sx, sy, hx, hy: hy + breathe * 0.4, hr,
+    rE: [rex, rey], rW: [rwx, rwy], rHand: pointing ? 'point' : 'fist', rHandRot: pointing ? 6 : 0,
+    lE: [lex, ley], lW: [lwx, lwy], bRot, bScale,
+    head: { view, eyes, tuftRot: track(tc, K.tuft) },
+  });
 }
 
-// ---------------- boot ----------------
-buildBackground();
-buildEye(1); buildEye(-1); buildMarks(1); buildMarks(-1);
-buildFist($('armR').querySelector('.fist'), false);
-buildFist($('armLfo').querySelector('.fist'), true);
+// ================= model sheet (checked against the turnaround before animating) =================
+function buildSheet() {
+  const s = $('sheet'); s.style.display = '';
+  $('shotA').style.display = 'none';
+  mk('rect', { width: 1080, height: 1920, fill: '#2a2150' }, s);
+  const base = { o: 1, low: 0, gx: 0, gy: 0, iris: 1, pupil: 1, brow: 0 };
+  const E = (a, b) => ({ L: Object.assign({}, base, a), R: Object.assign({}, base, b || a) });
+  const cells = [
+    ['FRONT', 0, E({})], ['3/4 R', 1, E({})], ['TURN INB.', 0.5, E({ o: 0 })],
+    ['SMUG', 0, E({ o: 0.9, low: 0.15, brow: -2 }, { o: 1.18, brow: 14 })], ['SKEPTIKAL', 0, E({ o: 0.55, low: 0.45, gx: -0.7, gy: 0.5, brow: -6 }, { o: 1.08, gx: -0.7, gy: 0.5, brow: 12 })],
+    ['TERKEJUT', 0, E({ o: 1.35, iris: 0.84, pupil: 0.7, brow: 12 })], ['TERKEJUT 3/4', 1, E({ o: 1.33, gx: 1, iris: 0.84, pupil: 0.7, brow: 12 })],
+  ];
+  cells.forEach(([label, view, eyes], i) => {
+    const x = 180 + (i % 3) * 360, y = 300 + Math.floor(i / 3) * 520;
+    const g = mk('g', { transform: `translate(${x} ${y}) scale(0.62)`, filter: 'url(#fOutline)' }, s);
+    makeHead(g).update({ view, eyes });
+    mk('text', { x, y: y + 200, 'text-anchor': 'middle', 'font-size': 48, fill: '#fff' }, s).textContent = label;
+  });
+  ['fist', 'point', 'grip'].forEach((k, i) => { const g = mk('g', { transform: `translate(${640 + i * 150} ${i === 2 ? 1460 : 1300})`, filter: 'url(#fOutline)' }, s); drawHand(g, k); });
+  const b = mk('g', { transform: 'translate(900 1840) scale(1.1)', filter: 'url(#fOutline)' }, s); drawBottle(b);
+}
 
-function ready() {
+// ================= boot =================
+function boot() {
+  if (P.get('sheet') === '1') { buildSheet(); window.seek = () => {}; window.DURATION = DURATION; return; }
+  buildBackground();
+  mrx = makeMrX($('charLayer'));
+  buildCloseup(); finishCloseupBottle();
   window.seek = seek;
   window.DURATION = DURATION;
   const tParam = P.get('t');
-  if (tParam !== null) { seek(parseFloat(tParam)); }
+  if (tParam !== null) seek(parseFloat(tParam));
   else if (!capture) {
     const t0 = performance.now();
     const loop = now => { seek(((now - t0) / 1000) % DURATION); requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
   } else seek(0);
-  if (!capture) document.body.classList.add('fit');
 }
-// real product cut-out if present, otherwise the blank placeholder bottle
+if (!capture) document.body.classList.add('fit');
+const go = () => document.fonts.load('150px Bangers').then(boot, boot);
 const img = new Image();
-img.onload = () => {
-  const el = $('bottleImg');
-  el.setAttribute('href', img.src); el.style.display = '';
-  $('bottleVec').style.display = 'none';
-  ready();
-};
-img.onerror = ready;
+img.onload = () => { productImg = img.src; go(); };
+img.onerror = go;
 img.src = 'assets/zscents-bottle.png';
 })();
 </script>

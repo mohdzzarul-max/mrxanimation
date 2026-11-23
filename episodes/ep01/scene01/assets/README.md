@@ -1,4 +1,6 @@
 Put the real ZSCENTS product cut-out here as `zscents-bottle.png`
 (transparent PNG, bottle upright, bottom of the bottle = bottom edge of the image).
-scene01.html picks it up automatically; without it a blank, unlabelled placeholder bottle is drawn.
+scene01.html picks it up automatically in both the medium shots and the close-up.
 Then re-run `node render.js`.
+
+fonts/Bangers.woff2: Bangers by Vernon Adams, SIL Open Font License 1.1.
