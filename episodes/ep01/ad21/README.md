@@ -27,8 +27,9 @@ node tools/render_video.js episodes/ep01/ad21/ad.html episodes/ep01/ad21/ZSCENTS
 
 Remotion and HyperFrames were not used: the existing seek-and-capture pipeline already gives frame-exact output, and adding them would change nothing in the picture.
 
-## Adding the real product
-Save a transparent PNG of the real ZSCENTS bottle (upright, label facing camera, ≥1500 px tall) as
-`assets/products/zscents_bottle.png` and re-render. It automatically fills the price showcase (8–13 s) and the end card,
-and the "placeholder" tag disappears. The bottle held in Mr X's hand is part of the drawings, so it changes only when
-those drawings are redrawn or the real bottle is composited into each hand pose (a follow-up step).
+## Product pipeline
+1. `python3 tools/cut_product.py assets/products/source/zscents_golden_duke.jpg assets/products/zscents_bottle.png`
+2. `python3 tools/place_product.py`: puts the real bottle into Mr X's hand drawings and writes `assets/characters/mrx/poses_draft/final/`.
+3. Re-render the ad. The showcase and end card read `assets/products/zscents_bottle.png` directly.
+
+To feature a different ZSCENTS product, replace the source photo and repeat steps 1–3.

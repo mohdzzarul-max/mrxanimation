@@ -23,10 +23,16 @@
   As a result, some actions repeat poses from Scene 1, the close-up (5.17–8.0 s) is one drawing held with a blink and a camera push,
   and the reaction uses the pose rather than wide eyes.
 
-## Product ❌ (blocking for a real campaign)
-- **No real ZSCENTS product image exists in the project.** The price showcase and end card show a labelled
-  placeholder slot ("GAMBAR PRODUK ZSCENTS SEBENAR"). The bottle in Mr X's hand is the draft drawing's
-  generic bottle, tagged on screen as a placeholder. No label or packaging was invented.
+## Product ✅
+- **Product:** the real ZSCENTS product is used (Golden Duke, DNA Collection, Extrait de Parfum; source photo in
+  `assets/products/source/`). It is cut from its white background by `tools/cut_product.py`.
+- **Where it appears:**
+  - In Mr X's hand in every bottle drawing (T14–T20), placed by `tools/place_product.py`.
+    Fingers drawn in front of the bottle stay in front; the rest of the hand falls behind the bottle.
+  - On the showcase pedestal (8–13 s) and the end card.
+- **Label:** readable in the showcase, the close-up and the end card. Nothing on the label was altered or invented.
+- ⚠️ **Fit:** the real bottle is wider than the drafts' drawn bottle, so in some grips it reads as held from behind rather than wrapped
+  (T14, T16, T20). T17 shows wrapped fingers.
 
 ## Wording ✅
 "HEYYY! JANGAN SCROLL DULUUU!", "ZSCENTS", "CLEARANCE HABIS-HABISAN!", "55 ML", "SEMUA BAWAH RM55!",
