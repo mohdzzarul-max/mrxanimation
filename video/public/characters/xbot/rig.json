@@ -1,0 +1,82 @@
+{
+ "unit": "native px of ref_xbot_hero.png; images stored at 2x",
+ "layers": {
+  "body": {
+   "x": 347.5,
+   "y": 318.5,
+   "w": 644.25,
+   "h": 571.0
+  },
+  "cap": {
+   "x": 462.5,
+   "y": 41.5,
+   "w": 393.0,
+   "h": 298.0
+  },
+  "shoeL": {
+   "x": 271.5,
+   "y": 903.5,
+   "w": 327.0,
+   "h": 205.0
+  },
+  "shoeR": {
+   "x": 703.5,
+   "y": 903.5,
+   "w": 326.0,
+   "h": 204.0
+  },
+  "handFist": {
+   "x": 188.5,
+   "y": 653.75,
+   "w": 185.0,
+   "h": 228.75
+  },
+  "handThumb": {
+   "x": 880.25,
+   "y": 441.25,
+   "w": 200.75,
+   "h": 274.75
+  }
+ },
+ "anchors": {
+  "shoulderL": [
+   352,
+   640
+  ],
+  "shoulderR": [
+   985,
+   610
+  ],
+  "hipL": [
+   470,
+   880
+  ],
+  "hipR": [
+   800,
+   880
+  ],
+  "ankleL": [
+   470,
+   935
+  ],
+  "ankleR": [
+   820,
+   935
+  ],
+  "eyeL": [
+   525,
+   530
+  ],
+  "eyeR": [
+   745,
+   512
+  ],
+  "neckPivot": [
+   667,
+   330
+  ],
+  "groundY": 1088,
+  "centerX": 660
+ },
+ "source": "assets-src/ref_xbot_hero.png (official) upscaled 4x"
+}
