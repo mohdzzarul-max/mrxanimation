@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Frame Break</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #stage { background: radial-gradient(80% 50% at 50% 45%, #22252d 0%, #0b0c0f 75%); }
+  #pic { position: absolute; z-index: 1; overflow: hidden; }
+  #pic canvas { display: block; }
+  #ball { position: absolute; left: 0; top: 0; width: 300px; height: 300px; margin: -150px; z-index: 4; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff9a6b, var(--accent) 45%, #b8340a);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 -12px 30px rgba(0,0,0,0.25); }
+  #ball::after { content: ''; position: absolute; left: 118px; top: 92px; border-left: 96px solid #fff;
+    border-top: 58px solid transparent; border-bottom: 58px solid transparent; }
+  #title { position: absolute; left: 0; right: 0; top: 1330px; z-index: 5; text-align: center;
+    font: 900 120px/0.95 var(--display); letter-spacing: -3px; text-transform: uppercase; }
+  #title span { color: var(--accent); }
+</style></head>
+<body><div id="stage">
+  <div id="pic"><canvas id="inside"></canvas></div>
+  <canvas id="fx" class="layer" width="1080" height="1920" style="z-index:3"></canvas>
+  <div id="ball"></div>
+  <div id="title">Out of<br><span>the box</span></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Frame Break: a play button inside a framed picture rushes the camera and smashes through the frame's
+   corner; border shards fly and fall with gravity, the button lands in front of the frame.
+   Picture = broll. */
+const { W, H, k, lerp, prog, ease, rng, drawFootage, run } = fx;
+const FR = { x: 170, y: 640, w: 740, h: 520, b: 16 };       // frame rect and border width
+const BREAK = 1.25, HIT = { x: 860, y: 640 };                // when / where the button breaks through
+const pic = document.getElementById('pic'), inside = document.getElementById('inside');
+pic.style.cssText = `left:${FR.x}px; top:${FR.y}px; width:${FR.w}px; height:${FR.h}px`;
+inside.width = FR.w; inside.height = FR.h;
+const ictx = inside.getContext('2d'), fctx = document.getElementById('fx').getContext('2d');
+const ball = document.getElementById('ball'), title = document.getElementById('title');
+const r = rng(17), shards = [...Array(22)].map(() => ({
+  x: HIT.x + (r() - 0.3) * 120, y: HIT.y + (r() - 0.5) * 50, vx: -250 + r() * 900, vy: -900 + r() * 700,
+  rot: r() * 6, vr: (r() - 0.5) * 18, s: 14 + r() * 34, c: r() > 0.3 ? '#f4f1ea' : '#c9c3b6',
+  p: [...Array(3)].map(() => [(r() - 0.5) * 2, (r() - 0.5) * 2]) }));
+
+function frame(ctx, broken) {
+  ctx.strokeStyle = '#f4f1ea'; ctx.lineWidth = FR.b; ctx.lineJoin = 'miter';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 20;
+  const x0 = FR.x, y0 = FR.y, x1 = FR.x + FR.w, y1 = FR.y + FR.h;
+  ctx.beginPath();
+  if (!broken) ctx.rect(x0, y0, FR.w, FR.h);
+  else {   // top-right corner knocked out, with jagged ends
+    ctx.moveTo(x1, y0 + 150); ctx.lineTo(x1, y1); ctx.lineTo(x0, y1); ctx.lineTo(x0, y0); ctx.lineTo(HIT.x - 120, y0);
+    ctx.lineTo(HIT.x - 106, y0 + 9); ctx.moveTo(x1, y0 + 150); ctx.lineTo(x1 - 10, y0 + 132);
+  }
+  ctx.stroke();
+  ctx.shadowColor = 'transparent';
+}
+
+run({ duration: 3.4, update: async t => {
+  await drawFootage(ictx, t, 'broll');
+  const brk = t >= BREAK;
+  if (brk) { pic.style.clipPath = `polygon(0 0, ${HIT.x - 120 - FR.x}px 0, ${FR.w}px 150px, ${FR.w}px 100%, 0 100%)`; }
+  else pic.style.clipPath = 'none';
+  fctx.clearRect(0, 0, W, H);
+  frame(fctx, brk);
+  // button path: drifts inside the picture, rushes the corner, then lands in front
+  let x, y, s;
+  if (!brk) {
+    const a = ease.in(prog(t, 0.5, BREAK - 0.5));
+    x = lerp(470, HIT.x, a); y = lerp(930, HIT.y, a); s = lerp(0.42, 0.9, a);
+  } else {
+    const b = ease.spring(prog(t, BREAK, 0.8));
+    x = lerp(HIT.x, 700, b); y = lerp(HIT.y, 470, b); s = lerp(0.9, 1.25, b);
+  }
+  const fl = Math.sin(t * 2.4) * 8 * prog(t, 2.1, 0.4);
+  ball.style.transform = `translate(${x}px, ${y + fl}px) scale(${s})`;
+  ball.style.opacity = prog(t, 0.35, 0.15);
+  ball.style.zIndex = brk ? 4 : 2;
+  // shards
+  const dt = t - BREAK;
+  if (dt > 0) shards.forEach(o => {
+    const px = o.x + o.vx * dt, py = o.y + o.vy * dt + 0.5 * 2200 * dt * dt;
+    fctx.save(); fctx.translate(px, py); fctx.rotate(o.rot + o.vr * dt);
+    fctx.globalAlpha = Math.max(0, 1 - dt / 1.6); fctx.fillStyle = o.c;
+    fctx.beginPath(); o.p.forEach(([a, b], i) => fctx[i ? 'lineTo' : 'moveTo'](a * o.s, b * o.s)); fctx.fill();
+    fctx.restore();
+  });
+  // impact ring
+  const ir = prog(t, BREAK, 0.4);
+  if (ir > 0 && ir < 1) {
+    fctx.strokeStyle = `rgba(255,255,255,${1 - ir})`; fctx.lineWidth = 6;
+    fctx.beginPath(); fctx.arc(HIT.x, HIT.y, 40 + 220 * ease.out(ir), 0, Math.PI * 2); fctx.stroke();
+  }
+  const ti = k(t, 1.7, 0.5, 'back');
+  title.style.opacity = Math.min(1, ti * 1.4); title.style.transform = `translateY(${lerp(60, 0, ti)}px)`;
+}});
+</script></body></html>

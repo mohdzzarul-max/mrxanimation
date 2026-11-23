@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Orbit</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  .chip { position: absolute; left: 0; top: 0; padding: 18px 30px; border-radius: 999px;
+    background: rgba(20,22,28,0.88); border: 2px solid var(--line); font: 600 38px var(--sans);
+    white-space: nowrap; box-shadow: 0 18px 40px rgba(0,0,0,0.35); will-change: transform; }
+  .chip b { color: var(--accent); margin-right: 10px; }
+  svg.ring { position: absolute; inset: 0; z-index: 1; }
+</style></head>
+<body><div id="stage"></div>
+<script src="lib/fx.js"></script>
+<script>
+/* Orbit: labels circle the speaker's head; the half behind the head passes behind them. */
+const { k, lerp, el, canvas, drawScene, head, run } = fx;
+const LABELS = [['🎬', 'Video'], ['📈', 'Growth'], ['💡', 'Ideas'], ['🎯', 'Focus'], ['⚡', 'Speed'], ['🤝', 'Team']];
+const RX = 420, RY = 120, TILT = -8 * Math.PI / 180, SPEED = 0.85;
+
+const backC = canvas(undefined, 0), subjC = canvas(undefined, 2);
+const bctx = backC.getContext('2d'), sctx = subjC.getContext('2d');
+const ring = el('div');
+ring.innerHTML = `<svg class="ring" width="1080" height="1920"><ellipse pathLength="1" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-dasharray="1 1"/></svg>`;
+const ell = ring.querySelector('ellipse');
+const chips = LABELS.map(([e, l]) => el('div', 'chip', undefined, `<b>${e}</b>${l}`));
+
+run({ duration: 4, update: async t => {
+  const separate = await drawScene(bctx, sctx, t);
+  const h = head(t), cy = h.y - 40;
+  const ringIn = k(t, 0.1, 0.9, 'inOut'), out = k(t, 3.5, 0.5, 'in');
+  ell.setAttribute('cx', h.x); ell.setAttribute('cy', cy);
+  ell.setAttribute('rx', RX); ell.setAttribute('ry', RY);
+  ell.setAttribute('transform', `rotate(${TILT * 180 / Math.PI} ${h.x} ${cy})`);
+  ell.setAttribute('stroke-dashoffset', 1 - ringIn);
+  ell.style.opacity = 1 - out;
+  chips.forEach((c, i) => {
+    const a = (i / chips.length) * Math.PI * 2 + t * SPEED;
+    const ex = RX * Math.cos(a), ey = RY * Math.sin(a);
+    const x = h.x + ex * Math.cos(TILT) - ey * Math.sin(TILT);
+    const y = cy + ex * Math.sin(TILT) + ey * Math.cos(TILT);
+    const depth = (Math.sin(a) + 1) / 2;                 // 0 = far side, 1 = near side
+    const enter = k(t, 0.25 + i * 0.07, 0.55, 'back');
+    const s = lerp(0.72, 1.1, depth) * enter * (1 - out);
+    c.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${s})`;
+    c.style.opacity = Math.min(1, enter * 1.5) * lerp(0.55, 1, depth) * (1 - out);
+    c.style.zIndex = separate && depth < 0.5 ? 1 : 3;
+  });
+}});
+</script></body></html>

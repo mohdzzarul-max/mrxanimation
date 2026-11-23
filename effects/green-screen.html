@@ -1,0 +1,61 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Green Screen</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #line { position: absolute; top: 0; bottom: 0; width: 8px; margin-left: -4px; z-index: 2; background: #fff;
+    box-shadow: 0 0 24px rgba(255,255,255,0.8); }
+  .lbl { position: absolute; top: 150px; z-index: 3; padding: 12px 22px; border-radius: 14px; font: 800 30px var(--mono); letter-spacing: 3px; }
+  #before { right: 65px; background: rgba(0,0,0,0.6); color: #fff; }
+  #after { left: 65px; background: var(--accent); color: var(--accent-ink); }
+</style></head>
+<body><div id="stage">
+  <canvas id="out" class="layer" width="1080" height="1920"></canvas>
+  <div id="line"></div><div id="before" class="lbl">BEFORE</div><div id="after" class="lbl">AFTER</div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Green Screen: a real chroma key, computed per pixel each frame. The raw green-screen shot shows first,
+   then a wipe reveals the keyed speaker over the new background.
+   Raw shot = footage (pass a real green-screen clip with --footage), new background = broll. */
+const { W, H, clamp, prog, ease, drawFootage, drawSubject, run } = fx;
+const KEY = { low: 18, high: 70 };   // greenness (g − max(r,b)) where transparency starts / is total
+const WIPE = [1.0, 1.1];
+const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c.getContext('2d', { willReadFrequently: true }); };
+const raw = mk(), keyed = mk(), bg = mk(), out = document.getElementById('out').getContext('2d');
+const line = document.getElementById('line'), before = document.getElementById('before'), after = document.getElementById('after');
+
+function placeholderGreen(ctx, t) {
+  const g = ctx.createRadialGradient(W / 2, H * 0.45, 100, W / 2, H * 0.45, H * 0.8);
+  g.addColorStop(0, '#2fd160'); g.addColorStop(1, '#0f8a34');   // uneven studio lighting, like a real screen
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  drawSubject(ctx, t);
+}
+function chromaKey(src, dst) {
+  const img = src.getImageData(0, 0, W, H), d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2], m = Math.max(r, b), gr = g - m;
+    if (gr <= KEY.low) continue;
+    d[i + 3] = Math.round(255 * (1 - clamp((gr - KEY.low) / (KEY.high - KEY.low))));
+    d[i + 1] = m;                                            // spill suppression: pull green down to the other channels
+  }
+  dst.putImageData(img, 0, 0);
+}
+
+run({ duration: 3.8, update: async t => {
+  if (fx.hasFootage()) await drawFootage(raw, t); else placeholderGreen(raw, t);
+  await drawFootage(bg, t, 'broll');
+  const x = W * ease.inOut(prog(t, WIPE[0], WIPE[1]));
+  out.drawImage(raw.canvas, 0, 0);
+  if (x > 0) {
+    chromaKey(raw, keyed);
+    out.save(); out.beginPath(); out.rect(0, 0, x, H); out.clip();
+    out.drawImage(bg.canvas, 0, 0); out.drawImage(keyed.canvas, 0, 0);
+    out.restore();
+  }
+  line.style.left = `${x}px`;
+  line.style.opacity = x > 0 && x < W ? 1 : 0;
+  const lab = prog(t, 0.3, 0.3) * (1 - prog(t, 2.6, 0.4));
+  before.style.opacity = lab * (x < W - 300 ? 1 : 0);
+  after.style.opacity = lab * (x > 360 ? 1 : 0);
+}});
+</script></body></html>

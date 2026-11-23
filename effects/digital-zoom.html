@@ -1,0 +1,68 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Digital Zoom</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #scan { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0 2px, transparent 2px 5px); }
+  .hud { position: absolute; z-index: 3; color: #fff; font: 700 34px var(--mono); letter-spacing: 2px; text-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+  .br { position: absolute; z-index: 3; width: 90px; height: 90px; border: 0 solid #fff; }
+  #rec i { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: #ff2d2d; margin-right: 14px; vertical-align: -2px; }
+  #zoom { color: var(--accent); font-size: 64px; }
+  #cross { position: absolute; z-index: 3; width: 160px; height: 160px; margin: -80px; border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; }
+  #cross::before, #cross::after { content: ''; position: absolute; background: rgba(255,255,255,0.8); }
+  #cross::before { left: 50%; top: -30px; bottom: -30px; width: 3px; margin-left: -1.5px; }
+  #cross::after { top: 50%; left: -30px; right: -30px; height: 3px; margin-top: -1.5px; }
+  #enh { left: 0; right: 0; top: 1500px; text-align: center; color: var(--accent); }
+</style></head>
+<body><div id="stage">
+  <canvas id="out" class="layer" width="1080" height="1920"></canvas>
+  <div id="scan"></div>
+  <div class="br" style="left:65px;top:115px;border-left-width:6px;border-top-width:6px"></div>
+  <div class="br" style="right:65px;top:115px;border-right-width:6px;border-top-width:6px"></div>
+  <div class="br" style="left:65px;bottom:288px;border-left-width:6px;border-bottom-width:6px"></div>
+  <div class="br" style="right:65px;bottom:288px;border-right-width:6px;border-bottom-width:6px"></div>
+  <div class="hud" id="rec" style="left:110px;top:160px"><i></i>REC</div>
+  <div class="hud" id="tc" style="right:110px;top:160px"></div>
+  <div class="hud" id="zoom" style="left:110px;bottom:330px">1.0×</div>
+  <div class="hud" id="enh">ENHANCING…</div>
+  <div id="cross"></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Digital Zoom: surveillance-style crop zoom. Each step snaps in pixelated and then "enhances"
+   back to sharp, under scan lines and a camcorder HUD. Shot = footage. */
+const { W, H, clamp, lerp, prog, ease, drawFootage, head, run } = fx;
+const STEPS = [{ at: 0.5, z: 2 }, { at: 1.55, z: 4 }];   // when, and zoom after the step
+const ENHANCE = 0.7, BLOCK = 30;                          // seconds to sharpen, starting block size (px)
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c.getContext('2d'); };
+const src = mk(W, H), out = document.getElementById('out').getContext('2d');
+const hud = id => document.getElementById(id);
+
+run({ duration: 3.2, update: async t => {
+  await drawFootage(src, t);
+  let z = 1, from = 1, px = 1, enhancing = false;
+  for (const s of STEPS) {
+    if (t >= s.at) {
+      z = lerp(from, s.z, ease.outExpo(prog(t, s.at, 0.14)));
+      const e = prog(t, s.at + 0.1, ENHANCE);
+      px = lerp(BLOCK, 1, ease.out(e)); enhancing = e < 1;
+    }
+    from = s.z;
+  }
+  const h = head(t), cw = W / z, ch = H / z;
+  const cx = clamp(h.x - cw / 2, 0, W - cw), cy = clamp(h.y - 40 - ch / 2, 0, H - ch);
+  const sw = Math.max(1, Math.round(W / px)), sh = Math.max(1, Math.round(H / px));
+  const small = mk(sw, sh);
+  small.drawImage(src.canvas, cx, cy, cw, ch, 0, 0, sw, sh);
+  out.imageSmoothingEnabled = px < 1.5;
+  out.drawImage(small.canvas, 0, 0, W, H);
+  hud('zoom').textContent = `${z.toFixed(1)}×`;
+  hud('enh').style.opacity = enhancing ? (Math.floor(t * 6) % 2 ? 1 : 0.35) : 0;
+  hud('rec').querySelector('i').style.opacity = Math.floor(t * 2) % 2 ? 0.25 : 1;
+  const f = Math.floor(t * 30);
+  hud('tc').textContent = `00:00:${String(Math.floor(f / 30) + 12).padStart(2, '0')}:${String(f % 30).padStart(2, '0')}`;
+  const cr = hud('cross'), lock = ease.back(prog(t, 0.2, 0.4));
+  cr.style.transform = `translate(${(h.x - cx) * z}px, ${(h.y - 40 - cy) * z}px) scale(${lerp(2.2, 1, lock)})`;
+  cr.style.opacity = lock;
+}});
+</script></body></html>

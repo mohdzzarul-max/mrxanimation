@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>B-roll Overlay</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #inset { position: absolute; left: 65px; top: 190px; width: 950px; height: 534px; z-index: 2; border-radius: 40px;
+    overflow: hidden; border: 6px solid rgba(255,255,255,0.92); box-shadow: 0 36px 80px rgba(0,0,0,0.55); transform-origin: 50% 0; }
+  #inset canvas { display: block; width: 100%; height: 100%; }
+  #tag { position: absolute; left: 28px; top: 26px; padding: 10px 20px; border-radius: 14px; background: var(--accent);
+    color: var(--accent-ink); font: 800 28px var(--mono); letter-spacing: 3px; }
+  #prog { position: absolute; left: 0; bottom: 0; height: 10px; width: 100%; background: var(--accent); transform-origin: 0 50%; }
+</style></head>
+<body><div id="stage">
+  <canvas id="shot" class="layer" width="1080" height="1920"></canvas>
+  <div id="inset"><canvas id="broll" width="950" height="534"></canvas><div id="tag">B-ROLL</div><div id="prog"></div></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* B-roll Overlay: a rounded inset clip drops in over the top of the shot, plays, then slides out.
+   Inset = broll footage (render.js --broll clip.mp4), shot = footage. */
+const { k, lerp, prog, ease, drawFootage, run } = fx;
+const IN = 0.3, OUT = 2.9;
+const shot = document.getElementById('shot').getContext('2d'), broll = document.getElementById('broll').getContext('2d');
+const inset = document.getElementById('inset'), bar = document.getElementById('prog'), tag = document.getElementById('tag');
+
+run({ duration: 3.6, update: async t => {
+  await drawFootage(shot, t);
+  await drawFootage(broll, Math.max(0, t - IN), 'broll');
+  const i = ease.spring(prog(t, IN, 0.6)), o = k(t, OUT, 0.45, 'inExpo');
+  inset.style.opacity = Math.min(1, prog(t, IN, 0.12));
+  inset.style.transform = `translate(${lerp(0, 1150, o)}px, ${lerp(-60, 0, i)}px) rotate(${lerp(-4, 0, i) + 6 * o}deg) scale(${lerp(0.82, 1, i)})`;
+  inset.style.filter = `blur(${lerp(10, 0, Math.min(1, i))}px)`;
+  bar.style.transform = `scaleX(${prog(t, IN, OUT - IN)})`;
+  const tg = k(t, IN + 0.35, 0.4, 'back');
+  tag.style.opacity = Math.min(1, tg * 1.4); tag.style.transform = `scale(${tg})`;
+}});
+</script></body></html>

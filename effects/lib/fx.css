@@ -1,0 +1,28 @@
+:root {
+  --bg: #0e0f13;
+  --ink: #f5f3ee;
+  --muted: #a7a9b2;
+  --accent: #ff5a1f;
+  --accent-ink: #1a0b04;
+  --card: #17191f;
+  --line: rgba(255, 255, 255, 0.12);
+  --sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --display: "Inter Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  --serif: "P052", "Palatino Linotype", Palatino, Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --safe-x: 65px;   /* ~6% side margin */
+  --safe-top: 115px;
+  --safe-bottom: 288px; /* bottom 15% kept clear for captions */
+}
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+html.alpha, html.alpha body { background: transparent; }
+#stage {
+  position: absolute; left: 0; top: 0; width: 1080px; height: 1920px;
+  overflow: hidden; transform-origin: 0 0; background: var(--bg);
+  font-family: var(--sans); color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+html.alpha #stage { background: transparent; }
+#stage * { box-sizing: border-box; }
+.layer { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.abs { position: absolute; }

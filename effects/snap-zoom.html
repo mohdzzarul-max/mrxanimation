@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Snap Zoom</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #shot { will-change: transform, filter; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 2; }
+</style></head>
+<body><div id="stage">
+  <canvas id="shot" class="layer" width="1080" height="1920"></canvas>
+  <div id="flash"></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Snap Zoom: two fast punch-ins on the face, each snapping in ~0.15 s and settling with a small spring. */
+const { k, lerp, prog, ease, drawFootage, head, run } = fx;
+const SNAPS = [{ at: 0.5, to: 1.32 }, { at: 1.45, to: 1.75 }];   // time (s) and zoom after the snap
+const shot = document.getElementById('shot'), ctx = shot.getContext('2d'), flash = document.getElementById('flash');
+
+run({ duration: 2.6, update: async t => {
+  await drawFootage(ctx, t);
+  let s = 1, blur = 0, fl = 0;
+  let from = 1;
+  for (const sn of SNAPS) {
+    const p = prog(t, sn.at, 0.42);
+    if (t >= sn.at) s = lerp(from, sn.to, ease.spring(p));
+    const fast = prog(t, sn.at, 0.12);
+    if (t >= sn.at && fast < 1) { blur = Math.max(blur, 9 * Math.sin(Math.PI * fast)); fl = Math.max(fl, 0.16 * (1 - fast)); }
+    from = sn.to;
+  }
+  const h = head(t);
+  shot.style.transformOrigin = `${h.x}px ${h.y - 30}px`;
+  shot.style.transform = `scale(${s})`;
+  shot.style.filter = blur > 0.05 ? `blur(${blur}px)` : 'none';
+  flash.style.opacity = fl;
+}});
+</script></body></html>

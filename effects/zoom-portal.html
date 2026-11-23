@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Zoom Portal</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #b { z-index: 0; transform-origin: 50% 50%; }
+  #a { z-index: 1; will-change: transform; }
+  #ring { position: absolute; left: 0; top: 0; z-index: 2; border-radius: 50%; border: 10px solid var(--accent);
+    box-shadow: 0 0 40px rgba(255,90,31,0.8), inset 0 0 40px rgba(255,90,31,0.6); }
+</style></head>
+<body><div id="stage">
+  <canvas id="b" class="layer" width="1080" height="1920"></canvas>
+  <canvas id="a" class="layer" width="1080" height="1920"></canvas>
+  <div id="ring"></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Zoom Portal: a glowing portal opens in shot A showing shot B; the camera flies into it
+   until shot B fills the frame. Shot A = footage, shot B = broll. */
+const { W, H, k, lerp, prog, ease, drawFootage, run } = fx;
+const P = { x: 770, y: 560, r: 150 };            // portal centre and radius in shot A
+const OPEN = [0.2, 0.55], ZOOM = [0.95, 1.35], MAXS = 9;
+const a = document.getElementById('a'), b = document.getElementById('b'), ring = document.getElementById('ring');
+const actx = a.getContext('2d'), bctx = b.getContext('2d');
+
+run({ duration: 3.2, update: async t => {
+  await drawFootage(actx, t, 'footage');
+  await drawFootage(bctx, t, 'broll');
+  const open = ease.back(prog(t, OPEN[0], OPEN[1]));
+  const z = ease.inOut(prog(t, ZOOM[0], ZOOM[1]));
+  const s = Math.exp(lerp(0, Math.log(MAXS), z));
+  const r = Math.max(0.01, P.r * open);
+  // the portal centre drifts to the middle of the frame as we fly in
+  const dx = lerp(0, W / 2 - P.x, z), dy = lerp(0, H / 2 - P.y, z);
+  const hole = `radial-gradient(circle ${r}px at ${P.x}px ${P.y}px, transparent ${r - 0.5}px, #000 ${r + 1}px)`;
+  a.style.maskImage = a.style.webkitMaskImage = hole;
+  a.style.transformOrigin = `${P.x}px ${P.y}px`;
+  a.style.transform = `translate(${dx}px, ${dy}px) scale(${s})`;
+  a.style.filter = `blur(${6 * Math.sin(Math.PI * z)}px)`;
+  a.style.opacity = z < 0.98 ? 1 : 0;
+  b.style.transform = `scale(${lerp(1.45, 1, z)})`;
+  const sx = P.x + dx, sy = P.y + dy, rr = r * s;
+  ring.style.width = ring.style.height = `${2 * rr + 20}px`;
+  ring.style.transform = `translate(${sx - rr - 10}px, ${sy - rr - 10}px)`;
+  ring.style.opacity = Math.min(prog(t, OPEN[0], 0.1), 1 - prog(t, ZOOM[0] + 0.3, 0.6));
+}});
+</script></body></html>

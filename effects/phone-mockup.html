@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Phone Mockup</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #stage { background: radial-gradient(70% 45% at 50% 42%, #3a1d10 0%, #121318 60%, #0b0c0f 100%); }
+  #persp { position: absolute; inset: 0; perspective: 2400px; }
+  #phone { position: absolute; left: 240px; top: 300px; width: 600px; height: 1240px; border-radius: 100px; padding: 22px;
+    background: #0a0a0c; border: 4px solid #4a4e58; transform-style: preserve-3d;
+    box-shadow: inset 0 0 0 3px #1b1c21, 0 60px 120px rgba(0,0,0,0.6); }
+  .btn { position: absolute; width: 8px; border-radius: 4px; background: #3d4049; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 80px; overflow: hidden; background: #f6f5f2; color: #111; }
+  #island { position: absolute; left: 50%; top: 22px; width: 190px; height: 54px; margin-left: -95px; border-radius: 27px; background: #000; z-index: 5; }
+  .status { position: absolute; left: 0; right: 0; top: 0; height: 110px; padding: 28px 56px 0; background: #f6f5f2; display: flex; justify-content: space-between; font: 700 30px var(--sans); z-index: 4; }
+  #feed { position: absolute; left: 0; right: 0; top: 110px; padding: 0 34px; }
+  #feed h1 { margin: 20px 0 26px; font: 900 64px var(--display); letter-spacing: -2px; }
+  #feed h1 span { color: var(--accent); }
+  .card { position: relative; margin-bottom: 30px; border-radius: 36px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+  .card canvas { display: block; width: 100%; height: 280px; }
+  .card .meta { padding: 20px 24px 24px; }
+  .card b { display: block; font: 800 34px var(--sans); }
+  .card span { font: 500 26px var(--sans); color: #777; }
+  #ripple { position: absolute; width: 40px; height: 40px; margin: -20px; border-radius: 50%; background: rgba(255,90,31,0.35); z-index: 6; }
+  #glare { position: absolute; inset: 0; z-index: 7; pointer-events: none; border-radius: 80px;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.22) 45%, transparent 55%); }
+  #shadow { position: absolute; left: 260px; top: 1560px; width: 560px; height: 70px; border-radius: 50%; background: rgba(0,0,0,0.55); filter: blur(24px); }
+</style></head>
+<body><div id="stage">
+  <div id="shadow"></div>
+  <div id="persp"><div id="phone">
+    <div class="btn" style="left:-12px;top:230px;height:70px"></div><div class="btn" style="left:-12px;top:330px;height:120px"></div>
+    <div class="btn" style="left:-12px;top:470px;height:120px"></div><div class="btn" style="right:-12px;top:300px;height:180px"></div>
+    <div id="screen">
+      <div id="island"></div>
+      <div class="status"><span>9:41</span><span>●●● 100%</span></div>
+      <div id="feed"><h1>MR<span>X</span> Studio</h1></div>
+      <div id="ripple"></div>
+      <div id="glare"></div>
+    </div>
+  </div></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Phone Mockup: the phone swings up from a tilted 3D angle and settles, the app feed scrolls,
+   and a tap lands on a card. The first card plays the footage live. */
+const { k, lerp, prog, ease, el, drawFootage, drawBroll, run } = fx;
+const CARDS = [['Behind the edit', '2.1M views · 2 days ago'], ['The 3-second hook', '880K views · 5 days ago'],
+  ['City at dusk, b-roll pack', '420K views · 1 week ago'], ['Live Q&A replay', '210K views · 2 weeks ago']];
+const TAP = { at: 3.25, card: 1 };
+const feed = document.getElementById('feed'), phone = document.getElementById('phone'), glare = document.getElementById('glare');
+const ripple = document.getElementById('ripple'), shadow = document.getElementById('shadow');
+const cards = CARDS.map(([title, meta], i) => {
+  const c = el('div', 'card', feed, `<canvas width="532" height="280"></canvas><div class="meta"><b>${title}</b><span>${meta}</span></div>`);
+  return { c, ctx: c.querySelector('canvas').getContext('2d'), i };
+});
+// static thumbnails for the other cards
+cards.slice(1).forEach(({ ctx, i }) => { ctx.save(); ctx.filter = `hue-rotate(${i * 70}deg)`; drawBroll(ctx, i * 3, 532, 280); ctx.restore(); });
+
+run({ duration: 4.2, update: async t => {
+  await drawFootage(cards[0].ctx, t);
+  const p = ease.spring(prog(t, 0.15, 1.2));
+  const sway = Math.sin(t * 1.3) * 3 * prog(t, 1.4, 0.6);
+  phone.style.transform = `translateY(${lerp(1300, 0, p)}px) rotateX(${lerp(30, 0, p)}deg) rotateY(${lerp(-26, 0, p) + sway}deg) rotateZ(${lerp(-10, 0, p)}deg)`;
+  shadow.style.opacity = p; shadow.style.transform = `scaleX(${lerp(0.6, 1, p)})`;
+  glare.style.transform = `translateX(${lerp(-60, 40, p) + sway * 8}%)`;
+  const scroll = ease.inOut(prog(t, 1.7, 1.2));
+  feed.style.transform = `translateY(${-430 * scroll}px)`;
+  const tc = cards[TAP.card].c, tp = prog(t, TAP.at, 0.5);
+  const press = t >= TAP.at ? Math.sin(Math.PI * prog(t, TAP.at, 0.3)) : 0;
+  tc.style.transform = `scale(${1 - 0.04 * press})`;
+  ripple.style.left = '300px'; ripple.style.top = `${tc.offsetTop + 110 + 140 - 430 * scroll}px`;
+  ripple.style.transform = `scale(${1 + 14 * ease.out(tp)})`;
+  ripple.style.opacity = tp > 0 && tp < 1 ? 1 - tp : 0;
+}});
+</script></body></html>

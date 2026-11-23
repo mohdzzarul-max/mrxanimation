@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Frame Escape</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #title { position: absolute; left: 0; right: 0; top: 330px; z-index: 2; text-align: center;
+    font: 900 168px/0.9 var(--display); letter-spacing: -4px; text-transform: uppercase; }
+  #title span { display: block; }
+  #title span + span { color: var(--accent); }
+  #border { position: absolute; z-index: 2; border: 8px solid #fff; box-shadow: 0 40px 90px rgba(0,0,0,0.55); }
+</style></head>
+<body><div id="stage">
+  <div id="title"><span>Break</span><span>the frame</span></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Frame Escape: the shot shrinks into a framed card while the speaker stays big,
+   so the head and shoulders climb out over the top edge. */
+const { W, H, k, lerp, canvas, el, run } = fx;
+const CARD = { x: 110, y: 1080, w: 860, h: 560, r: 44 };   // final card, stage px
+const back = canvas(undefined, 1), subj = canvas(undefined, 3);
+const bctx = back.getContext('2d'), sctx = subj.getContext('2d');
+const border = el('div'); border.id = 'border';
+const title = document.getElementById('title');
+
+run({ duration: 3.6, update: async t => {
+  const e = k(t, 0.3, 1.1, 'inOut');
+  const x = lerp(0, CARD.x, e), y = lerp(0, CARD.y, e), w = lerp(W, CARD.w, e), h = lerp(H, CARD.h, e), r = lerp(0, CARD.r, e);
+  const inset = `${y}px ${W - x - w}px ${H - y - h}px ${x}px`;
+  sctx.clearRect(0, 0, W, H);
+  // real footage has no cutout: it just shrinks into the card
+  const separate = !fx.hasFootage() && !fx.alpha;
+  back.style.clipPath = `inset(${inset} round ${r}px)`;
+  if (!separate) await fx.drawFootage(bctx, t);
+  else {
+    fx.drawBackdrop(bctx, t);
+    // speaker shrinks a little and rises into the card; clipped at the sides and bottom only
+    sctx.save(); sctx.translate(0, lerp(0, -170, e)); fx.drawSubject(sctx, t, lerp(1, 0.92, e)); sctx.restore();
+    subj.style.clipPath = `inset(0 ${W - x - w}px ${H - y - h}px ${x}px round 0 0 ${r}px ${r}px)`;
+  }
+  border.style.cssText = `left:${x}px; top:${y}px; width:${w}px; height:${h}px; border-radius:${r}px; opacity:${e};`;
+  const ti = k(t, 1.05, 0.6, 'back');
+  title.style.opacity = Math.min(1, ti * 1.4);
+  title.style.transform = `translateY(${lerp(80, 0, ti)}px)`;
+}});
+</script></body></html>

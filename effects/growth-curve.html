@@ -1,0 +1,84 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Growth Curve</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #stage { background: radial-gradient(110% 70% at 70% 20%, #2a1a12 0%, var(--bg) 60%); }
+  #head { position: absolute; left: 65px; right: 65px; top: 230px; }
+  .eyebrow { font: 700 32px var(--mono); color: var(--muted); letter-spacing: 6px; text-transform: uppercase; }
+  #num { margin-top: 14px; font: 900 220px/0.9 var(--display); letter-spacing: -8px; font-variant-numeric: tabular-nums; }
+  #num span { color: var(--accent); }
+  .sub { margin-top: 18px; font: 500 44px var(--sans); color: var(--muted); }
+  svg#chart { position: absolute; left: 0; top: 0; }
+  .grid line { stroke: rgba(255,255,255,0.09); stroke-width: 2; }
+  .axis text { fill: #7d828d; font: 600 28px var(--mono); }
+  #line { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+  #tag { position: absolute; left: 0; top: 0; padding: 14px 24px; border-radius: 20px; background: var(--ink); color: #111;
+    font: 800 38px var(--sans); white-space: nowrap; }
+</style></head>
+<body><div id="stage">
+  <div id="head"><div class="eyebrow">Monthly views</div><div id="num"><span>+</span>0%</div><div class="sub">Jan → Dec, every video since the switch</div></div>
+  <svg id="chart" width="1080" height="1920">
+    <defs>
+      <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a1f" stop-opacity="0.45"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient>
+      <clipPath id="reveal"><rect id="revealRect" x="0" y="0" height="1920" width="0"/></clipPath>
+    </defs>
+    <g class="grid"></g><g class="axis"></g>
+    <path id="area" fill="url(#fill)" clip-path="url(#reveal)"/>
+    <path id="line"/>
+    <circle id="pulse" r="18" fill="none" stroke="#ff5a1f" stroke-width="4"/>
+    <circle id="tip" r="16" fill="#fff" stroke="#ff5a1f" stroke-width="8"/>
+  </svg>
+  <div id="tag"></div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Growth Curve: gridlines fade up, the line draws itself left to right with a filled area behind it,
+   a tip marker rides the end with a live value, and the headline counter counts up to the total. */
+const { k, lerp, prog, ease, rng, run } = fx;
+const VALUES = [12, 15, 14, 19, 23, 22, 30, 37, 45, 58, 71, 92];   // per month, any units
+const TOTAL = 248;                                                   // headline number (%)
+const MONTHS = 'JFMAMJJASOND'.split('');
+const BOX = { x: 120, y: 820, w: 840, h: 640 }, DRAW = [0.7, 2.3];
+const max = Math.max(...VALUES) * 1.1;
+const pts = VALUES.map((v, i) => [BOX.x + (i / (VALUES.length - 1)) * BOX.w, BOX.y + BOX.h - (v / max) * BOX.h]);
+// smooth curve through the points (Catmull-Rom → cubic Bézier)
+let d = `M${pts[0][0]},${pts[0][1]}`;
+for (let i = 0; i < pts.length - 1; i++) {
+  const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+  d += ` C${p1[0] + (p2[0] - p0[0]) / 6},${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6},${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]},${p2[1]}`;
+}
+const line = document.getElementById('line'), area = document.getElementById('area');
+line.setAttribute('d', d);
+area.setAttribute('d', `${d} L${BOX.x + BOX.w},${BOX.y + BOX.h} L${BOX.x},${BOX.y + BOX.h} Z`);
+const L = line.getTotalLength();
+line.style.strokeDasharray = L;
+const grid = document.querySelector('.grid'), axis = document.querySelector('.axis');
+const gl = [0, 1, 2, 3, 4].map(i => { const y = BOX.y + (i / 4) * BOX.h; const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  l.setAttribute('x1', BOX.x); l.setAttribute('x2', BOX.x + BOX.w); l.setAttribute('y1', y); l.setAttribute('y2', y); grid.appendChild(l); return l; });
+const labels = MONTHS.map((m, i) => { const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  tx.setAttribute('x', pts[i][0]); tx.setAttribute('y', BOX.y + BOX.h + 60); tx.setAttribute('text-anchor', 'middle'); tx.textContent = m; axis.appendChild(tx); return tx; });
+const tip = document.getElementById('tip'), pulse = document.getElementById('pulse'), tag = document.getElementById('tag');
+const num = document.getElementById('num'), headEl = document.getElementById('head');
+
+run({ duration: 4.2, update: async t => {
+  const hi = k(t, 0.05, 0.6, 'out');
+  headEl.style.cssText = `opacity:${hi}; transform: translateY(${lerp(40, 0, hi)}px)`;
+  gl.forEach((l, i) => { const g = k(t, 0.2 + i * 0.06, 0.5); l.style.opacity = g; l.setAttribute('x2', BOX.x + BOX.w * g); });
+  labels.forEach((l, i) => (l.style.opacity = k(t, 0.35 + i * 0.03, 0.4)));
+  const p = ease.inOut(prog(t, DRAW[0], DRAW[1]));
+  line.style.strokeDashoffset = L * (1 - p);
+  const at = line.getPointAtLength(L * p);
+  document.getElementById('revealRect').setAttribute('width', at.x);
+  tip.setAttribute('cx', at.x); tip.setAttribute('cy', at.y);
+  tip.style.opacity = t >= DRAW[0] ? 1 : 0;
+  const v = Math.round(lerp(0, TOTAL, p));
+  num.innerHTML = `<span>+</span>${v}%`;
+  const month = Math.min(VALUES.length - 1, Math.round(p * (VALUES.length - 1)));
+  tag.textContent = `${MONTHS[month]} · ${VALUES[month]}K`;
+  tag.style.opacity = tip.style.opacity;
+  tag.style.transform = `translate(${Math.min(at.x - 40, 1015 - tag.offsetWidth)}px, ${at.y - 110}px)`;
+  const pu = prog(t, DRAW[0] + DRAW[1], 0.9);
+  pulse.setAttribute('cx', at.x); pulse.setAttribute('cy', at.y); pulse.setAttribute('r', 18 + 60 * ease.out(pu));
+  pulse.style.opacity = pu > 0 && pu < 1 ? 1 - pu : 0;
+}});
+</script></body></html>

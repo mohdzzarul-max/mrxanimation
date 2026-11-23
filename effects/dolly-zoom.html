@@ -1,0 +1,67 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Dolly Zoom</title>
+<link rel="stylesheet" href="lib/fx.css">
+</head>
+<body><div id="stage">
+  <canvas id="hall" class="layer" width="1080" height="1920"></canvas>
+  <canvas id="subj" class="layer" width="1080" height="1920" style="z-index:2"></canvas>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Dolly Zoom (vertigo): the camera pulls back while the lens zooms in by the same amount,
+   so the speaker stays the same size and the corridor behind stretches away.
+   Real 3D projection: f = f0 · (Z0 + d) / Z0 keeps a subject at depth Z0 fixed. */
+const { W, H, k, lerp, prog, ease, drawSubject, drawFootage, head, run } = fx;
+const Z0 = 2.2, F0 = 900, PULL = 7;                 // subject depth, base focal length (px), pull-back distance
+const HALF_W = 1.4, FLOOR = -1.25, CEIL = 1.6;      // corridor size in scene units (eye at y = 0)
+const hall = document.getElementById('hall').getContext('2d'), subj = document.getElementById('subj').getContext('2d');
+
+function corridor(ctx, d, t) {
+  const f = F0 * (Z0 + d) / Z0, cx = W / 2, cy = 860;
+  const P = (x, y, z) => [cx + (x / z) * f, cy - (y / z) * f];
+  ctx.fillStyle = '#0d0e12'; ctx.fillRect(0, 0, W, H);
+  // far wall glow
+  const far = 40 + d, [fx0, fy0] = P(-HALF_W, CEIL, far), [fx1, fy1] = P(HALF_W, FLOOR, far);
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(80, (fx1 - fx0) * 3));
+  g.addColorStop(0, '#ffcf9a'); g.addColorStop(1, 'rgba(255,170,95,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // frames every 1 unit of depth, nearest first so far ones draw on top of the gradient walls
+  for (let i = 0; i < 40; i++) {
+    const z = 0.6 + i + d;
+    const [x0, y0] = P(-HALF_W, CEIL, z), [x1, y1] = P(HALF_W, FLOOR, z);
+    const fog = Math.min(1, z / 26);
+    ctx.strokeStyle = `rgba(255,${190 - fog * 60},${130 - fog * 60},${0.85 * (1 - fog)})`;
+    ctx.lineWidth = Math.max(1, 60 / z);
+    ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+    if (i % 3 === 0) {                                // door frames on the side walls
+      const [dx0, dy0] = P(-HALF_W, 0.9, z), [, dy1] = P(-HALF_W, FLOOR, z), [ex0] = P(-HALF_W, 0, z + 0.7);
+      ctx.fillStyle = `rgba(20,18,24,${0.9 * (1 - fog)})`;
+      ctx.beginPath(); ctx.moveTo(dx0, dy0); ctx.lineTo(ex0, P(-HALF_W, 0.9, z + 0.7)[1]); ctx.lineTo(ex0, P(-HALF_W, FLOOR, z + 0.7)[1]); ctx.lineTo(dx0, dy1); ctx.fill();
+      const mx = 2 * cx - dx0, mx2 = 2 * cx - ex0;
+      ctx.beginPath(); ctx.moveTo(mx, dy0); ctx.lineTo(mx2, P(HALF_W, 0.9, z + 0.7)[1]); ctx.lineTo(mx2, P(HALF_W, FLOOR, z + 0.7)[1]); ctx.lineTo(mx, dy1); ctx.fill();
+    }
+  }
+  // floor and ceiling rails toward the vanishing point
+  ctx.strokeStyle = 'rgba(255,200,150,0.35)'; ctx.lineWidth = 3;
+  [[-HALF_W, FLOOR], [HALF_W, FLOOR], [-HALF_W, CEIL], [HALF_W, CEIL], [-0.45, FLOOR], [0.45, FLOOR]].forEach(([x, y]) => {
+    const [ax, ay] = P(x, y, 0.6 + d), [bx, by] = P(x, y, 60 + d);
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+  });
+  const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.7);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+
+run({ duration: 3.6, update: async t => {
+  const d = PULL * ease.inOut(prog(t, 0.3, 2.8));
+  subj.clearRect(0, 0, W, H);
+  if (fx.hasFootage()) {
+    // no 3D scene for real footage: fake it with an opposite-direction zoom of the frame
+    await drawFootage(hall, t);
+    hall.canvas.style.transform = `scale(${lerp(1, 1.6, d / PULL)})`;
+    return;
+  }
+  corridor(hall, d, t);
+  if (!fx.alpha) drawSubject(subj, t);
+}});
+</script></body></html>

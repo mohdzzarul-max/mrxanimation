@@ -1,0 +1,84 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Chat Takeover</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #shot { z-index: 0; transform-origin: 50% 45%; }
+  #dim { position: absolute; inset: 0; background: #000; z-index: 1; }
+  #panel { position: absolute; left: 40px; right: 40px; top: 90px; bottom: 90px; z-index: 2;
+    border-radius: 56px; background: #15171c; border: 2px solid var(--line); overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6); }
+  .head { position: absolute; left: 0; right: 0; top: 0; height: 170px; display: flex; align-items: center;
+    gap: 26px; padding: 0 44px; border-bottom: 2px solid var(--line); background: #1b1e24; }
+  .avatar { width: 96px; height: 96px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+    display: grid; place-items: center; font: 800 38px var(--display); }
+  .who b { display: block; font: 700 42px var(--sans); }
+  .who span { font: 500 30px var(--sans); color: #3ddc84; }
+  .msg { position: absolute; left: 44px; max-width: 760px; padding: 28px 38px; border-radius: 44px;
+    font: 500 44px/1.3 var(--sans); background: #262a33; will-change: transform; }
+  .msg.out { left: auto; right: 44px; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .msg.in { border-bottom-left-radius: 12px; transform-origin: 0 100%; }
+  .msg.out { border-bottom-right-radius: 12px; transform-origin: 100% 100%; }
+  .msg .txt, .msg .dots { transition: none; }
+  .dots { position: absolute; left: 38px; top: 50%; display: flex; gap: 12px; transform: translateY(-50%); }
+  .dots i { width: 16px; height: 16px; border-radius: 50%; background: #9aa0ab; display: block; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 150px; display: flex; align-items: center;
+    padding: 0 36px; border-top: 2px solid var(--line); background: #1b1e24; }
+  .bar div { flex: 1; height: 86px; border-radius: 43px; background: #262a33; color: #7d828d;
+    font: 500 36px var(--sans); display: flex; align-items: center; padding: 0 36px; }
+</style></head>
+<body><div id="stage">
+  <canvas id="shot" class="layer" width="1080" height="1920"></canvas>
+  <div id="dim"></div>
+  <div id="panel">
+    <div class="head"><div class="avatar">MX</div><div class="who"><b>MR X</b><span>● online</span></div></div>
+    <div class="bar"><div>Message…</div></div>
+  </div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Chat Takeover: the shot pushes back and blurs, a chat window fills the frame, messages pop in
+   and push the older ones up. Incoming messages show a typing indicator first. */
+const { k, lerp, prog, el, drawFootage, run } = fx;
+const MESSAGES = [
+  ['in', 'Did you see the new video? 👀'],
+  ['out', 'Not yet. Is it good?'],
+  ['in', 'It hit 1M views overnight 🚀'],
+  ['out', 'No way. Send it!'],
+  ['in', '🔗 mrx.video/launch'],
+];
+const START = 1.15, GAP = 0.5, TYPING = 0.32, BOTTOM = 1740 - 150 - 40, SPACING = 22;
+const shot = document.getElementById('shot').getContext('2d');
+const panel = document.getElementById('panel'), dim = document.getElementById('dim');
+const bubbles = MESSAGES.map(([side, text]) => {
+  const m = el('div', `msg ${side}`, panel, `<span class="txt">${text}</span>` + (side === 'in' ? '<span class="dots"><i></i><i></i><i></i></span>' : ''));
+  return { m, side, h: 0, txt: m.querySelector('.txt'), dots: m.querySelector('.dots') };
+});
+bubbles.forEach(b => (b.h = b.m.offsetHeight));
+
+run({ duration: 4.4, update: async t => {
+  await drawFootage(shot, t);
+  const push = k(t, 0.2, 0.7, 'inOut');
+  shot.canvas.style.transform = `scale(${lerp(1, 0.9, push)})`;
+  shot.canvas.style.filter = `blur(${lerp(0, 16, push)}px)`;
+  dim.style.opacity = lerp(0, 0.55, push);
+  const pin = fx.ease.spring(prog(t, 0.35, 0.8));
+  panel.style.transform = `translateY(${lerp(1900, 0, pin)}px)`;
+  // stack from the bottom: each revealed message pushes the older ones up by its height
+  let y = BOTTOM;
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    const b = bubbles[i], t0 = START + i * GAP;
+    const reveal = k(t, t0, 0.35, 'back');
+    const grow = k(t, t0, 0.3, 'out');
+    b.m.style.top = `${y - b.h}px`;
+    y -= (b.h + SPACING) * grow;
+    b.m.style.transform = `scale(${lerp(0.55, 1, reveal)})`;
+    b.m.style.opacity = Math.min(1, prog(t, t0, 0.15));
+    if (b.dots) {
+      const typing = t < t0 + TYPING;
+      b.txt.style.opacity = typing ? 0 : prog(t, t0 + TYPING, 0.12);
+      b.dots.style.opacity = typing ? 1 : 0;
+      [...b.dots.children].forEach((d, j) => (d.style.transform = `translateY(${-10 * Math.max(0, Math.sin((t - t0) * 14 - j * 0.9))}px)`));
+    }
+  }
+}});
+</script></body></html>

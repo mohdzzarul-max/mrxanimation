@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Checklist Tally</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #stage { background: radial-gradient(120% 80% at 50% 0%, #1d2028 0%, var(--bg) 60%); }
+  .grid { position: absolute; inset: 0; opacity: 0.35;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 90px 90px; mask-image: radial-gradient(70% 55% at 50% 40%, #000, transparent); }
+  #wrap { position: absolute; left: 65px; right: 65px; top: 200px; }
+  .eyebrow { font: 700 34px var(--mono); color: var(--accent); letter-spacing: 6px; text-transform: uppercase; }
+  h1 { margin: 18px 0 0; font: 900 104px/0.95 var(--display); letter-spacing: -3px; }
+  #count { position: absolute; right: 0; top: 0; text-align: right; font: 800 150px/1 var(--display); letter-spacing: -4px;
+    font-variant-numeric: tabular-nums; }
+  #count small { font-size: 70px; color: var(--muted); }
+  .digit { display: inline-block; height: 150px; overflow: hidden; vertical-align: top; }
+  .digit div { display: flex; flex-direction: column; }
+  .digit span { height: 150px; }
+  .track { margin: 60px 0 50px; height: 22px; border-radius: 11px; background: #262a33; overflow: hidden; }
+  .bar { height: 100%; width: 100%; border-radius: 11px; background: var(--accent); transform-origin: 0 50%; }
+  .item { display: flex; align-items: center; gap: 36px; padding: 34px 40px; margin-bottom: 22px; border-radius: 34px;
+    background: #17191f; border: 2px solid var(--line); font: 650 50px var(--sans); }
+  .item .dot { flex: none; width: 76px; height: 76px; border-radius: 50%; border: 5px solid #4a505b; position: relative; }
+  .item .dot b { position: absolute; inset: -5px; border-radius: 50%; background: var(--accent); }
+  .item .dot svg { position: absolute; inset: -5px; }
+  .item path { fill: none; stroke: var(--accent-ink); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+  .item.done span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); text-decoration-thickness: 5px; }
+  #stamp { position: absolute; left: 50%; top: 1330px; padding: 22px 60px; border: 8px solid var(--accent); border-radius: 24px;
+    color: var(--accent); font: 900 92px var(--display); letter-spacing: 4px; white-space: nowrap; }
+</style></head>
+<body><div id="stage">
+  <div class="grid"></div>
+  <div id="wrap">
+    <div class="eyebrow">Launch day</div>
+    <h1>Checklist</h1>
+    <div id="count"><span class="digit"><div></div></span><small>/5</small></div>
+    <div class="track"><div class="bar"></div></div>
+    <div id="list"></div>
+  </div>
+  <div id="stamp">ALL DONE</div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Checklist Tally: items tick off one by one; the counter rolls up and the progress bar fills.
+   When the last one lands, an ALL DONE stamp slams in. */
+const { k, lerp, prog, ease, el, run } = fx;
+const ITEMS = ['Script locked', 'B-roll captured', 'Edit and captions', 'Thumbnail', 'Publish'];
+const FIRST = 0.9, STEP = 0.5;
+const list = document.getElementById('list'), bar = document.querySelector('.bar'), stamp = document.getElementById('stamp');
+const roll = document.querySelector('.digit div');
+roll.innerHTML = ITEMS.map((_, i) => `<span>${i}</span>`).join('') + `<span>${ITEMS.length}</span>`;
+const rows = ITEMS.map(text => {
+  const r = el('div', 'item', list, `<div class="dot"><b></b><svg viewBox="0 0 86 86"><path pathLength="1" d="M24 44 L37 57 L62 30"/></svg></div><span>${text}</span>`);
+  return { r, b: r.querySelector('b'), p: r.querySelector('path') };
+});
+
+run({ duration: 4.6, update: async t => {
+  const intro = k(t, 0.05, 0.6, 'out');
+  document.getElementById('wrap').style.cssText = `opacity:${intro}; transform: translateY(${lerp(50, 0, intro)}px)`;
+  let count = 0;
+  rows.forEach((o, i) => {
+    const show = k(t, 0.25 + i * 0.07, 0.5, 'back');
+    o.r.style.opacity = Math.min(1, show * 1.4);
+    o.r.style.transform = `translateY(${lerp(40, 0, show)}px)`;
+    const t0 = FIRST + i * STEP, tick = k(t, t0, 0.3, 'back');
+    o.b.style.transform = `scale(${tick})`;
+    o.p.style.strokeDasharray = 1; o.p.style.strokeDashoffset = 1 - k(t, t0 + 0.08, 0.22, 'out');
+    o.r.classList.toggle('done', t >= t0 + 0.15);
+    o.r.style.borderColor = t >= t0 ? `rgba(255,90,31,${0.6 * (1 - prog(t, t0, 0.6))})` : '';
+    count += ease.spring(prog(t, t0, 0.45));
+  });
+  roll.style.transform = `translateY(${-150 * count}px)`;
+  bar.style.transform = `scaleX(${count / ITEMS.length})`;
+  const end = FIRST + (ITEMS.length - 1) * STEP + 0.3, s = k(t, end, 0.35, 'back');
+  stamp.style.opacity = prog(t, end, 0.08);
+  stamp.style.transform = `translateX(-50%) rotate(-6deg) scale(${lerp(2.4, 1, s)})`;
+}});
+</script></body></html>

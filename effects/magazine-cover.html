@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Magazine Cover</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #stage { background: #cfc8bb; }
+  #cover { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; background: #e9e2d4;
+    transform-origin: 50% 48%; }
+  #cover .layer { position: absolute; }
+  #mast { position: absolute; left: 0; right: 0; top: 70px; z-index: 2; text-align: center; color: #f6f1e6;
+    font: 900 400px/0.8 var(--serif); letter-spacing: -14px; }
+  #issue { position: absolute; left: 65px; right: 65px; top: 420px; z-index: 4; display: flex; justify-content: space-between;
+    font: 700 28px var(--mono); letter-spacing: 4px; color: #f6f1e6; border-top: 3px solid #f6f1e6; padding-top: 14px; }
+  .line { position: absolute; left: 65px; z-index: 4; color: #f6f1e6; width: 330px; }
+  .line b { display: block; font: 900 58px/0.95 var(--display); letter-spacing: -1px; text-transform: uppercase; }
+  .line span { display: block; margin-top: 8px; font: 500 30px/1.2 var(--sans); color: #e6dccb; }
+  #feature { position: absolute; left: 65px; right: 65px; top: 1380px; z-index: 4; text-align: center; }
+  #feature small { font: 800 32px var(--mono); letter-spacing: 8px; color: var(--accent); background: #f6f1e6; padding: 6px 14px; }
+  #feature b { display: block; margin-top: 18px; font: 900 132px/0.86 var(--display); letter-spacing: -4px; color: #f6f1e6; text-transform: uppercase; }
+  #barcode { position: absolute; right: 65px; top: 1650px; z-index: 4; background: #fff; padding: 12px 14px 8px; }
+  #barcode div { display: flex; height: 110px; align-items: stretch; }
+  #barcode i { display: block; background: #111; }
+  #barcode p { margin: 6px 0 0; font: 600 20px var(--mono); color: #111; letter-spacing: 3px; }
+  #shadow { position: absolute; inset: 0; box-shadow: 0 50px 120px rgba(40,30,20,0.55); pointer-events: none; }
+</style></head>
+<body><div id="stage">
+  <div id="cover">
+    <canvas id="back" class="layer" width="1080" height="1920" style="z-index:1"></canvas>
+    <div id="mast">MR X</div>
+    <canvas id="subj" class="layer" width="1080" height="1920" style="z-index:3"></canvas>
+    <div id="issue"><span>ISSUE 01</span><span>THE CREATOR EDITION</span><span>2026</span></div>
+    <div class="line" style="top:560px"><b>The 10M view playbook</b><span>What every hit has in common</span></div>
+    <div class="line" style="top:830px"><b>Inside the edit</b><span>Cuts, captions, timing</span></div>
+    <div class="line" style="top:1060px"><b>3 seconds</b><span>Why the hook is everything</span></div>
+    <div id="feature"><small>EXCLUSIVE</small><b>Creator of<br>the year</b></div>
+    <div id="barcode"><div></div><p>9 771234 567003</p></div>
+    <div id="shadow"></div>
+  </div>
+</div>
+<script src="lib/fx.js"></script>
+<script>
+/* Magazine Cover: the masthead drops in behind the speaker's head, cover lines slide in,
+   then the whole frame pulls back into a printed cover on a table. */
+const { k, lerp, prog, ease, rng, el, drawScene, run } = fx;
+const cover = document.getElementById('cover'), mast = document.getElementById('mast');
+const bctx = document.getElementById('back').getContext('2d'), sctx = document.getElementById('subj').getContext('2d');
+const lines = [...document.querySelectorAll('.line'), document.getElementById('issue'), document.getElementById('feature'), document.getElementById('barcode')];
+const bars = document.querySelector('#barcode div'), r = rng(3);
+for (let i = 0; i < 46; i++) { const b = el('i', '', bars); b.style.width = `${1 + Math.floor(r() * 4)}px`; b.style.marginRight = `${1 + Math.floor(r() * 3)}px`; if (r() > 0.6) b.style.background = '#fff'; }
+const shadow = document.getElementById('shadow');
+
+run({ duration: 4.2, update: async t => {
+  const separate = await drawScene(bctx, sctx, t);
+  if (separate) {                                 // cover framing: speaker bigger and higher, head over the masthead
+    sctx.clearRect(0, 0, 1080, 1920);
+    sctx.save(); sctx.translate(0, -420); fx.drawSubject(sctx, t, 1.12); sctx.restore();
+  }
+  mast.style.zIndex = separate ? 2 : 4;          // behind the head only when the speaker is a cutout
+  const m = ease.spring(prog(t, 0.1, 0.7));
+  mast.style.opacity = Math.min(1, prog(t, 0.1, 0.2));
+  mast.style.transform = `translateY(${lerp(-120, 0, m)}px) scale(${lerp(1.15, 1, m)})`;
+  lines.forEach((l, i) => {
+    const p = k(t, 0.55 + i * 0.12, 0.5, 'back');
+    l.style.opacity = Math.min(1, p * 1.5);
+    l.style.transform = `translateX(${lerp(-60, 0, p)}px)`;
+  });
+  const z = ease.inOut(prog(t, 2.0, 1.1));
+  cover.style.transform = `scale(${lerp(1, 0.8, z)}) rotate(${lerp(0, -2.5, z)}deg)`;
+  shadow.style.opacity = z;
+}});
+</script></body></html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Headline Storm</title>
+<link rel="stylesheet" href="lib/fx.css">
+<style>
+  #stage { background: radial-gradient(90% 60% at 50% 45%, #23262e 0%, #0b0c0f 75%); }
+  #cam { position: absolute; inset: 0; transform-origin: 50% 46%; }
+  .hl { position: absolute; left: 50%; top: 0; padding: 26px 40px; background: #f4f1ea; color: #111;
+    box-shadow: 0 24px 50px rgba(0,0,0,0.45); white-space: nowrap; will-change: transform; }
+  .hl small { display: block; font: 700 24px var(--mono); letter-spacing: 3px; color: #8a8378; margin-bottom: 8px; }
+  .hl b { font: 900 68px/1 var(--display); letter-spacing: -1.5px; text-transform: uppercase; }
+  .hl.serif b { font: 700 70px/1 var(--serif); text-transform: none; letter-spacing: -1px; }
+  .hl.dark { background: #1c1f26; color: #f4f1ea; } .hl.dark small { color: #8d93a0; }
+  #final { position: absolute; left: 50%; top: 880px; padding: 34px 54px; background: var(--accent); color: var(--accent-ink);
+    font: 900 112px/0.92 var(--display); letter-spacing: -3px; text-transform: uppercase; text-align: center;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.6); white-space: nowrap; }
+</style></head>
+<body><div id="stage"><div id="cam"></div></div>
+<script src="lib/fx.js"></script>
+<script>
+/* Headline Storm: headlines fly in from every side, spin and stack into a pile;
+   each landing nudges the camera; a final headline slams on top. */
+const { k, lerp, prog, ease, rng, el, run } = fx;
+const HEADLINES = [
+  ['THE DAILY', 'Views top 1 million', ''], ['TRENDING', 'Nobody saw this coming', 'serif'],
+  ['BREAKING', 'Creators rush to copy', 'dark'], ['MARKETS', 'Sales double in a week', ''],
+  ['OPINION', 'Is this the new normal?', 'serif'], ['TECH', 'The 3-second rule', 'dark'],
+  ['LIVE', 'Experts stunned', ''], ['CULTURE', 'The clip everyone shared', 'serif'],
+  ['WORLD', 'Comments hit 50K', 'dark'], ['UPDATE', 'Brands want in', ''],
+];
+const FINAL = 'Everyone is<br>talking', FINAL_AT = 2.45;
+const cam = document.getElementById('cam'), r = rng(42);
+const cards = HEADLINES.map(([tag, text, style], i) => {
+  const c = el('div', `hl ${style}`, cam, `<small>${tag}</small><b>${text}</b>`);
+  const a = r() * Math.PI * 2;
+  return { c, at: 0.15 + i * 0.17,
+    from: { x: Math.cos(a) * 1500, y: Math.sin(a) * 1700, rot: (r() - 0.5) * 140, s: 1.6 },
+    to: { x: (r() - 0.5) * 220, y: 300 + i * 122 + (r() - 0.5) * 30, rot: (r() - 0.5) * 16, s: 0.92 + r() * 0.12 } };
+});
+const fin = el('div', '', document.getElementById('stage'), FINAL); fin.id = 'final';
+
+run({ duration: 4.2, update: async t => {
+  let shake = 0;
+  cards.forEach(({ c, at, from, to }, i) => {
+    const p = ease.outExpo(prog(t, at, 0.55));
+    const x = lerp(from.x, to.x, p), y = lerp(from.y, to.y, p);
+    c.style.transform = `translate(calc(-50% + ${x}px), ${y}px) rotate(${lerp(from.rot, to.rot, p)}deg) scale(${lerp(from.s, to.s, p)})`;
+    c.style.opacity = t >= at ? 1 : 0;
+    c.style.zIndex = i;
+    const land = prog(t, at + 0.12, 0.25);
+    if (land > 0 && land < 1) shake = Math.max(shake, 7 * (1 - land));
+    c.style.filter = `brightness(${lerp(1, 0.55, prog(t, FINAL_AT, 0.4))})`;
+  });
+  const fs = ease.outExpo(prog(t, FINAL_AT, 0.32));
+  if (t >= FINAL_AT && t < FINAL_AT + 0.35) shake = Math.max(shake, 22 * (1 - prog(t, FINAL_AT + 0.1, 0.25)));
+  fin.style.opacity = t >= FINAL_AT ? 1 : 0;
+  fin.style.transform = `translateX(-50%) rotate(${lerp(-12, -4, fs)}deg) scale(${lerp(3.2, 1, fs)})`;
+  const jx = Math.sin(t * 91) * shake, jy = Math.cos(t * 77) * shake;
+  const push = lerp(1, 1.07, ease.inOut(prog(t, 0, 4.2)));
+  cam.style.transform = `translate(${jx}px, ${jy}px) scale(${push})`;
+  fin.style.marginLeft = `${jx}px`; fin.style.marginTop = `${jy}px`;
+}});
+</script></body></html>
