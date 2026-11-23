@@ -1,0 +1,11 @@
+{
+ "_note": "gx/gy in head-canvas px (before mirroring); lid 0 = as drawn, 1 = shut. 34 heads face screen-left as drawn; mirror=true faces screen-right.",
+ "front_open":   {"view": "front", "eyes": {}},
+ "front_lookL":  {"view": "front", "eyes": {"L": {"gx": -16, "gy": 2}, "R": {"gx": -16, "gy": 2}}},
+ "front_lookR":  {"view": "front", "eyes": {"L": {"gx": 16, "gy": -2}, "R": {"gx": 16, "gy": -2}}},
+ "front_half":   {"view": "front", "eyes": {"L": {"lid": 0.5}, "R": {"lid": 0.5}}},
+ "front_closed": {"view": "front", "eyes": {"L": {"lid": 1}, "R": {"lid": 1}}},
+ "front_anticR": {"view": "front", "eyes": {"L": {"gx": 18, "gy": -2, "lid": 0.35}, "R": {"gx": 18, "gy": -2, "lid": 0.35}}},
+ "34R_open":     {"view": "34", "mirror": true, "eyes": {"L": {"gx": -10, "gy": -2}, "R": {"gx": -6, "gy": -1}}},
+ "34R_ahead":    {"view": "34", "mirror": true, "eyes": {}}
+}

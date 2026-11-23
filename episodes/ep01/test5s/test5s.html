@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MR X rig test (5 s)</title>
+<!--
+  Phase 4 animation test, 5 s, 1080x1920, 24 fps.
+  Every Mr X pixel is an approved-sheet layer from assets/characters/mrx/rig:
+    body_front_noRarm  headless front body          arm_front_R  screen-right arm (under the sleeve)
+    states/*.png       pre-rendered head sprites (front eye states, 3/4-right), swapped, never morphed
+  GSAP drives all timing. Character timeline is sampled on twos (12 drawings/s); camera and graphics on ones.
+  URL: ?t=2.5 hold a frame · ?capture=1 (tools/render_video.js)
+-->
+<style>
+  @font-face { font-family: 'Bangers'; src: url('../../../assets/fonts/Bangers.woff2') format('woff2'); font-display: block; }
+  html, body { margin: 0; background: #0b0820; overflow: hidden; }
+  #frame { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #140e3a; }
+  body.fit { display: grid; place-items: center; height: 100vh; }
+  body.fit #frame { transform: scale(calc(100vh / 1920px)); transform-origin: center; }
+  .abs { position: absolute; left: 0; top: 0; }
+  #cam, #bgcam { width: 1080px; height: 1920px; transform-origin: 540px 760px; }
+  #char { width: 1340px; height: 3056px; transform-origin: 670px 1700px; }
+  #char img { position: absolute; }
+  #arm { transform-origin: 968px 1190px; }
+  #head { width: 1600px; height: 1400px; transform-origin: 800px 1200px; }
+  #head img { position: absolute; left: 0; top: 0; visibility: hidden; }
+  #gfx { width: 1080px; height: 1920px; pointer-events: none; }
+  .t { font-family: 'Bangers', Impact, sans-serif; position: absolute; white-space: nowrap; color: #fff;
+       -webkit-text-stroke: 14px #0a0710; paint-order: stroke fill; letter-spacing: 4px; }
+</style></head>
+<body>
+<div id="frame">
+  <div id="bgcam" class="abs"><img class="abs" src="../../../assets/sets/studio/studio_back.png" width="1080" height="1920"></div>
+  <div id="cam" class="abs">
+    <div id="charpos" class="abs" style="transform: translate(128px, 330px) scale(0.6152)">
+      <div id="char" class="abs">
+        <img id="arm" src="../../../assets/characters/mrx/rig/arm_front_R.png" width="1340" height="3056">
+        <img src="../../../assets/characters/mrx/rig/body_front_noRarm.png" width="1340" height="3056">
+        <div id="head" class="abs" style="left:-110px; top:-374px"></div>
+      </div>
+    </div>
+    <img class="abs" src="../../../assets/sets/studio/studio_counter.png" width="1080" height="1920">
+  </div>
+  <div id="gfx" class="abs">
+    <div id="banner" class="abs" style="left:0; top:0; width:1080px; height:1920px; transform-origin: 540px 1745px;">
+      <svg class="abs" width="1080" height="1920" viewBox="0 0 1080 1920">
+        <path d="M 150 1612 L 942 1598 L 920 1872 L 128 1888 Z" fill="#7b5cff" stroke="#0a0710" stroke-width="12" stroke-linejoin="round"/>
+        <path d="M 170 1628 L 920 1615 L 916 1636 L 167 1649 Z" fill="#b3a2ff"/>
+      </svg>
+      <div id="w1" class="t" style="left:0; width:1080px; text-align:center; top:1630px; font-size:96px; transform-origin:540px 60px;">SEMUA BAWAH</div>
+      <div id="w3" class="t" style="left:0; width:1080px; text-align:center; top:1706px; font-size:170px; color:#ffcf4a; -webkit-text-stroke: 18px #0a0710; transform-origin:540px 100px;">RM55!</div>
+    </div>
+    <svg id="spark" class="abs" width="1080" height="1920" viewBox="0 0 1080 1920">
+      <path id="sp1" d="M 0 -50 L 11 -11 L 50 0 L 11 11 L 0 50 L -11 11 L -50 0 L -11 -11 Z" fill="#fff"/>
+      <path id="sp2" d="M 0 -34 L 8 -8 L 34 0 L 8 8 L 0 34 L -8 8 L -34 0 L -8 -8 Z" fill="#ffe08a"/>
+    </svg>
+  </div>
+</div>
+<script src="../../../rig/vendor/gsap.min.js"></script>
+<script>
+(() => {
+const P = new URLSearchParams(location.search), capture = P.get('capture') === '1';
+const DURATION = 5, FPS = 24;
+const STATES = ['front_open', 'front_lookL', 'front_lookR', 'front_half', 'front_closed', 'front_anticR', '34R_open'];
+const head = document.getElementById('head');
+const imgs = {};
+for (const s of STATES) { const i = new Image(); i.src = `../../../assets/characters/mrx/rig/states/${s}.png`; i.width = 1600; i.height = 1400; head.appendChild(i); imgs[s] = i; }
+
+// ---- character state (sampled on twos) ----
+const C = { head: 0, hx: 0, hy: 0, hr: 0, arm: 0, bx: 0, by: 0, lean: 0 };
+const ch = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+const swap = (t, name) => ch.set(C, { head: STATES.indexOf(name) }, t);
+swap(0, 'front_open');
+// idle glance: eyes left with a small head follow, blink, back to centre
+swap(0.50, 'front_lookL'); ch.to(C, { hr: -1.6, hx: -4, duration: 0.45 }, 0.50);
+swap(1.04, 'front_half'); swap(1.12, 'front_closed'); swap(1.20, 'front_half'); swap(1.29, 'front_open');
+ch.to(C, { hr: 0, hx: 0, duration: 0.4 }, 1.10);
+// arm: anticipation in, swing out, overshoot, settle, return
+ch.to(C, { arm: 1.2, duration: 0.17, ease: 'power1.inOut' }, 1.46)
+  .to(C, { arm: -4.6, duration: 0.26, ease: 'power3.out' }, 1.63)
+  .to(C, { arm: -3.4, duration: 0.22, ease: 'sine.inOut' }, 1.89)
+  .to(C, { lean: -0.6, bx: -6, duration: 0.4 }, 1.55)
+  .to(C, { arm: 0, duration: 0.42, ease: 'power2.inOut' }, 2.62);
+// head turn to screen-right: eyes lead, anticipation dip with half-lid, swap to 3/4, overshoot, settle
+swap(2.25, 'front_lookR');
+swap(2.41, 'front_anticR'); ch.to(C, { hy: 10, hr: -2.4, duration: 0.16, ease: 'power1.in' }, 2.33);
+swap(2.50, '34R_open');
+ch.to(C, { hy: -8, hr: 4.5, hx: 10, duration: 0.14, ease: 'power2.out' }, 2.50)
+  .to(C, { hy: 0, hr: 1.2, hx: 6, duration: 0.3, ease: 'sine.inOut' }, 2.64)
+  .to(C, { lean: 0.8, bx: 8, duration: 0.35, ease: 'power2.out' }, 2.50);
+// small reaction to the graphic slam
+ch.to(C, { by: 6, duration: 0.08, ease: 'power1.out' }, 3.04).to(C, { by: 0, duration: 0.3, ease: 'sine.out' }, 3.12);
+ch.set({}, {}, DURATION);
+
+// ---- camera + graphics (on ones) ----
+const K = { cs: 1, cx: 0, cy: 0, shake: 0, ban: 0, w1: 0, w2: 0, w3: 0, sp: 0, flo: 0 };
+const cam = gsap.timeline({ paused: true });
+cam.to(K, { cs: 1.045, cy: -6, duration: 2.4, ease: 'sine.inOut' }, 0)
+   .to(K, { cs: 1.075, cx: -14, cy: -20, duration: 0.5, ease: 'power2.inOut' }, 2.4)
+   .to(K, { cs: 1.09, cy: -26, duration: 2.1, ease: 'sine.out' }, 2.9)
+   .to(K, { shake: 1, duration: 0.01 }, 3.0).to(K, { shake: 0, duration: 0.16, ease: 'power2.out' }, 3.01)
+   .to(K, { ban: 1, duration: 0.24, ease: 'back.out(2.2)' }, 2.98)
+   .to(K, { w1: 1, duration: 0.2, ease: 'back.out(2.5)' }, 3.10)
+   .to(K, { w2: 1, duration: 0.2, ease: 'back.out(2.5)' }, 3.22)
+   .to(K, { w3: 1, duration: 0.28, ease: 'back.out(3)' }, 3.40)
+   .to(K, { sp: 1, duration: 0.5, ease: 'none' }, 3.62)
+   .to(K, { flo: 1, duration: 1.3, ease: 'sine.inOut' }, 3.7);
+cam.set({}, {}, DURATION);
+
+const $ = id => document.getElementById(id);
+let shown = -1;
+function render(t) {
+  // camera
+  const sh = K.shake * 7, sx = Math.sin(t * 140) * sh, sy = Math.cos(t * 170) * sh;
+  $('cam').style.transform = `translate(${K.cx + sx}px, ${K.cy + sy}px) scale(${K.cs})`;
+  $('bgcam').style.transform = `translate(${K.cx * 0.5}px, ${K.cy * 0.5}px) scale(${1 + (K.cs - 1) * 0.5})`;
+  // character (state already sampled on twos)
+  const tc = Math.floor(t * 12 + 1e-6) / 12, breathe = Math.sin(tc / 2.6 * Math.PI * 2);
+  $('char').style.transform = `translate(${C.bx}px, ${C.by}px) rotate(${C.lean}deg) scale(1, ${1 + 0.004 * breathe})`;
+  $('arm').style.transform = `rotate(${C.arm}deg)`;
+  $('head').style.transform = `translate(${C.hx}px, ${C.hy - 3 * breathe}px) rotate(${C.hr}deg)`;
+  const hi = Math.round(C.head);
+  if (hi !== shown) { if (shown >= 0) imgs[STATES[shown]].style.visibility = 'hidden'; imgs[STATES[hi]].style.visibility = 'visible'; shown = hi; }
+  // graphics
+  $('banner').style.opacity = Math.min(1, K.ban * 3);
+  $('banner').style.transform = `translateY(${-6 * Math.sin(K.flo * Math.PI)}px) rotate(-3deg) scale(${1.7 - 0.7 * K.ban})`;
+  const pop = (el, k, rot) => { el.style.opacity = k > 0.02 ? 1 : 0; el.style.transform = `scale(${Math.max(0, k)}) rotate(${rot}deg)`; };
+  pop($('w1'), K.w1, 0); pop($('w3'), K.w3, -2);
+  for (const [id, x, y, d] of [['sp1', 860, 1720, 0], ['sp2', 220, 1640, 0.25]]) {
+    const k = Math.min(1, Math.max(0, (K.sp - d) / 0.75)), s = k <= 0 || k >= 1 ? 0 : Math.sin(Math.PI * k);
+    $(id).setAttribute('transform', `translate(${x} ${y}) rotate(${k * 90}) scale(${s})`);
+  }
+}
+function seek(t) {
+  t = Math.min(Math.max(t, 0), DURATION - 1e-6);
+  ch.seek(Math.floor(t * 12 + 1e-6) / 12, false);   // drawings on twos
+  cam.seek(t, false);
+  render(t);
+}
+async function boot() {
+  await Promise.all(Object.values(imgs).map(i => i.decode().catch(() => {})));
+  await document.fonts.load('118px Bangers').catch(() => {});
+  window.seek = seek; window.DURATION = DURATION;
+  const tp = P.get('t');
+  if (tp !== null) seek(parseFloat(tp));
+  else if (!capture) { document.body.classList.add('fit'); const t0 = performance.now(); const loop = n => { seek(((n - t0) / 1000) % DURATION); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  else seek(0);
+}
+boot();
+})();
+</script></body></html>
