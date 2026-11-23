@@ -1,0 +1,51 @@
+{
+ "head_canvas": [
+  1600,
+  1400
+ ],
+ "head_pivot": [
+  800,
+  1200
+ ],
+ "views": {
+  "front": {
+   "body": "body_front.png",
+   "body_size": [
+    1340,
+    3056
+   ],
+   "body_pivot": [
+    690,
+    826
+   ],
+   "head": "head_front.png",
+   "source_sprite": "body_front"
+  },
+  "34": {
+   "body": "body_34.png",
+   "body_size": [
+    1280,
+    3096
+   ],
+   "body_pivot": [
+    535,
+    818
+   ],
+   "head": "head_34.png",
+   "source_sprite": "body_34_left"
+  },
+  "side": {
+   "body": "body_side.png",
+   "body_size": [
+    1000,
+    3056
+   ],
+   "body_pivot": [
+    498,
+    798
+   ],
+   "head": "head_side.png",
+   "source_sprite": "body_side_left"
+  }
+ }
+}

@@ -64,3 +64,21 @@ and it plugs into `rig/stage.html`.
 - `rig/stage.html` + `tools/render_stills.js`: composite sprites from a shot JSON into a 1080×1920 PNG.
   Phase 4 adds GSAP timing and sprite swaps on top of this stage.
 - `episodes/ep01/approval/*.json|png`: the three approval stills.
+
+## 4. Rig layers built from the approved turnaround (round 2)
+
+Built by `tools/build_rig.py` (cut lines in `rig_layers.json`) and `tools/build_eyes.py` (eye boxes in `rig_eyes.json`).
+Output is in `rig/`, shown in `RIG_LAYERS_SHEET.png`.
+
+| Layer | Status | How it was made |
+|---|---|---|
+| `body_front`, `body_34`, `body_side` (headless) | ✅ | Each turnaround figure with its head removed. The neck stub is the drawn neck; its top is extended up by repeating one drawn row of the neck. That extension is always under the head. *Known nit: `body_34` keeps a thin lavender sliver right of the neck, also hidden under the head.* |
+| `head_front`, `head_34`, `head_side` | ✅ | The drawn heads, cut along the jaw where it meets the neck. All three share a 1600×1400 canvas with the neck pivot at (800, 1200). 3/4-right and side-right are horizontal mirrors about the pivot. |
+| Front eyes: plate / iris / lash band / sclera mask | ✅ | Open = the original drawing, pixel for pixel. Gaze moves the drawn iris inside the drawn sclera. The iris top hidden under the lid is completed from the iris's own rings and stays under the lash band. |
+| Front eye states: open, look L/R, half-lid, closed | ✅ for approval | Half-lid and closed slide the drawn lash band down to follow the eye's shape. The lid is coloured from the drawn skin above the lash. |
+| 3/4 eyes: open + gaze | ✅ near eye / ⚠️ far eye is very small | |
+| 3/4 and side blink | ❌ not yet | Those lids are steep and partly hidden, so the slide method breaks the lash line. These need illustrated closed-eye drawings, or more work, before use. |
+| Wide/surprised eyes (any view) | ❌ needs illustration | Opening the lid wider would show sclera that was never drawn. |
+
+`tools/compose_rig.py` assembles body + head (+ optional mirror or tilt) + eye state.
+The three approval composites are in `episodes/ep01/approval_rig/`.

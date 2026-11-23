@@ -1,0 +1,136 @@
+{
+ "_note": "Coordinates are in sprites_4x space. cut = polyline drawn just under the head's black jaw outline, across the neck only (everywhere else head and shoulders are already separated by background). pivot = neck joint. neck_row/neck_x = a row of the drawn neck that is extended upward under the jaw (hidden by the head).",
+ "front": {
+  "sprite": "body_front",
+  "cut": [
+   [
+    560,
+    806
+   ],
+   [
+    606,
+    814
+   ],
+   [
+    690,
+    840
+   ],
+   [
+    774,
+    814
+   ],
+   [
+    820,
+    806
+   ]
+  ],
+  "head_seed": [
+   670,
+   300
+  ],
+  "pivot": [
+   690,
+   826
+  ],
+  "neck_row": 862,
+  "neck_x": [
+   596,
+   786
+  ],
+  "neck_up": 90
+ },
+ "34": {
+  "sprite": "body_34_left",
+  "cut": [
+   [
+    420,
+    800
+   ],
+   [
+    462,
+    792
+   ],
+   [
+    520,
+    808
+   ],
+   [
+    610,
+    826
+   ],
+   [
+    680,
+    842
+   ],
+   [
+    745,
+    856
+   ],
+   [
+    775,
+    872
+   ]
+  ],
+  "head_seed": [
+   600,
+   300
+  ],
+  "pivot": [
+   535,
+   818
+  ],
+  "neck_row": 888,
+  "neck_x": [
+   470,
+   605
+  ],
+  "neck_up": 90
+ },
+ "side": {
+  "sprite": "body_side_left",
+  "cut": [
+   [
+    395,
+    840
+   ],
+   [
+    432,
+    820
+   ],
+   [
+    480,
+    802
+   ],
+   [
+    530,
+    786
+   ],
+   [
+    572,
+    774
+   ],
+   [
+    590,
+    778
+   ],
+   [
+    615,
+    792
+   ]
+  ],
+  "head_seed": [
+   450,
+   300
+  ],
+  "pivot": [
+   498,
+   798
+  ],
+  "neck_row": 884,
+  "neck_x": [
+   432,
+   572
+  ],
+  "neck_up": 90
+ }
+}

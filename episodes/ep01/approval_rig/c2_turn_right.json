@@ -1,0 +1,6 @@
+{ "note": "Rig composite c2_turn_right: headless body_front + head on the shared neck pivot + eye state (tools/compose_rig.py). All pixels from the approved turnaround.",
+  "layers": [
+    { "src": "assets/sets/studio/studio_back.png", "x": 0, "y": 0, "w": 1080 },
+    { "src": "assets/characters/mrx/rig/test/c2_turn_right.png", "x": 540, "y": 330, "h": 1880, "anchor": [0.5, 0] },
+    { "src": "assets/sets/studio/studio_counter.png", "x": 0, "y": 0, "w": 1080 }
+  ] }
