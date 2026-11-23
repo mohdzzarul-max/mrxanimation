@@ -2,3 +2,4 @@ renders/
 __pycache__/
 *.pyc
 *.blend1
+exports/*_master.mp4
