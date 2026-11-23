@@ -39,7 +39,7 @@ def new_scene(res=(540, 960), samples=20):
     sc.render.image_settings.color_depth = "8"
     sc.view_settings.view_transform = "AgX"
     try:
-        sc.view_settings.look = "AgX - Medium High Contrast"
+        sc.view_settings.look = "AgX - Punchy"
     except TypeError:
         pass
     sc.render.use_motion_blur = True

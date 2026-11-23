@@ -138,7 +138,7 @@ EXPR = {  # MR X lids: (upper, lower, roll) roll>0 = angry slant (inner corners 
 
 
 def expr(c, f, name, interp=None):
-    up, lo, roll = EXPR[name]
+    up, lo, roll = getattr(c, "EXPR", EXPR)[name]
     for i, e in enumerate(c.eyes):
         sgn = 1 if i == 0 else -1  # eye0 = character's left (+X)
         if e.get("lid_up"):
@@ -150,7 +150,7 @@ def expr(c, f, name, interp=None):
 
 def blink(c, f, name=None):
     name = name or getattr(c, "_expr", "neutral")
-    up, lo, roll = EXPR[name]
+    up, lo, roll = getattr(c, "EXPR", EXPR)[name]
     for i, e in enumerate(c.eyes):
         sgn = 1 if i == 0 else -1
         if not e.get("lid_up"):
@@ -175,6 +175,8 @@ def gaze(c, f, x=0, z=0, interp=None):
 
 
 def eye_size(c, f, s, interp=None):
+    if getattr(c, "recessed", False):
+        s = min(max(s, 0.94), 1.04)     # recessed eyes must never grow past the mask surface
     for e in c.eyes:
         sx = e["sx"]
         obj_key(e["root"], F(f), scale=(sx * s, s, s), interp=interp)
@@ -361,7 +363,7 @@ def static_key(o, f):
 
 def xbot_glow(c, strength=8):
     """Yellow eye-glow light riding on X-BOT's body (lights nearby faces)."""
-    lt = point("xbot_glow", (0, -0.35, 0.80), energy=strength, color=(1.0, 0.65, 0.15), radius=0.08)
+    lt = point("xbot_glow", (0, -0.35, 0.67), energy=strength, color=(1.0, 0.65, 0.15), radius=0.08)
     bind(lt, c.arm, "body")
     return lt
 

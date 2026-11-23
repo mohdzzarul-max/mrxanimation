@@ -570,7 +570,7 @@ def sh06g(ctx=None):
 MPOS = (-1.1, -0.85, 0)            # MR X standing spot, bed right behind him
 MHH = (-1.1, -0.85, 1.0)
 XPOS = (-0.2, -0.95, 0)            # X-BOT landing spot (screen right of MR X)
-XH = (-0.2, -0.95, 0.82)
+XH = (-0.2, -0.95, 0.69)
 MRZ = 53                           # MR X faces X-BOT, cheated ~30 deg toward camera
 XRZ = -66                          # X-BOT faces MR X, cheated ~30 deg toward camera
 
@@ -968,7 +968,7 @@ def sh07m(ctx=None):
 BED_SIT = (-1.1, -0.66, 0.05)
 BSH = (-1.1, -0.66, 1.02)
 XPOS8 = (-0.3, -1.0, 0)
-XH8 = (-0.3, -1.0, 0.82)
+XH8 = (-0.3, -1.0, 0.69)
 MRZ8 = 42
 XRZ8 = -78
 
@@ -1152,12 +1152,12 @@ def sh09b(ctx=None):
     xeyes(x, 4, 1.3, 1.2, 1.4, interp="BACK")
     pose(x.arm, "body", F(4), rot=(10, 0, 0), scale=(0.95, 0.95, 1.08))
     n = (math.sin(math.radians(rz)), -math.cos(math.radians(rz)))
-    eye = (XPOS8[0] + n[0] * 0.16, XPOS8[1] + n[1] * 0.16, 0.80)
-    cpos = (XPOS8[0] + n[0] * 1.0, XPOS8[1] + n[1] * 1.0, 0.86)
+    eye = (XPOS8[0] + n[0] * 0.16, XPOS8[1] + n[1] * 0.16, 0.67)
+    cpos = (XPOS8[0] + n[0] * 1.0, XPOS8[1] + n[1] * 1.0, 0.73)
     ctx.cam(lens=40, fstop=2.0)
     ctx.ck(0, cpos, eye, focus=eye)
-    ctx.ck(4, (XPOS8[0] + n[0] * 0.72, XPOS8[1] + n[1] * 0.72, 0.84), eye, focus=eye, interp="BACK")
-    ctx.ck(30, (XPOS8[0] + n[0] * 0.68, XPOS8[1] + n[1] * 0.68, 0.84), eye, focus=eye)
+    ctx.ck(4, (XPOS8[0] + n[0] * 0.72, XPOS8[1] + n[1] * 0.72, 0.71), eye, focus=eye, interp="BACK")
+    ctx.ck(30, (XPOS8[0] + n[0] * 0.68, XPOS8[1] + n[1] * 0.68, 0.71), eye, focus=eye)
     return ctx
 
 

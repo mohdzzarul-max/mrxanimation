@@ -128,7 +128,7 @@ class Character:
 
 # ======================================================================= eyes
 def build_eye(char, name, center, normal, r, sx, mats, head_bone, lid_mat, lash_mat, iris_col,
-              iris_r=0.62, lower=True, sparkle=True, sclera=None):
+              iris_r=0.62, lower=True, sparkle=True, sclera=None, lash_ring=True):
     """Eye unit oriented to face along `normal` (outward). Upper/lower lids are half
     domes rotating about local X; iris/pupil sit on a gaze pivot."""
     root = empty(f"{name}_root", center)
@@ -157,15 +157,16 @@ def build_eye(char, name, center, normal, r, sx, mats, head_bone, lid_mat, lash_
     up = half_dome(f"{name}_lidU", r * 1.08, m=lid_mat)
     up.parent = root
     up.rotation_mode = "XYZ"
-    lash = torus(f"{name}_lash", (0, 0, 0), r * 1.10, r * 0.15, m=lash_mat)
-    # keep only the front half of the lash ring
-    import bmesh
-    bm = bmesh.new()
-    bm.from_mesh(lash.data)
-    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y > r * 0.15], context="VERTS")
-    bm.to_mesh(lash.data)
-    bm.free()
-    lash.parent = up
+    if lash_ring:
+        lash = torus(f"{name}_lash", (0, 0, 0), r * 1.10, r * 0.15, m=lash_mat)
+        # keep only the front half of the lash ring
+        import bmesh
+        bm = bmesh.new()
+        bm.from_mesh(lash.data)
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y > r * 0.15], context="VERTS")
+        bm.to_mesh(lash.data)
+        bm.free()
+        lash.parent = up
     lo = None
     if lower:
         lo = half_dome(f"{name}_lidL", r * 1.06, m=lid_mat, keep_upper=False)
@@ -175,6 +176,57 @@ def build_eye(char, name, center, normal, r, sx, mats, head_bone, lid_mat, lash_
     e = dict(root=root, pivot=pivot, lid_up=up, lid_lo=lo, sx=sx, sparkle=sp)
     char.eyes.append(e)
     return e
+
+
+# MR X lid poses for the recessed eye rig: (upper, lower, roll). Calibrated against the reference sheet.
+MRX_EXPR = {
+    "neutral": (-22, 54, 0), "wide": (-62, 74, 0), "excited": (-48, 66, 0), "happy": (-28, 34, -8),
+    "suspicious": (2, 34, 0), "squint": (10, 28, 0), "angry": (-2, 44, 26), "furious": (-18, 52, 30),
+    "sad": (-6, 54, -22), "embarrassed": (0, 50, -16), "closed": (64, 52, 0), "smug": (2, 40, 12),
+    "shock": (-72, 80, 0),
+}
+
+EYE_PROJ = (0.37, -0.14)     # eye centre in the mask's front projection (x, z), shared with textures.py
+
+
+def almond_pts(sx, R, scale=1.0, n=64):
+    """Eye opening outline in the eye's tangent plane (metres). Matches textures.mask_front's skin almond."""
+    rx, rz_up, rz_lo = 0.33 * R / 0.93 * scale, 0.21 * R * scale, 0.21 * 0.8 * R * scale
+    pts = []
+    for i in range(n):
+        a = 2 * math.pi * i / n
+        x = rx * math.cos(a)
+        z = (rz_up if math.sin(a) > 0 else rz_lo) * math.sin(a)
+        z -= 0.04 * R * scale * (x * sx) / rx
+        pts.append((x, z))
+    return pts
+
+
+def lid_material(prefix, skin_rgb):
+    """Skin lid with a thick dark lash line painted along its rim (no protruding lash geometry)."""
+    m = bpy.data.materials.new(prefix + "_lid")
+    m.use_nodes = True
+    nt = m.node_tree
+    N, L = nt.nodes, nt.links
+    p = N["Principled BSDF"]
+    p.inputs["Roughness"].default_value = 0.5
+    tc = N.new("ShaderNodeTexCoord")
+    sep = N.new("ShaderNodeSeparateXYZ")
+    L.new(tc.outputs["Object"], sep.inputs[0])
+    ab = N.new("ShaderNodeMath")
+    ab.operation = "ABSOLUTE"
+    L.new(sep.outputs[2], ab.inputs[0])
+    mr = N.new("ShaderNodeMapRange")
+    mr.inputs["From Min"].default_value = 0.010
+    mr.inputs["From Max"].default_value = 0.016
+    L.new(ab.outputs[0], mr.inputs["Value"])
+    mx = N.new("ShaderNodeMix")
+    mx.data_type = "RGBA"
+    mx.inputs[6].default_value = (0.008, 0.006, 0.006, 1)
+    mx.inputs[7].default_value = (*skin_rgb, 1)
+    L.new(mr.outputs[0], mx.inputs[0])
+    L.new(mx.outputs[2], p.inputs["Base Color"])
+    return m
 
 
 def eyeball_material(name, iris_rgb, r):
@@ -196,9 +248,10 @@ def eyeball_material(name, iris_rgb, r):
     cr = N.new("ShaderNodeValToRGB")
     e = cr.color_ramp.elements
     ir, ig, ib = iris_rgb
-    stops = [(0.0, (0.9, 0.9, 0.88)), (0.66, (0.9, 0.9, 0.88)), (0.685, (0.01, 0.01, 0.02)),
-             (0.72, (ir * 0.6, ig * 0.6, ib * 0.6)), (0.88, (ir * 1.6, ig * 1.6, ib * 1.6)),
-             (0.915, (ir, ig, ib)), (0.925, (0.0, 0.0, 0.005)), (1.0, (0.0, 0.0, 0.005))]
+    stops = [(0.0, (0.9, 0.9, 0.88)), (0.60, (0.9, 0.9, 0.88)), (0.625, (0.005, 0.005, 0.02)),
+             (0.66, (ir * 0.35, ig * 0.35, ib * 0.45)), (0.80, (ir, ig, ib)),
+             (0.88, (min(1, ir * 2 + 0.1), min(1, ig * 2.2 + 0.1), min(1, ib * 1.1))),
+             (0.905, (0.0, 0.0, 0.005)), (1.0, (0.0, 0.0, 0.005))]
     e[0].position, e[0].color = stops[0][0], (*stops[0][1], 1)
     e[1].position, e[1].color = stops[1][0], (*stops[1][1], 1)
     for pos, col in stops[2:]:
@@ -249,72 +302,107 @@ def build_mrx(prefix="MRX"):
     skin = mat("mrx_skin", SKIN, rough=0.55, sss=0.15)
     shoe_b = mat("shoe_black", (0.02, 0.02, 0.022), rough=0.35, coat=0.3)
     shoe_w = mat("shoe_white", (0.85, 0.85, 0.83), rough=0.5)
-    mats = dict(iris_rgb=(0.01, 0.12, 0.62),
+    mats = dict(iris_rgb=(0.0, 0.16, 0.95),
                 pupil=mat("pupil", (0.0, 0.0, 0.01), rough=0.1, coat=1.0),
                 hl=emission_mat("eye_hl", (1, 1, 1), 6.0))
     lash = mat("lash", (0.01, 0.01, 0.01), rough=0.6)
 
+    # proportions measured from the reference sheet: head : body height = 0.76, chunky arms/fists,
+    # baggy sweatpants, big sneakers.  Total height ~1.39 (head centre 1.08, radius 0.31).
     bones = [("root", (0, 0, 0), (0, 0, 0.1), None),
-             ("hips", (0, 0, 0.38), (0, 0, 0.46), "root"),
-             ("chest", (0, 0, 0.46), (0, 0, 0.68), "hips"),
-             ("head", (0, 0, 0.68), (0, 0, 1.0), "chest")]
+             ("hips", (0, 0, 0.42), (0, 0, 0.50), "root"),
+             ("chest", (0, 0, 0.50), (0, 0, 0.76), "hips"),
+             ("head", (0, 0, 0.76), (0, 0, 1.08), "chest")]
     for s, sx in (("L", 1), ("R", -1)):
-        bones += [(f"uparm.{s}", (sx * 0.19, 0, 0.64), (sx * 0.235, 0, 0.53), "chest"),
-                  (f"forearm.{s}", (sx * 0.235, 0, 0.53), (sx * 0.245, 0, 0.45), f"uparm.{s}"),
-                  (f"hand.{s}", (sx * 0.245, 0, 0.45), (sx * 0.245, 0, 0.38), f"forearm.{s}"),
-                  (f"thigh.{s}", (sx * 0.095, 0, 0.38), (sx * 0.095, 0, 0.22), "hips"),
-                  (f"shin.{s}", (sx * 0.095, 0, 0.22), (sx * 0.095, 0, 0.07), f"thigh.{s}"),
-                  (f"foot.{s}", (sx * 0.095, 0, 0.07), (sx * 0.095, -0.08, 0.04), f"shin.{s}")]
+        bones += [(f"uparm.{s}", (sx * 0.225, 0, 0.72), (sx * 0.27, 0, 0.585), "chest"),
+                  (f"forearm.{s}", (sx * 0.27, 0, 0.585), (sx * 0.28, -0.005, 0.50), f"uparm.{s}"),
+                  (f"hand.{s}", (sx * 0.28, -0.005, 0.50), (sx * 0.28, -0.01, 0.40), f"forearm.{s}"),
+                  (f"thigh.{s}", (sx * 0.11, 0, 0.42), (sx * 0.11, 0, 0.26), "hips"),
+                  (f"shin.{s}", (sx * 0.11, 0, 0.26), (sx * 0.11, 0, 0.09), f"thigh.{s}"),
+                  (f"foot.{s}", (sx * 0.11, 0, 0.09), (sx * 0.11, -0.09, 0.05), f"shin.{s}")]
     arm = make_armature(prefix + "_rig", bones)
     c = Character(prefix, arm)
     c.hips = "hips"
     c.legs = [("thigh.L", "shin.L", "foot.L"), ("thigh.R", "shin.R", "foot.R")]
     c.arms = [("uparm.L", "forearm.L"), ("uparm.R", "forearm.R")]
 
-    R = 0.36
-    HC = (0, 0, 1.02)
-    head = sphere(f"{prefix}_head", HC, R, m=knit, seg=96, rings=48)
+    R = 0.31
+    HC = Vector((0, 0, 1.08))
+    # ---- mask shell with real almond eye openings (boolean), thickness via solidify
+    head = sphere(f"{prefix}_head", tuple(HC), R, m=knit, seg=128, rings=64)
+    eye_ns = []
+    for i, sx in enumerate((1, -1)):
+        nx, nz = EYE_PROJ[0] * sx, EYE_PROJ[1]
+        n = Vector((nx, -math.sqrt(1 - nx * nx - nz * nz), nz))
+        eye_ns.append(n)
+        cut = poly_prism(f"{prefix}_eyecut{i}", almond_pts(sx, R, 0.94), 0.30)
+        cut.rotation_mode = "QUATERNION"
+        cut.rotation_quaternion = (-n).to_track_quat("Y", "Z")
+        cut.location = HC + n * R
+        bpy.context.view_layer.update()
+        bo = head.modifiers.new("cut", "BOOLEAN")
+        bo.operation = "DIFFERENCE"
+        bo.object = cut
+        bo.solver = "EXACT"
+        bpy.context.view_layer.objects.active = head
+        bpy.ops.object.modifier_apply(modifier="cut")
+        bpy.data.objects.remove(cut)
+    for p in head.data.polygons:
+        p.use_smooth = True
+    sol = head.modifiers.new("thickness", "SOLIDIFY")
+    sol.thickness = 0.010
+    sol.offset = -1
+    sol.use_even_offset = False
+    sol.use_quality_normals = True
     bind(head, arm, "head")
+    # ---- skin face underneath the mask: only visible through the openings
+    face = sphere(f"{prefix}_face", tuple(HC), R - 0.016, m=skin, seg=64, rings=32)
+    bind(face, arm, "head")
     # knit seam down the middle of the top (reference: vertical seam)
-    seam = torus(f"{prefix}_seam", HC, R * 1.001, 0.004, m=mat("seam", (0.008, 0.008, 0.01), rough=0.9),
+    seam = torus(f"{prefix}_seam", tuple(HC), R * 1.001, 0.004, m=mat("seam", (0.008, 0.008, 0.01), rough=0.9),
                  rot=(0, math.pi / 2, 0))
     import bmesh
     bm = bmesh.new(); bm.from_mesh(seam.data)
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y < 0 and -v.co.x < R * 0.55], context="VERTS")
     bm.to_mesh(seam.data); bm.free()
     bind(seam, arm, "head")
-    for s, sx, side in (("L", 1, 0), ("R", -1, 1)):
-        nx, nz = 0.37 * sx, -0.15
-        ny = -math.sqrt(1 - nx * nx - nz * nz)
-        n = Vector((nx, ny, nz))
-        ctr = Vector(HC) + n * R * 0.86
-        build_eye(c, f"{prefix}_eye{s}", ctr, n, 0.064, 1.3, mats, "head", skin, lash, None)
-    torso = rbox(f"{prefix}_shirt", (0, 0, 0.555), (0.40, 0.27, 0.30), m=black_cloth, round_=0.35)
+    # ---- recessed eyes: eyeball front sits just BEHIND the mask surface; the mask hides the rest
+    RE = 0.072
+    lidm = lid_material(prefix, SKIN)
+    for (s, sx), n in zip((("L", 1), ("R", -1)), eye_ns):
+        ctr = HC + n * (R - 0.005 - RE)
+        build_eye(c, f"{prefix}_eye{s}", ctr, n, RE, 1.3, mats, "head", lidm, lash, None, lash_ring=False)
+    c.recessed = True
+    c.mask_radius = R
+    torso = rbox(f"{prefix}_shirt", (0, 0, 0.595), (0.46, 0.31, 0.38), m=black_cloth, round_=0.38)
     bind(torso, arm, "chest")
-    collar = torus(f"{prefix}_collar", (0, 0, 0.70), 0.10, 0.018, m=black_cloth, scale=(1.2, 1, 1))
+    hem = torus(f"{prefix}_hem", (0, 0, 0.425), 0.205, 0.03, m=black_cloth, scale=(1.08, 0.7, 1))
+    bind(hem, arm, "chest")
+    collar = torus(f"{prefix}_collar", (0, 0, 0.775), 0.095, 0.02, m=black_cloth, scale=(1.25, 1, 1))
     bind(collar, arm, "chest")
-    hips = rbox(f"{prefix}_pantsHip", (0, 0, 0.39), (0.37, 0.25, 0.11), m=black_cloth, round_=0.4)
+    hips = rbox(f"{prefix}_pantsHip", (0, 0, 0.42), (0.44, 0.30, 0.14), m=black_cloth, round_=0.4)
     bind(hips, arm, "hips")
     for s, sx in (("L", 1), ("R", -1)):
-        sl = rbox(f"{prefix}_sleeve{s}", (sx * 0.215, 0, 0.615), (0.13, 0.16, 0.13), m=black_cloth, round_=0.45,
+        sl = rbox(f"{prefix}_sleeve{s}", (sx * 0.245, 0, 0.685), (0.165, 0.19, 0.16), m=black_cloth, round_=0.45,
                   rot=(0, sx * -0.3, 0))
         bind(sl, arm, f"uparm.{s}")
-        ua = cyl(f"{prefix}_uarm{s}", (sx * 0.235, 0, 0.535), 0.043, 0.09, m=skin)
+        ua = cyl(f"{prefix}_uarm{s}", (sx * 0.262, 0, 0.605), 0.056, 0.08, m=skin)
         bind(ua, arm, f"uparm.{s}")
-        fa = cyl(f"{prefix}_farm{s}", (sx * 0.243, 0, 0.48), 0.047, 0.08, m=skin)
+        fa = cyl(f"{prefix}_farm{s}", (sx * 0.275, -0.003, 0.545), 0.062, 0.09, m=skin)
         bind(fa, arm, f"forearm.{s}")
-        for p in _fist(f"{prefix}_fist{s}", (sx * 0.248, -0.005, 0.405), 0.062, skin, sx):
+        for p in _fist(f"{prefix}_fist{s}", (sx * 0.28, -0.012, 0.455), 0.082, skin, sx):
             bind(p, arm, f"hand.{s}")
-        th = cyl(f"{prefix}_thigh{s}", (sx * 0.095, 0, 0.30), 0.088, 0.17, m=black_cloth)
+        th = cyl(f"{prefix}_thigh{s}", (sx * 0.11, 0, 0.335), 0.108, 0.19, m=black_cloth)
         bind(th, arm, f"thigh.{s}")
-        sh = cyl(f"{prefix}_shin{s}", (sx * 0.095, 0, 0.15), 0.084, 0.16, m=black_cloth)
+        sh = cyl(f"{prefix}_shin{s}", (sx * 0.11, 0, 0.175), 0.102, 0.17, m=black_cloth)
         bind(sh, arm, f"shin.{s}")
-        cuff = torus(f"{prefix}_cuff{s}", (sx * 0.095, 0, 0.085), 0.08, 0.022, m=black_cloth)
+        cuff = torus(f"{prefix}_cuff{s}", (sx * 0.11, 0, 0.105), 0.096, 0.026, m=black_cloth)
         bind(cuff, arm, f"shin.{s}")
-        for p in _sneaker(f"{prefix}_shoe{s}", (sx * 0.10, -0.03, 0.0), (0.155, 0.28, 0.105), shoe_b, shoe_w, sx):
+        for p in _sneaker(f"{prefix}_shoe{s}", (sx * 0.115, -0.035, 0.0), (0.175, 0.31, 0.11), shoe_b, shoe_w, sx):
             bind(p, arm, f"foot.{s}")
-    c.base_lids = (-26, 48)
-    c.lids(1, up=-26, lo=48)
+    c.EXPR = MRX_EXPR
+    c.base_lids = (-22, 54)
+    c.lids(1, up=-22, lo=54)
     return c
 
 
@@ -366,8 +454,8 @@ def mask_material(prefix):
     fw.inputs["From Max"].default_value = -0.25
     L.new(sep.outputs[1], fw.inputs["Value"])
     bw = N.new("ShaderNodeMapRange")
-    bw.inputs["From Min"].default_value = 0.15
-    bw.inputs["From Max"].default_value = 0.45
+    bw.inputs["From Min"].default_value = 0.45
+    bw.inputs["From Max"].default_value = 0.62
     L.new(sep.outputs[1], bw.inputs["Value"])
     black = (0.006, 0.006, 0.007, 1)
     mix1 = N.new("ShaderNodeMix")
@@ -402,13 +490,40 @@ def mask_material(prefix):
     # the white paint is slightly smoother than knit
     rr = N.new("ShaderNodeMapRange")
     rr.inputs["To Min"].default_value = 0.8
-    rr.inputs["To Max"].default_value = 0.45
+    rr.inputs["To Max"].default_value = 0.62
     L.new(mix2.outputs[2], rr.inputs["Value"])
     L.new(rr.outputs[0], p.inputs["Roughness"])
     return m
 
 
 # ======================================================================= UNCLE
+def hair_brushed():
+    """Black hair with fine front-to-back comb streaks (bump) and a soft sheen."""
+    if "hair_brushed" in bpy.data.materials:
+        return bpy.data.materials["hair_brushed"]
+    m = bpy.data.materials.new("hair_brushed")
+    m.use_nodes = True
+    nt = m.node_tree
+    N, L = nt.nodes, nt.links
+    p = N["Principled BSDF"]
+    p.inputs["Base Color"].default_value = (0.006, 0.005, 0.005, 1)
+    p.inputs["Roughness"].default_value = 0.6
+    p.inputs["Specular IOR Level"].default_value = 0.2
+    tc = N.new("ShaderNodeTexCoord")
+    wv = N.new("ShaderNodeTexWave")
+    wv.bands_direction = "X"
+    wv.inputs["Scale"].default_value = 140
+    wv.inputs["Distortion"].default_value = 3
+    wv.inputs["Detail"].default_value = 3
+    L.new(tc.outputs["Object"], wv.inputs["Vector"])
+    bp = N.new("ShaderNodeBump")
+    bp.inputs["Strength"].default_value = 0.6
+    bp.inputs["Distance"].default_value = 0.003
+    L.new(wv.outputs["Fac"], bp.inputs["Height"])
+    L.new(bp.outputs["Normal"], p.inputs["Normal"])
+    return m
+
+
 def head_material_uncle():
     """Skin with a skin-fade haircut on sides/back (darker as it goes up)."""
     m = bpy.data.materials.new("uncle_head")
@@ -424,8 +539,8 @@ def head_material_uncle():
     sep = N.new("ShaderNodeSeparateXYZ")
     L.new(tc.outputs["Object"], sep.inputs[0])
     up = N.new("ShaderNodeMapRange")
-    up.inputs["From Min"].default_value = -0.07
-    up.inputs["From Max"].default_value = 0.09
+    up.inputs["From Min"].default_value = -0.02
+    up.inputs["From Max"].default_value = 0.15
     L.new(sep.outputs[2], up.inputs["Value"])
     # exclude the face (front, y < -0.15)
     fr = N.new("ShaderNodeMapRange")
@@ -448,7 +563,7 @@ def head_material_uncle():
     mx.inputs[7].default_value = (0.03, 0.022, 0.02, 1)
     sm = N.new("ShaderNodeMath")
     sm.operation = "MULTIPLY_ADD"
-    sm.inputs[1].default_value = 2.2
+    sm.inputs[1].default_value = 4.5
     sm.inputs[2].default_value = 0.0
     L.new(mul2.outputs[0], sm.inputs[0])
     clamp = N.new("ShaderNodeClamp")
@@ -467,8 +582,8 @@ def build_uncle(prefix="UNCLE"):
     leather = mat("leather", (0.28, 0.12, 0.04), rough=0.45, coat=0.2)
     brass = mat("brass", (0.75, 0.5, 0.2), rough=0.25, metal=1.0)
     frame_m = mat("glasses", (0.01, 0.01, 0.01), rough=0.15, coat=1.0)
-    lens = mat("lens", (0.9, 0.9, 0.9), rough=0.02, spec=1.0)
-    lens.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = 0.12
+    lens = mat("lens", (0.9, 0.9, 0.9), rough=0.03, spec=0.45)
+    lens.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = 0.07
     shoe_b = mat("shoe_black", (0.02, 0.02, 0.022), rough=0.35, coat=0.3)
     shoe_w = mat("shoe_white", (0.85, 0.85, 0.83), rough=0.5)
     xw = decal_mat("x_white", _tex("x_brush.png"))
@@ -500,10 +615,11 @@ def build_uncle(prefix="UNCLE"):
     bind(head, arm, "head")
     jowl = rbox(f"{prefix}_cheeks", HC + Vector((0, -0.02, -0.11)), (0.50, 0.42, 0.20), m=skin, round_=0.48)
     bind(jowl, arm, "head")
-    top = rbox(f"{prefix}_hairtop", HC + Vector((0, 0.005, 0.235)), (0.50, 0.445, 0.25), m=hair, round_=0.16)
+    # tall brushed flat-top; hairline raised so the forehead shows (reference)
+    top = rbox(f"{prefix}_hairtop", HC + Vector((0, 0.01, 0.30)), (0.505, 0.44, 0.27), m=hair_brushed(), round_=0.14)
     bind(top, arm, "head")
     # flat-top front ridge (pompadour edge)
-    ridge = rbox(f"{prefix}_hairfront", HC + Vector((0, -0.175, 0.26)), (0.51, 0.13, 0.24), m=hair, round_=0.3)
+    ridge = rbox(f"{prefix}_hairfront", HC + Vector((0, -0.17, 0.315)), (0.51, 0.12, 0.29), m=hair_brushed(), round_=0.3)
     bind(ridge, arm, "head")
     for s, sx in (("L", 1), ("R", -1)):
         ear = sphere(f"{prefix}_ear{s}", HC + Vector((sx * 0.255, 0.02, -0.02)), 0.065, scale=(0.5, 0.8, 1.05),
@@ -514,8 +630,8 @@ def build_uncle(prefix="UNCLE"):
         e = build_eye(c, f"{prefix}_eye{s}", ctr, n, 0.05, 1.2, mats, "head", skin, lash, None, iris_r=0.62,
                       sparkle=False)
         # thick angled brow
-        brow = rbox(f"{prefix}_brow{s}", ctr + Vector((sx * 0.01, -0.045, 0.092)), (0.15, 0.05, 0.05), m=hair, round_=0.5,
-                    rot=(0, sx * 0.18, 0))
+        brow = rbox(f"{prefix}_brow{s}", Vector((sx * 0.115, -0.262, HC.z + 0.125)), (0.165, 0.05, 0.058), m=hair,
+                    round_=0.5, rot=(0, -sx * 0.22, 0))
         bind(brow, arm, "head")
         c.parts[f"brow{s}"] = brow
         # glasses rims (rectangular)
@@ -529,6 +645,7 @@ def build_uncle(prefix="UNCLE"):
                      bevel=0.004)
             bind(r_, arm, "head")
         ln = box(f"{prefix}_lens{s}", Vector((gx, gy + 0.002, gz)), (w - 0.01, 0.003, h - 0.01), m=lens)
+        ln.hide_render = True   # clear lenses (reference): eyes must read through the frames
         bind(ln, arm, "head")
         c.parts[f"lens{s}"] = ln
         temple = box(f"{prefix}_temple{s}", Vector((sx * 0.255, -0.12, gz + 0.03)), (0.014, 0.30, 0.016),
@@ -595,9 +712,23 @@ def build_uncle(prefix="UNCLE"):
         bind(cp, arm, f"thigh.{s}")
         sh = cyl(f"{prefix}_shin{s}", (sx * 0.12, 0, 0.16), 0.105, 0.16, m=shirt)
         bind(sh, arm, f"shin.{s}")
-        for p in _sneaker(f"{prefix}_shoe{s}", (sx * 0.12, -0.02, 0.0), (0.16, 0.27, 0.10), shoe_b, shoe_w, sx,
+        for p in _sneaker(f"{prefix}_shoe{s}", (sx * 0.125, -0.03, 0.0), (0.19, 0.32, 0.13), shoe_b, shoe_w, sx,
                           xdecal=xw):
             bind(p, arm, f"foot.{s}")
+    for s, sx in (("L", 1), ("R", -1)):
+        fs = box(f"{prefix}_fstrap{s}", (sx * 0.15, -0.165, 0.80), (0.045, 0.014, 0.10), m=leather, bevel=0.004)
+        bind(fs, arm, "chest")
+        ov = box(f"{prefix}_ostrap{s}", (sx * 0.15, 0.0, 0.83), (0.045, 0.34, 0.014), m=leather, bevel=0.004)
+        bind(ov, arm, "chest")
+        bk = box(f"{prefix}_bstrap{s}", (0, 0.175, 0.64), (0.045, 0.014, 0.42), m=leather, bevel=0.004,
+                 rot=(0, sx * 0.62, 0))
+        bind(bk, arm, "chest")
+    for s, sx in (("L", 1), ("R", -1)):
+        lp = torus(f"{prefix}_bow{s}", (sx * 0.035, 0.18, 0.47), 0.03, 0.009, m=leather, rot=(math.pi / 2, 0, 0))
+        bind(lp, arm, "chest")
+        tail = box(f"{prefix}_bowtail{s}", (sx * 0.02, 0.18, 0.41), (0.016, 0.01, 0.09), m=leather,
+                   rot=(0, sx * 0.25, 0))
+        bind(tail, arm, "chest")
     hipb = rbox(f"{prefix}_pantsHip", (0, 0, 0.42), (0.47, 0.32, 0.12), m=shirt, round_=0.35)
     bind(hipb, arm, "hips")
     watch = cyl(f"{prefix}_watch", (0.33, -0.005, 0.53), 0.064, 0.03, m=frame_m)
@@ -642,8 +773,8 @@ def build_xbot(prefix="XBOT"):
     panel = mat("xbot_panel", (0.006, 0.006, 0.008), rough=0.04, coat=1.0)
     gold = mat("gold", (0.95, 0.68, 0.25), rough=0.18, metal=1.0)
     goldglow = mat("goldglow", (0.9, 0.6, 0.2), rough=0.2, metal=0.6, emit=(1.0, 0.6, 0.15), emit_str=2.5)
-    eye_m = emission_mat("xbot_eye", (1.0, 0.62, 0.05), 9.0)
-    eye_core = emission_mat("xbot_eye_core", (1.0, 0.85, 0.3), 14.0)
+    eye_m = emission_mat("xbot_eye", (1.0, 0.30, 0.0), 1.8)
+    eye_core = emission_mat("xbot_eye_core", (1.0, 0.62, 0.0), 2.6)
     rubber = mat("xbot_arm", (0.015, 0.015, 0.017), rough=0.3, coat=0.5)
     glove = mat("glove", (0.92, 0.92, 0.9), rough=0.55, sheen=0.1)
     shoe_b = mat("shoe_black", (0.02, 0.02, 0.022), rough=0.35, coat=0.3)
@@ -657,8 +788,8 @@ def build_xbot(prefix="XBOT"):
         bones += [(f"uparm.{s}", (sx * 0.31, 0, 0.66), (sx * 0.40, 0, 0.55), "body"),
                   (f"forearm.{s}", (sx * 0.40, 0, 0.55), (sx * 0.40, -0.02, 0.42), f"uparm.{s}"),
                   (f"hand.{s}", (sx * 0.40, -0.02, 0.42), (sx * 0.40, -0.02, 0.34), f"forearm.{s}"),
-                  (f"thigh.{s}", (sx * 0.12, 0, 0.40), (sx * 0.12, 0, 0.24), "root"),
-                  (f"shin.{s}", (sx * 0.12, 0, 0.24), (sx * 0.12, 0, 0.09), f"thigh.{s}"),
+                  (f"thigh.{s}", (sx * 0.12, 0, 0.27), (sx * 0.12, 0, 0.17), "root"),
+                  (f"shin.{s}", (sx * 0.12, 0, 0.17), (sx * 0.12, 0, 0.09), f"thigh.{s}"),
                   (f"foot.{s}", (sx * 0.12, 0, 0.09), (sx * 0.12, -0.09, 0.05), f"shin.{s}")]
     arm = make_armature(prefix + "_rig", bones)
     c = Character(prefix, arm)
@@ -685,7 +816,8 @@ def build_xbot(prefix="XBOT"):
             bind(e, arm, "body")
     # angry eyes (flat glowing shapes on the panel)
     for s, sx in (("L", 1), ("R", -1)):
-        pts = [(-0.075, 0.03), (0.075, -0.005), (0.06, -0.03), (0.02, -0.055), (-0.03, -0.055), (-0.07, -0.02)]
+        pts = [(x * 1.3, z * 1.3) for x, z in
+               [(-0.075, 0.03), (0.075, -0.005), (0.06, -0.03), (0.02, -0.055), (-0.03, -0.055), (-0.07, -0.02)]]
         pts = [(-sx * x, z) for x, z in pts]   # inner corners low = angry slant (reference)
         if sx > 0:
             pts = pts[::-1]
@@ -708,21 +840,21 @@ def build_xbot(prefix="XBOT"):
     capx = plane(f"{prefix}_capX", (0, -0.217, 1.17), (0.12, 0.12), m=xw, rot=(math.pi / 2, 0, 0))
     bind(capx, arm, "cap")
     for s, sx in (("L", 1), ("R", -1)):
-        up = cyl(f"{prefix}_uarm{s}", (sx * 0.355, 0, 0.605), 0.03, 0.15, m=rubber, rot=(0, sx * 0.7, 0))
+        up = cyl(f"{prefix}_uarm{s}", (sx * 0.355, 0, 0.605), 0.046, 0.15, m=rubber, rot=(0, sx * 0.7, 0))
         bind(up, arm, f"uparm.{s}")
-        sj = sphere(f"{prefix}_elbow{s}", (sx * 0.40, 0, 0.55), 0.031, m=rubber)
+        sj = sphere(f"{prefix}_elbow{s}", (sx * 0.40, 0, 0.55), 0.047, m=rubber)
         bind(sj, arm, f"uparm.{s}")
-        fa = cyl(f"{prefix}_farm{s}", (sx * 0.40, -0.01, 0.485), 0.03, 0.13, m=rubber)
+        fa = cyl(f"{prefix}_farm{s}", (sx * 0.40, -0.01, 0.485), 0.046, 0.13, m=rubber)
         bind(fa, arm, f"forearm.{s}")
-        cuff = torus(f"{prefix}_cuff{s}", (sx * 0.40, -0.02, 0.435), 0.045, 0.02, m=glove)
+        cuff = torus(f"{prefix}_cuff{s}", (sx * 0.40, -0.02, 0.435), 0.06, 0.026, m=glove)
         bind(cuff, arm, f"hand.{s}")
-        fist = _fist(f"{prefix}_glove{s}", (sx * 0.40, -0.025, 0.375), 0.07, glove, sx)
+        fist = _fist(f"{prefix}_glove{s}", (sx * 0.405, -0.025, 0.36), 0.095, glove, sx)
         for p in fist:
             bind(p, arm, f"hand.{s}")
         # pointing glove (hidden by default): palm + extended index finger
-        pg = sphere(f"{prefix}_point{s}", (sx * 0.40, -0.025, 0.375), 0.062, scale=(0.9, 1, 1), m=glove)
-        fing = cyl(f"{prefix}_finger{s}", (sx * 0.40, -0.025, 0.27), 0.022, 0.13, m=glove)
-        tip = sphere(f"{prefix}_fingertip{s}", (sx * 0.40, -0.025, 0.205), 0.022, m=glove)
+        pg = sphere(f"{prefix}_point{s}", (sx * 0.40, -0.025, 0.37), 0.082, scale=(0.9, 1, 1), m=glove)
+        fing = cyl(f"{prefix}_finger{s}", (sx * 0.40, -0.025, 0.25), 0.028, 0.15, m=glove)
+        tip = sphere(f"{prefix}_fingertip{s}", (sx * 0.40, -0.025, 0.175), 0.028, m=glove)
         th = sphere(f"{prefix}_pthumb{s}", (sx * 0.40 - sx * 0.04, -0.06, 0.39), 0.026, m=glove)
         fing.parent = pg
         tip.parent = pg
@@ -737,11 +869,21 @@ def build_xbot(prefix="XBOT"):
         for o in [pg, fing, tip, th]:
             o.hide_render = True
             o.hide_viewport = True
-        lg = cyl(f"{prefix}_leg{s}", (sx * 0.12, 0, 0.25), 0.032, 0.30, m=rubber)
+        lg = cyl(f"{prefix}_leg{s}", (sx * 0.12, 0, 0.19), 0.048, 0.18, m=rubber)
         bind(lg, arm, f"thigh.{s}")
-        for p in _sneaker(f"{prefix}_shoe{s}", (sx * 0.13, -0.02, 0.0), (0.16, 0.26, 0.10), shoe_b, shoe_w, sx,
+        for p in _sneaker(f"{prefix}_shoe{s}", (sx * 0.13, -0.03, 0.0), (0.20, 0.32, 0.14), shoe_b, shoe_w, sx,
                           xdecal=xw, toe=shoe_w):
             bind(p, arm, f"foot.{s}")
+    # reference proportions: legs+shoes ~19% of height -> drop body/cap/arms by DZ in the rest pose
+    DZ = 0.13
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode="EDIT")
+    for b in arm.data.edit_bones:
+        if not b.name.startswith(("thigh", "shin", "foot", "root")):
+            b.head.z -= DZ
+            b.tail.z -= DZ
+    bpy.ops.object.mode_set(mode="OBJECT")
+    c.eye_z = 0.79 - DZ
     return c
 
 

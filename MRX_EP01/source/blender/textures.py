@@ -23,7 +23,7 @@ def mask_front(N=2048):
     im = Image.new("RGB", (N, N), (0, 0, 0))
     d = ImageDraw.Draw(im)
     P = lambda x, z: ((x + 1) / 2 * N, (1 - (z + 1) / 2) * N)
-    W = (240, 240, 236)
+    W = (226, 226, 222)
 
     def bez(pts, n=40):
         out = []
@@ -53,9 +53,9 @@ def mask_front(N=2048):
         return L + R_[::-1]
 
     # main horn: rises from beside the eye's outer corner, follows the head outline, tip points up
-    shape(stroke([(0.50, -0.02), (0.86, 0.10), (0.78, 0.48), (0.42, 0.74)], 0.25, 0.0))
+    shape(stroke([(0.60, -0.22), (0.95, 0.02), (0.82, 0.50), (0.42, 0.78)], 0.30, 0.0))
     # inner spike: branches from the horn base, pointing up and inward
-    shape(stroke([(0.62, 0.10), (0.48, 0.30), (0.34, 0.42), (0.20, 0.56)], 0.18, 0.0))
+    shape(stroke([(0.68, 0.06), (0.52, 0.28), (0.36, 0.42), (0.18, 0.58)], 0.20, 0.0))
     # white band hugging the top-outer rim of the eye, joining the horn base
     shape(stroke([(0.20, 0.06), (0.40, 0.14), (0.58, 0.08), (0.70, -0.10)], 0.07, 0.10))
     # outer cheek bar, curving down and inward
@@ -66,7 +66,7 @@ def mask_front(N=2048):
     shape(stroke([(0.40, -0.56), (0.41, -0.64), (0.40, -0.70), (0.37, -0.76)], 0.10, 0.03))
     # eye openings (skin), almond tilted slightly down toward the outside
     for sx in (1, -1):
-        cx, cz, rx, rz = 0.37 * sx, -0.14, 0.27, 0.18
+        cx, cz, rx, rz = 0.37 * sx, -0.14, 0.33, 0.21
         pts = []
         for i in range(96):
             a = 2 * math.pi * i / 96
@@ -90,12 +90,12 @@ def mask_back(N=2048):
         for i in range(41):
             t = i / 40
             a = math.radians(-60 + 150 * t)
-            pts.append((sx * (0.95 * math.cos(a) * 0.9 - 0.02), 0.9 * math.sin(a) * 0.95))
+            pts.append((sx * (0.80 * math.cos(a) * 0.9 - 0.02), 0.85 * math.sin(a) * 0.95))
         for i in range(40, -1, -1):
             t = i / 40
             a = math.radians(-60 + 150 * t)
-            w = 0.10 * math.sin(math.pi * min(1, t * 1.2))
-            pts.append((sx * ((0.95 - w) * math.cos(a) * 0.9 - 0.02 - w * 0.6), (0.9 - w) * math.sin(a) * 0.95))
+            w = 0.075 * math.sin(math.pi * min(1, t * 1.2))
+            pts.append((sx * ((0.80 - w) * math.cos(a) * 0.9 - 0.02 - w * 0.6), (0.85 - w) * math.sin(a) * 0.95))
         d.polygon([P(x, z) for x, z in pts], fill=W)
         # small hook at the bottom
         d.polygon([P(sx * x, z) for x, z in [(0.40, -0.70), (0.55, -0.62), (0.52, -0.55), (0.30, -0.62)]], fill=W)
