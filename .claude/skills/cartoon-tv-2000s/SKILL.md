@@ -1,6 +1,6 @@
 ---
 name: cartoon-tv-2000s
-description: Make an original 2D cartoon short in the early-2000s TV look (thick black outlines, flat colours, one hard shadow, angular characters, glowing supernatural effects, night city) and render it to MP4 with effects/render.js. Use for "animation macam Danny Phantom", ghost-hero cartoon, Saturday-morning cartoon style. Original characters only - never copy a real show's characters, logo or scenes.
+description: NOT for IT'S X! (that project rejected code-drawn characters - use the its-x-* skills). Make an original 2D cartoon short in the early-2000s TV look (thick black outlines, flat colours, one hard shadow, angular characters, glowing supernatural effects, night city) and render it to MP4 with effects/render.js. Use for "animation macam Danny Phantom", ghost-hero cartoon, Saturday-morning cartoon style. Original characters only - never copy a real show's characters, logo or scenes.
 ---
 
 # 2000s TV cartoon, in code

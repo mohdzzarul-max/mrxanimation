@@ -1,3 +1,5 @@
+> **REJECTED by the client (off-model code-drawn puppet).** Kept only as a record and for its measured music timing. Do not reuse this approach; see /CLAUDE.md.
+
 # IT'S X! - scientist acting test (5 s)
 
 - `scientist-test.html`: the animation source (canvas rig). Open it in a browser to play it; add `?t=3.8` to hold one frame.
