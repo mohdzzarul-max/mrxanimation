@@ -49,7 +49,8 @@ function extractFrames(file, fps, tag) {
 }
 
 async function renderOne(browser, name, o, media) {
-  const file = path.join(DIR, `${name}.html`);
+  // a bare name is an effect in this folder; a path (e.g. cartoon/ghost-x) is used as given
+  const file = name.includes('/') ? path.resolve(`${name}.html`) : path.join(DIR, `${name}.html`);
   if (!fs.existsSync(file)) throw new Error(`no effect called ${name} (${file})`);
   const q = new URLSearchParams({ capture: '1' });
   if (o.alpha) q.set('alpha', '1');
@@ -62,7 +63,7 @@ async function renderOne(browser, name, o, media) {
   const duration = await page.evaluate(() => window.DURATION);
   const frames = Math.round(duration * o.fps);
   const ext = o.alpha ? 'webm' : 'mp4';
-  const outFile = path.join(o.out, `${name}.${ext}`);
+  const outFile = path.join(o.out, `${path.basename(name)}.${ext}`);
   const enc = o.alpha
     ? ['-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-b:v', '0', '-crf', '30', '-row-mt', '1']
     : ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'medium', '-movflags', '+faststart'];
@@ -79,7 +80,7 @@ async function renderOne(browser, name, o, media) {
   await done;
   await page.close();
   if (errors.length) throw new Error(`${name}: page errors: ${errors.join(' | ')}`);
-  console.log(`✓ ${name}  ${duration}s  ${frames} frames  ${((Date.now() - t0) / 1000).toFixed(1)}s  → ${path.relative(process.cwd(), outFile)}`);
+  console.log(`✓ ${path.basename(name)}  ${duration}s  ${frames} frames  ${((Date.now() - t0) / 1000).toFixed(1)}s  → ${path.relative(process.cwd(), outFile)}`);
 }
 
 (async () => {
