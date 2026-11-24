@@ -61,6 +61,9 @@ async function renderOne(browser, name, o, media) {
   await page.goto(pathToFileURL(file).href + '?' + q.toString());
   await page.waitForFunction(() => typeof window.seek === 'function' && window.DURATION > 0);
   const duration = await page.evaluate(() => window.DURATION);
+  // a page may declare its own canvas size (e.g. 1920x1080 for 16:9); default is 1080x1920
+  const size = await page.evaluate(() => [window.STAGE_W || 0, window.STAGE_H || 0]);
+  if (size[0] && size[1]) await page.setViewportSize({ width: size[0], height: size[1] });
   const frames = Math.round(duration * o.fps);
   const ext = o.alpha ? 'webm' : 'mp4';
   const outFile = path.join(o.out, `${path.basename(name)}.${ext}`);
