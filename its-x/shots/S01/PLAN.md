@@ -10,7 +10,7 @@
 |---|---|---|---|
 | K01 | 1 | v3 | - |
 | K02 | 25 | v4 | neck/collar paste edge (beige wedge) - fix at clean-up |
-| K03 | 37 | v3 | IDENTICAL to K04 (0.01% of pixels differ) - the lift pose is missing and the "drop" accent at f41 shows no change |
+| K03 | 37 | v8 | left hand has erase holes, grips the flask shoulder not the neck; forearm ghost lines - fix at clean-up |
 | K04 | 41 | v3 | - |
 | K05 | 73 | v3 | pasted-head seam at the neck/collar; expression reads more suspicious than confused |
 | K06 | 96 | v4 | - |

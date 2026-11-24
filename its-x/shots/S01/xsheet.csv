@@ -11,13 +11,13 @@ frame,drawing,action,notes
 10,,,
 11,,,
 12,,,
-13,,,BEAT!
+13,,[B01 planned],BEAT!
 14,,,
 15,,,
 16,,,
 17,,,
 18,,,
-19,,,
+19,,[B02 planned],
 20,,,
 21,,,
 22,,,
@@ -29,7 +29,7 @@ frame,drawing,action,notes
 28,,,
 29,,,
 30,,,
-31,,,
+31,,[B03 planned],
 32,,,
 33,,,"""little"""
 34,,,
@@ -37,17 +37,17 @@ frame,drawing,action,notes
 36,,,
 37,K03.png,Lift over flask,beat
 38,,,
-39,,,
+39,,[B04 planned],
 40,,,
 41,K04.png,"""drop"": squeeze, drop","""drop"""
 42,,,
 43,,,
 44,,,
-45,,,
+45,,[B05 planned],
 46,,,
 47,,,
 48,,,
-49,,,beat
+49,,[B06 planned],beat
 50,,,
 51,,,
 52,,,"""made"""
@@ -59,13 +59,13 @@ frame,drawing,action,notes
 58,,,
 59,,,
 60,,,
-61,,,beat
+61,,[B07 planned],beat
 62,,,
 63,,,
 64,,,
 65,,,
 66,,,
-67,,,
+67,,[B08 planned],
 68,,,
 69,,,
 70,,,
@@ -84,12 +84,12 @@ frame,drawing,action,notes
 83,,,
 84,,,BEAT!
 85,,,
-86,,,
+86,,[B09 planned],
 87,,,
 88,,,
 89,,,
 90,,,"""blow"""
-91,,,
+91,,[B10 planned],
 92,,,
 93,,,
 94,,,
@@ -97,7 +97,7 @@ frame,drawing,action,notes
 96,K06.png,"""glow"": take, step back",BEAT!
 97,,,
 98,,,
-99,,,
+99,,[B11 planned],
 100,,,
 101,,,
 102,,,
@@ -106,7 +106,7 @@ frame,drawing,action,notes
 105,,,
 106,,,
 107,,,
-108,,,
+108,,[B12 planned],
 109,,,beat
 110,,,
 111,,,
