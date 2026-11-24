@@ -1,0 +1,10 @@
+Edit the FIRST image only. It is an approved rough animation key of an original cartoon scientist. Produce the next breakdown drawing of the same shot.
+
+Keep IDENTICAL: the character's face model, messy black hairstyle, white lab coat, black t-shirt, black cargo pants, black wristbands, sneakers, body proportions, size, position on the canvas, camera, line style and greyscale rough rendering. Do not redesign or re-render the character. Keep the transparent background.
+
+Change ONLY:
+1. Eyes look further DOWN, following a drop that falls into a flask below the dropper tip (use the eye shapes of the second image, the grey "OPEN" eye looking down).
+2. The head dips down very slightly (about 4 pixels).
+3. The thumb releases the rubber bulb of the dropper, so the bulb is round again.
+
+Do NOT draw any drop, flask, table, background, text, labels or effects - they are separate layers.
