@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sage Absolue — Experimental Perfumery Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family:'Inter',sans-serif; background-color:#060b08; color:#f3eed9; overflow-x:hidden; margin:0; padding:0; }
+        .font-cinzel { font-family:'Cinzel',serif; }
+        .font-cormorant { font-family:'Cormorant Garamond',serif; }
+        @keyframes sunbeamSway {
+            0%,100% { transform:rotate(-18deg) translateX(0) scaleY(1); opacity:.25; }
+            50% { transform:rotate(-14deg) translateX(25px) scaleY(1.05); opacity:.45; }
+        }
+        .sunbeam { position:absolute; top:-20%; right:12%; width:300px; height:150%;
+            background:linear-gradient(180deg,rgba(226,212,152,.35) 0%,rgba(138,168,92,.08) 60%,transparent 100%);
+            filter:blur(28px); transform-origin:top right; animation:sunbeamSway 9s ease-in-out infinite; pointer-events:none; }
+        .sunbeam-2 { right:32%; width:180px; animation-delay:-4s; animation-duration:12s; }
+        @keyframes bottleFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-9px); } }
+        .bottle-float { animation:bottleFloat 5.5s ease-in-out infinite; }
+        #bottleTilt > * { transition:transform .35s cubic-bezier(.22,1,.36,1); }
+        @keyframes mascotIdle { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-6px) scale(1.015); } }
+        @keyframes mascotTalk { 0%,100% { transform:translateY(0) rotate(0); } 25% { transform:translateY(-4px) rotate(-1deg); } 75% { transform:translateY(-2px) rotate(1deg); } }
+        .mascot-idle { animation:mascotIdle 4s ease-in-out infinite; }
+        .mascot-talking { animation:mascotTalk .45s ease-in-out infinite; }
+        @keyframes eyePulse { 0%,100% { filter:drop-shadow(0 0 6px #00f0ff); opacity:.9; } 50% { filter:drop-shadow(0 0 14px #38bdf8); opacity:1; } }
+        .cyber-eyes { animation:eyePulse 2.5s ease-in-out infinite; }
+        .glass-panel { background:rgba(12,22,16,.72); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(212,197,138,.22); box-shadow:0 20px 50px rgba(0,0,0,.65); transition:all .5s ease; }
+        .speech-bubble { background:linear-gradient(145deg,rgba(16,30,22,.92),rgba(9,17,12,.95));
+            border:1px solid rgba(56,189,248,.45); box-shadow:0 10px 30px rgba(0,0,0,.7),0 0 20px rgba(56,189,248,.12); }
+        .section-highlight { border-color:#38bdf8 !important; box-shadow:0 0 28px rgba(56,189,248,.28) !important; transform:scale(1.01); }
+        .note-btn { transition:all .3s ease; }
+        .note-btn.active { background:linear-gradient(135deg,rgba(163,184,108,.28),rgba(212,197,138,.15)); border-color:#d4c58a; box-shadow:0 0 18px rgba(163,184,108,.25); }
+        @keyframes mistDrift { 0% { transform:translateX(-8%) scale(1.05); opacity:.2; } 50% { transform:translateX(8%) scale(1.1); opacity:.35; } 100% { transform:translateX(-8%) scale(1.05); opacity:.2; } }
+        .mist-layer { background:radial-gradient(ellipse at center,rgba(154,184,142,.18) 0%,rgba(15,28,19,0) 70%); animation:mistDrift 16s ease-in-out infinite; }
+        .caret::after { content:'▍'; margin-left:2px; color:#38bdf8; animation:blink 1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity:0; } }
+        #mistCanvas { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:30; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-[#a3b86c] selection:text-[#060b08]">
+
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_65%_20%,#1b3320_0%,#0a150d_55%,#030704_100%)]"></div>
+        <div class="sunbeam"></div>
+        <div class="sunbeam sunbeam-2"></div>
+        <div class="mist-layer absolute inset-0"></div>
+        <canvas id="atmosphereCanvas" class="absolute inset-0 w-full h-full"></canvas>
+    </div>
+    <canvas id="mistCanvas"></canvas>
+
+    <header class="relative z-20 pt-4 pb-2 px-4 sm:px-8 max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-[#132419] border border-[#d4c58a]/40 flex items-center justify-center text-[#d4c58a] font-cinzel text-lg shadow-md">✕</div>
+            <div>
+                <h2 class="font-cinzel text-xs sm:text-sm tracking-[0.35em] text-[#e8dec0] uppercase">Experimental</h2>
+                <p class="font-cinzel text-[9px] tracking-[0.3em] text-[#d4c58a]/80 uppercase">Perfumery • Lab</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-2">
+            <label for="bottleUploadInput" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#d4c58a] hover:bg-[#e5d7a3] text-[#060b08] font-semibold text-[11px] tracking-wider uppercase transition-all shadow-md active:scale-95">
+                <span>📷 <span data-i18n="loadBottle">Load Actual Bottle</span></span>
+            </label>
+            <input type="file" id="bottleUploadInput" accept="image/*" class="hidden" />
+            <label for="mascotUploadInput" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#152836] hover:bg-[#1e3a4f] border border-[#38bdf8]/50 text-[#7dd3fc] font-medium text-[11px] tracking-wider uppercase transition-all shadow-md active:scale-95">
+                <span>🎭 <span data-i18n="loadMascot">Load Mascot</span></span>
+            </label>
+            <input type="file" id="mascotUploadInput" accept="image/*" class="hidden" />
+            <button id="exportVideoBtn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#0284c7] to-[#2563eb] hover:from-[#0ea5e9] hover:to-[#3b82f6] text-white font-semibold text-[11px] tracking-wider uppercase transition-all shadow-lg active:scale-95">
+                <span id="recordDot" class="w-2 h-2 rounded-full bg-red-400"></span>
+                <span id="exportBtnLabel">🎬 Export Video</span>
+            </button>
+            <div class="flex rounded-full bg-black/50 p-0.5 border border-[#d4c58a]/25 text-[11px]">
+                <button id="langMy" type="button" class="px-3 py-1 rounded-full bg-[#d4c58a] text-[#060b08] font-semibold transition-all">BM</button>
+                <button id="langEn" type="button" class="px-3 py-1 rounded-full text-[#d4c58a] hover:text-white transition-all">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-3 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+
+        <div id="stage-bottle" class="lg:col-span-5 flex flex-col items-center justify-center relative rounded-3xl p-4 transition-all duration-500 border border-transparent">
+            <div id="bottleGlow" class="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-[#a3b86c]/20 blur-3xl transition-all duration-700 pointer-events-none"></div>
+            <div id="bottleTilt" class="bottle-float relative cursor-pointer select-none flex flex-col items-center" title="Tap bottle to spray mist">
+                <div id="realBottleWrapper" class="hidden relative w-64 sm:w-72 md:w-80 rounded-2xl overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.9)] border border-[#d4c58a]/40 bg-[#0b140e]">
+                    <img id="realBottleImg" src="" alt="Sage Absolue Actual Bottle" class="w-full h-auto object-contain block" />
+                    <div class="absolute inset-0 bg-gradient-to-tr from-[#060b08]/30 via-transparent to-[#d4c58a]/15 pointer-events-none"></div>
+                </div>
+                <svg id="vectorBottleSvg" class="w-60 sm:w-72 h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.9)]" viewBox="0 0 320 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#090909"/><stop offset="22%" stop-color="#2c2c2c"/><stop offset="50%" stop-color="#050505"/><stop offset="82%" stop-color="#242424"/><stop offset="100%" stop-color="#080808"/></linearGradient>
+                        <linearGradient id="juiceGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#dfbf60" stop-opacity="0.88"/><stop offset="50%" stop-color="#b89639" stop-opacity="0.92"/><stop offset="100%" stop-color="#7a601b" stop-opacity="0.96"/></linearGradient>
+                        <linearGradient id="glassEdge" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fff" stop-opacity="0.55"/><stop offset="15%" stop-color="#fff" stop-opacity="0.1"/><stop offset="85%" stop-color="#fff" stop-opacity="0.1"/><stop offset="100%" stop-color="#fff" stop-opacity="0.45"/></linearGradient>
+                        <linearGradient id="forestArt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#142414"/><stop offset="55%" stop-color="#3a4f23"/><stop offset="100%" stop-color="#1a2915"/></linearGradient>
+                        <linearGradient id="labelSun" x1="100%" y1="0%" x2="20%" y2="100%"><stop offset="0%" stop-color="#f7e79c" stop-opacity="0.75"/><stop offset="100%" stop-color="#f7e79c" stop-opacity="0"/></linearGradient>
+                    </defs>
+                    <rect x="92" y="22" width="136" height="68" rx="6" fill="url(#capGrad)" stroke="#333" stroke-width="1"/>
+                    <rect x="96" y="25" width="128" height="4" rx="2" fill="#fff" fill-opacity="0.25"/>
+                    <rect x="108" y="90" width="104" height="42" fill="url(#capGrad)" stroke="#222" stroke-width="1"/>
+                    <line x1="108" y1="92" x2="212" y2="92" stroke="#d4c58a" stroke-opacity="0.4" stroke-width="1"/>
+                    <rect x="44" y="132" width="232" height="256" rx="14" fill="#1a1812" fill-opacity="0.4" stroke="url(#glassEdge)" stroke-width="3"/>
+                    <rect x="54" y="144" width="212" height="230" rx="8" fill="url(#juiceGrad)"/>
+                    <rect x="68" y="156" width="184" height="206" rx="2" fill="#f5eccd"/>
+                    <text x="160" y="175" text-anchor="middle" fill="#181815" font-family="Cinzel, serif" font-size="11" font-weight="700" letter-spacing="3">EXPERIMENTAL</text>
+                    <text x="160" y="184" text-anchor="middle" fill="#3a3830" font-family="Inter, sans-serif" font-size="5.5" letter-spacing="2.5">PERFUMERY</text>
+                    <line x1="92" y1="182" x2="122" y2="182" stroke="#181815" stroke-width="0.5"/>
+                    <line x1="198" y1="182" x2="228" y2="182" stroke="#181815" stroke-width="0.5"/>
+                    <rect x="81" y="191" width="158" height="156" fill="url(#forestArt)"/>
+                    <polygon points="239,191 180,191 110,347 175,347" fill="url(#labelSun)"/>
+                    <path d="M81 310 Q 130 285, 175 315 T 239 305 L 239 347 L 81 347 Z" fill="#233316"/>
+                    <path d="M81 328 Q 145 310, 200 335 T 239 330 L 239 347 L 81 347 Z" fill="#121c0b"/>
+                    <text x="160" y="236" text-anchor="middle" fill="#f7f1db" font-family="Cormorant Garamond, serif" font-style="italic" font-size="23" font-weight="600" letter-spacing="1">SAGE</text>
+                    <text x="160" y="257" text-anchor="middle" fill="#f7f1db" font-family="Cormorant Garamond, serif" font-style="italic" font-size="24" font-weight="600" letter-spacing="1">ABSOLUE</text>
+                    <line x1="125" y1="264" x2="195" y2="264" stroke="#f7f1db" stroke-opacity="0.7" stroke-width="0.7"/>
+                    <text x="76" y="275" text-anchor="middle" fill="#2b2923" font-family="Inter, sans-serif" font-size="6" font-weight="500" letter-spacing="1.5" transform="rotate(-90 76 275)">EXTRAIT DE PARFUM</text>
+                    <text x="245" y="275" text-anchor="middle" fill="#2b2923" font-family="Inter, sans-serif" font-size="6" font-weight="500" letter-spacing="1.5" transform="rotate(-90 245 275)">55 ML</text>
+                    <rect x="49" y="138" width="6" height="244" rx="3" fill="#fff" fill-opacity="0.22"/>
+                    <rect x="265" y="138" width="5" height="244" rx="2.5" fill="#fff" fill-opacity="0.18"/>
+                    <path d="M46 374 L 274 374 L 268 386 L 52 386 Z" fill="#fff" fill-opacity="0.25"/>
+                </svg>
+                <button id="sprayBtn" type="button" class="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#16291c]/90 hover:bg-[#233f2c] border border-[#d4c58a]/40 text-xs tracking-widest uppercase text-[#e8dec0] transition-all shadow-lg active:scale-95">
+                    <span class="w-2 h-2 rounded-full bg-[#a3b86c] animate-ping"></span>
+                    <span data-i18n="spray">Spray Mist</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col gap-4">
+            <div id="recordingBanner" class="hidden rounded-xl px-4 py-2.5 bg-[#0c1f2e] border border-[#38bdf8] flex items-center justify-between gap-3 shadow-lg">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+                    <span id="recordingStatusText" class="text-xs sm:text-sm text-[#e0f2fe] font-medium">Recording…</span>
+                </div>
+                <button id="finishRecBtn" type="button" class="px-2.5 py-1 rounded bg-red-500/20 hover:bg-red-500/40 border border-red-400/50 text-[11px] text-red-200 uppercase tracking-wider">Finish Now</button>
+            </div>
+
+            <div class="speech-bubble rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 relative">
+                <div id="mascotAvatarBox" class="mascot-idle relative w-28 h-36 sm:w-32 sm:h-40 rounded-xl overflow-hidden shrink-0 bg-[#05080a] border border-[#38bdf8]/40 shadow-[0_0_25px_rgba(56,189,248,0.2)] flex items-center justify-center">
+                    <img id="realMascotImg" src="" alt="Experimental Perfumery Mascot" class="hidden w-full h-full object-cover object-top" />
+                    <svg id="vectorMascotSvg" class="w-full h-full" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="80" cy="95" r="55" fill="#38bdf8" fill-opacity="0.12"/>
+                        <path d="M48 62 L38 45 L55 48 L52 30 L70 40 L80 24 L90 40 L108 30 L104 48 L122 45 L112 65 Z" fill="#1a1d24" stroke="#0b0d10" stroke-width="1.5"/>
+                        <path d="M56 56 C56 44, 104 44, 104 56 L102 82 C102 94, 80 102, 80 102 C80 102, 58 94, 58 82 Z" fill="#1c2026" stroke="#333b48" stroke-width="1.5"/>
+                        <path d="M62 78 L80 86 L98 78 L95 92 L80 100 L65 92 Z" fill="#111317" stroke="#475569" stroke-width="1"/>
+                        <g class="cyber-eyes">
+                            <polygon points="62,64 76,68 74,73 63,70" fill="#22d3ee"/>
+                            <polygon points="98,64 84,68 86,73 97,70" fill="#22d3ee"/>
+                        </g>
+                        <rect x="72" y="98" width="16" height="14" fill="#d4a387"/>
+                        <path d="M36 195 L44 116 L66 108 L94 108 L116 116 L124 195 Z" fill="#e2e8f0"/>
+                        <path d="M66 108 L80 128 L94 108 L92 195 L68 195 Z" fill="#111317"/>
+                        <polygon points="66,108 56,142 74,148" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                        <polygon points="94,108 104,142 86,148" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                        <rect x="96" y="138" width="10" height="14" rx="1.5" fill="#94a3b8" stroke="#334155" stroke-width="1"/>
+                        <path d="M44 146 Q 80 138, 116 146 L114 166 Q 80 158, 46 166 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+                        <rect x="40" y="158" width="22" height="12" rx="4" fill="#111317"/>
+                        <rect x="98" y="158" width="22" height="12" rx="4" fill="#111317"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0 w-full">
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <span class="font-cinzel text-[10px] tracking-[0.3em] uppercase text-[#7dd3fc]" data-i18n="host">Lab Host</span>
+                        <button id="presentBtn" type="button" class="px-3 py-1 rounded-full bg-[#38bdf8]/15 hover:bg-[#38bdf8]/30 border border-[#38bdf8]/50 text-[10px] tracking-wider uppercase text-[#bae6fd] active:scale-95 transition-all">▶ <span id="presentLabel" data-i18n="present">Present</span></button>
+                    </div>
+                    <p id="mascotText" class="text-sm sm:text-base leading-relaxed text-[#e8f4fb] min-h-[4.5rem]"></p>
+                </div>
+            </div>
+
+            <section id="card-intro" class="glass-panel rounded-2xl p-5 sm:p-6">
+                <p class="font-cinzel text-[10px] tracking-[0.35em] uppercase text-[#d4c58a]/80 mb-1" data-i18n="kicker">Extrait de Parfum • 55 ml</p>
+                <h1 class="font-cormorant italic text-4xl sm:text-5xl text-[#f7f1db] leading-tight">Sage Absolue</h1>
+                <p class="mt-2 text-sm text-[#d9d3bb]/90 leading-relaxed" data-i18n="tagline">A sunlit walk through a rainforest clearing, distilled into amber glass.</p>
+            </section>
+
+            <section id="card-notes" class="glass-panel rounded-2xl p-5 sm:p-6">
+                <h3 class="font-cinzel text-xs tracking-[0.3em] uppercase text-[#d4c58a] mb-3" data-i18n="pyramid">Olfactive Pyramid</h3>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button type="button" class="note-btn active px-4 py-1.5 rounded-full border border-[#d4c58a]/30 text-xs uppercase tracking-wider" data-note="top" data-i18n="top">Top</button>
+                    <button type="button" class="note-btn px-4 py-1.5 rounded-full border border-[#d4c58a]/30 text-xs uppercase tracking-wider" data-note="heart" data-i18n="heart">Heart</button>
+                    <button type="button" class="note-btn px-4 py-1.5 rounded-full border border-[#d4c58a]/30 text-xs uppercase tracking-wider" data-note="base" data-i18n="base">Base</button>
+                </div>
+                <div id="noteName" class="font-cormorant italic text-2xl text-[#f7f1db]"></div>
+                <p id="noteDesc" class="mt-1 text-sm text-[#d9d3bb]/90 leading-relaxed"></p>
+            </section>
+
+            <section id="card-details" class="glass-panel rounded-2xl p-5 sm:p-6 grid grid-cols-3 gap-3 text-center">
+                <div><p class="font-cinzel text-[9px] tracking-[0.25em] uppercase text-[#d4c58a]/70" data-i18n="conc">Concentration</p><p class="mt-1 text-sm">Extrait</p></div>
+                <div><p class="font-cinzel text-[9px] tracking-[0.25em] uppercase text-[#d4c58a]/70" data-i18n="size">Size</p><p class="mt-1 text-sm">55 ml</p></div>
+                <div><p class="font-cinzel text-[9px] tracking-[0.25em] uppercase text-[#d4c58a]/70" data-i18n="family">Family</p><p class="mt-1 text-sm" data-i18n="familyVal">Green Herbal</p></div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="relative z-10 text-center py-4 text-[10px] tracking-[0.3em] uppercase text-[#d4c58a]/50 font-cinzel">Experimental Perfumery • Sage Absolue</footer>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var lang = 'my';
+
+  var T = {
+    my: {
+      loadBottle:'Muat Botol Asal', loadMascot:'Muat Maskot', spray:'Semburan Kabus', host:'Hos Makmal', present:'Persembahan',
+      kicker:'Extrait de Parfum • 55 ml', tagline:'Satu perjalanan di kawasan lapang hutan hujan yang disinari matahari, disuling ke dalam kaca ambar.',
+      pyramid:'Piramid Olfaktori', top:'Atas', heart:'Tengah', base:'Dasar', conc:'Kepekatan', size:'Saiz', family:'Keluarga', familyVal:'Herba Hijau',
+      idle:'Hai! Saya hos makmal. Tekan Persembahan dan saya akan terangkan Sage Absolue.',
+      s1:'Ini Sage Absolue daripada Experimental Perfumery. Extrait de parfum 55 ml, terinspirasi hutan hujan yang disinari cahaya.',
+      s2:'Nota atas: sage segar dan bergamot. Pembukaan yang cerah, hijau dan berherba.',
+      s3:'Nota tengah: sage absolut dan lavender. Di sinilah watak herba yang sebenar bermula.',
+      s4:'Nota dasar: oakmoss, vetiver dan kayu cedar. Tanah lembap selepas hujan yang tahan lama.',
+      s5:'Itulah Sage Absolue. Tekan botol untuk menyembur kabus. Terima kasih!',
+      rec:'Merakam persembahan…', recDone:'Video siap dimuat turun.', recFail:'Rakaman tidak disokong atau dibatalkan.', exp:'🎬 Eksport Video', finish:'Tamat Sekarang',
+      notes:{top:['Sage Segar • Bergamot','Pembukaan cerah dan berherba, seperti daun yang digenyeh.'],heart:['Sage Absolut • Lavender','Teras herba yang hangat, bersih dan sedikit bertepung.'],base:['Oakmoss • Vetiver • Cedar','Dasar berlumut dan berkayu yang tahan lama pada kulit.']}
+    },
+    en: {
+      loadBottle:'Load Actual Bottle', loadMascot:'Load Mascot', spray:'Spray Mist', host:'Lab Host', present:'Present',
+      kicker:'Extrait de Parfum • 55 ml', tagline:'A sunlit walk through a rainforest clearing, distilled into amber glass.',
+      pyramid:'Olfactive Pyramid', top:'Top', heart:'Heart', base:'Base', conc:'Concentration', size:'Size', family:'Family', familyVal:'Green Herbal',
+      idle:"Hi! I'm your lab host. Press Present and I'll walk you through Sage Absolue.",
+      s1:'This is Sage Absolue by Experimental Perfumery. A 55 ml extrait de parfum inspired by a sunlit rainforest.',
+      s2:'Top notes: fresh sage and bergamot. A bright, green, herbal opening.',
+      s3:'Heart notes: sage absolute and lavender. This is where the true herbal character lives.',
+      s4:'Base notes: oakmoss, vetiver and cedar. Damp earth after the rain, lasting for hours.',
+      s5:"That's Sage Absolue. Tap the bottle to spray a mist. Thank you!",
+      rec:'Recording presentation…', recDone:'Video ready to download.', recFail:'Recording unsupported or cancelled.', exp:'🎬 Export Video', finish:'Finish Now',
+      notes:{top:['Fresh Sage • Bergamot','A bright, herbal opening, like crushed leaves.'],heart:['Sage Absolute • Lavender','A warm, clean, faintly powdery herbal core.'],base:['Oakmoss • Vetiver • Cedar','A mossy, woody base that lingers on skin.']}
+    }
+  };
+  var note = 'top';
+
+  function renderNote() {
+    var n = T[lang].notes[note];
+    $('noteName').textContent = n[0]; $('noteDesc').textContent = n[1];
+    document.querySelectorAll('.note-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.note === note); });
+    var glow = { top:'rgba(163,184,108,.22)', heart:'rgba(212,197,138,.25)', base:'rgba(120,90,50,.28)' };
+    $('bottleGlow').style.background = glow[note];
+  }
+  function applyLang() {
+    document.documentElement.lang = lang === 'my' ? 'ms' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(function (el) { var v = T[lang][el.dataset.i18n]; if (v) el.textContent = v; });
+    $('langMy').className = 'px-3 py-1 rounded-full transition-all ' + (lang === 'my' ? 'bg-[#d4c58a] text-[#060b08] font-semibold' : 'text-[#d4c58a] hover:text-white');
+    $('langEn').className = 'px-3 py-1 rounded-full transition-all ' + (lang === 'en' ? 'bg-[#d4c58a] text-[#060b08] font-semibold' : 'text-[#d4c58a] hover:text-white');
+    $('exportBtnLabel').textContent = T[lang].exp; $('finishRecBtn').textContent = T[lang].finish;
+    renderNote();
+    if (!presenting) say(T[lang].idle, false);
+  }
+  window.setLanguage = function (l) { lang = l; applyLang(); };
+  $('langMy').onclick = function () { setLanguage('my'); };
+  $('langEn').onclick = function () { setLanguage('en'); };
+  document.querySelectorAll('.note-btn').forEach(function (b) { b.onclick = function () { note = b.dataset.note; renderNote(); }; });
+
+  /* ---------- images ---------- */
+  function useBottle(src) { $('realBottleImg').src = src; $('realBottleWrapper').classList.remove('hidden'); $('vectorBottleSvg').classList.add('hidden'); }
+  function useMascot(src) { $('realMascotImg').src = src; $('realMascotImg').classList.remove('hidden'); $('vectorMascotSvg').classList.add('hidden'); }
+  $('realBottleImg').onerror = function () { $('realBottleWrapper').classList.add('hidden'); $('vectorBottleSvg').classList.remove('hidden'); };
+  $('realMascotImg').onerror = function () { $('realMascotImg').classList.add('hidden'); $('vectorMascotSvg').classList.remove('hidden'); };
+  useBottle('bottle.jpg'); useMascot('mascot.jpg');
+  $('realMascotImg').style.objectPosition = '50% 40%';
+  function fromFile(input, fn) { input.onchange = function () { var f = input.files[0]; if (f) fn(URL.createObjectURL(f)); }; }
+  fromFile($('bottleUploadInput'), useBottle); fromFile($('mascotUploadInput'), useMascot);
+
+  /* ---------- atmosphere particles ---------- */
+  var ac = $('atmosphereCanvas'), actx = ac.getContext('2d'), parts = [];
+  function sizeAc() { ac.width = innerWidth; ac.height = innerHeight; }
+  sizeAc(); addEventListener('resize', sizeAc);
+  for (var i = 0; i < 55; i++) parts.push({ x:Math.random(), y:Math.random(), r:Math.random()*2+.5, vx:(Math.random()-.5)*.0003, vy:-Math.random()*.0004-.0001, a:Math.random()*.5+.15 });
+  var mist = [], mc = $('mistCanvas'), mctx = mc.getContext('2d');
+  function sizeMc() { mc.width = innerWidth; mc.height = innerHeight; }
+  sizeMc(); addEventListener('resize', sizeMc);
+  function frame() {
+    actx.clearRect(0, 0, ac.width, ac.height);
+    parts.forEach(function (p) {
+      p.x += p.vx; p.y += p.vy; if (p.y < -.02) { p.y = 1.02; p.x = Math.random(); }
+      actx.beginPath(); actx.arc(p.x*ac.width, p.y*ac.height, p.r, 0, 6.283);
+      actx.fillStyle = 'rgba(226,212,152,' + p.a + ')'; actx.fill();
+    });
+    mctx.clearRect(0, 0, mc.width, mc.height);
+    mist = mist.filter(function (m) { return m.life > 0; });
+    mist.forEach(function (m) {
+      m.x += m.vx; m.y += m.vy; m.vx *= .985; m.r += .6; m.life -= 1;
+      mctx.beginPath(); mctx.arc(m.x, m.y, m.r, 0, 6.283);
+      mctx.fillStyle = 'rgba(230,236,210,' + (m.life/m.max*.12) + ')'; mctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+
+  /* ---------- spray + tilt ---------- */
+  function spray() {
+    var el = $('realBottleWrapper').classList.contains('hidden') ? $('vectorBottleSvg') : $('realBottleWrapper');
+    var r = el.getBoundingClientRect(), ox = r.left + r.width/2, oy = r.top + r.height*.12;
+    for (var i = 0; i < 70; i++) {
+      var ang = -Math.PI/2 + (Math.random()-.5)*1.4, sp = Math.random()*4+1.5, life = 60 + Math.random()*50;
+      mist.push({ x:ox, y:oy, vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp*.7, r:Math.random()*8+4, life:life, max:life });
+    }
+    var g = $('bottleGlow'); g.style.transform = 'scale(1.25)'; setTimeout(function () { g.style.transform = ''; }, 500);
+  }
+  $('sprayBtn').onclick = function (e) { e.stopPropagation(); spray(); };
+  $('bottleTilt').addEventListener('click', function (e) { if (e.target.closest('#sprayBtn')) return; spray(); });
+  var tilt = $('bottleTilt');
+  tilt.addEventListener('mousemove', function (e) {
+    var r = tilt.getBoundingClientRect(), x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
+    [$('realBottleWrapper'), $('vectorBottleSvg')].forEach(function (el) { el.style.transform = 'perspective(700px) rotateY(' + x*14 + 'deg) rotateX(' + (-y*10) + 'deg)'; });
+  });
+  tilt.addEventListener('mouseleave', function () { [$('realBottleWrapper'), $('vectorBottleSvg')].forEach(function (el) { el.style.transform = ''; }); });
+
+  /* ---------- mascot speech ---------- */
+  var typeTimer = null, speakTimer = null;
+  function say(text, speak) {
+    clearInterval(typeTimer); clearTimeout(speakTimer);
+    var el = $('mascotText'), box = $('mascotAvatarBox'), i = 0;
+    el.textContent = ''; el.classList.add('caret'); box.classList.remove('mascot-idle'); box.classList.add('mascot-talking');
+    typeTimer = setInterval(function () {
+      el.textContent = text.slice(0, ++i);
+      if (i >= text.length) { clearInterval(typeTimer); el.classList.remove('caret'); speakTimer = setTimeout(function () { box.classList.remove('mascot-talking'); box.classList.add('mascot-idle'); }, 400); }
+    }, 22);
+    if (speak && window.speechSynthesis) {
+      try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = lang === 'my' ? 'ms-MY' : 'en-US'; u.rate = 1.1; speechSynthesis.speak(u); } catch (e) {}
+    }
+  }
+  function highlight(id) {
+    ['stage-bottle','card-notes','card-details','card-intro'].forEach(function (s) { $(s).classList.toggle('section-highlight', s === id); });
+  }
+
+  /* ---------- presentation (5 steps x 4.4 s = 22 s) ---------- */
+  var presenting = false, timers = [], STEP = 4400;
+  function stopPresent() {
+    presenting = false; timers.forEach(clearTimeout); timers = []; highlight(null);
+    if (window.speechSynthesis) try { speechSynthesis.cancel(); } catch (e) {}
+    $('presentLabel').textContent = T[lang].present;
+  }
+  function startPresent(done) {
+    stopPresent(); presenting = true; $('presentLabel').textContent = '■';
+    var steps = [
+      ['stage-bottle','s1',null], ['card-notes','s2','top'], ['card-notes','s3','heart'], ['card-notes','s4','base'], ['card-intro','s5',null]
+    ];
+    steps.forEach(function (s, i) {
+      timers.push(setTimeout(function () {
+        highlight(s[0]); if (s[2]) { note = s[2]; renderNote(); } say(T[lang][s[1]], true);
+        if (i === 0 || i === 4) spray();
+      }, i * STEP));
+    });
+    timers.push(setTimeout(function () { stopPresent(); say(T[lang].idle, false); if (done) done(); }, steps.length * STEP + 600));
+  }
+  $('presentBtn').onclick = function () { if (presenting) { stopPresent(); say(T[lang].idle, false); } else startPresent(); };
+
+  /* ---------- video export (records this tab) ---------- */
+  var rec = null, chunks = [];
+  function finishRec() { if (rec && rec.state !== 'inactive') rec.stop(); }
+  $('finishRecBtn').onclick = function () { finishRec(); };
+  $('exportVideoBtn').onclick = async function () {
+    if (rec) return;
+    try {
+      var stream = await navigator.mediaDevices.getDisplayMedia({ video:{ frameRate:30 }, audio:false, preferCurrentTab:true });
+      var types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+      var mime = types.find(function (t) { return window.MediaRecorder && MediaRecorder.isTypeSupported(t); }) || '';
+      rec = new MediaRecorder(stream, mime ? { mimeType:mime, videoBitsPerSecond:6e6 } : {}); chunks = [];
+      rec.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        var type = rec.mimeType || 'video/webm', blob = new Blob(chunks, { type:type }), a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = 'sage-absolue.' + (type.indexOf('mp4') > -1 ? 'mp4' : 'webm'); a.click();
+        rec = null; stopPresent(); $('recordingBanner').classList.add('hidden'); $('recordingStatusText').textContent = T[lang].recDone;
+      };
+      stream.getVideoTracks()[0].onended = finishRec;
+      $('recordingStatusText').textContent = T[lang].rec; $('recordingBanner').classList.remove('hidden');
+      rec.start(); startPresent(function () { setTimeout(finishRec, 500); });
+    } catch (e) {
+      rec = null; $('recordingStatusText').textContent = T[lang].recFail; $('recordingBanner').classList.remove('hidden');
+      setTimeout(function () { $('recordingBanner').classList.add('hidden'); }, 3000);
+    }
+  };
+
+  applyLang();
+})();
+</script>
+</body>
+</html>
